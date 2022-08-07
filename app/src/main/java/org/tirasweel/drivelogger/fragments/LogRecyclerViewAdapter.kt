@@ -4,16 +4,13 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import io.realm.kotlin.query.RealmResults
 
-import org.tirasweel.drivelogger.placeholder.PlaceholderContent.PlaceholderItem
 import org.tirasweel.drivelogger.databinding.FragmentLogBinding
+import org.tirasweel.drivelogger.db.DriveLog
 
-/**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
- */
 class LogRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>
+    private val values: RealmResults<DriveLog>
 ) : RecyclerView.Adapter<LogRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,8 +27,7 @@ class LogRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.idView.text = item.id
-        holder.contentView.text = item.content
+        holder.idView.text = item.id.toString()
     }
 
     override fun getItemCount(): Int = values.size
