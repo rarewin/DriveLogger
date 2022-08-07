@@ -1,7 +1,8 @@
-package org.tirasweel.drivelogger
+package org.tirasweel.drivelogger.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import org.tirasweel.drivelogger.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
