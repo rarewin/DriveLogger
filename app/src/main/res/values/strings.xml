@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">DriveLogger</string>
     <string name="description_fab_new_drivelog">add a new drive log</string>
+    <string name="register_log">register a log</string>
 </resources>
