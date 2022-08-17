@@ -3,4 +3,6 @@
     <string name="description_fab_new_drivelog">add a new drive log</string>
     <string name="menu_register_log">register a log</string>
     <string name="menu_delete_log">delete a drive log</string>
+    <string name="hint_input_date">date</string>
+    <string name="hint_mileage">mileage</string>
 </resources>

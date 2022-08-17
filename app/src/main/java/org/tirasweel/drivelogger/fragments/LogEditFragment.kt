@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import org.tirasweel.drivelogger.R
@@ -36,7 +37,21 @@ class LogEditFragment : Fragment() {
                 isVisible = true
                 isEnabled = true
             }
+
+            setOnMenuItemClickListener { item ->
+                when (item?.itemId) {
+                    R.id.menu_register_log -> {
+                        Toast.makeText(this.context, "TEST", Toast.LENGTH_LONG).show()
+                    }
+                    else -> {
+                        throw IllegalStateException("$item is unexpected here")
+                    }
+                }
+
+                true
+            }
         }
+
 
         return binding?.root
     }
