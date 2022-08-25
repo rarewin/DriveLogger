@@ -7,12 +7,24 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import io.realm.kotlin.Realm
+import io.realm.kotlin.RealmConfiguration
+import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
+import org.tirasweel.drivelogger.db.DriveLog
+import java.util.*
 
 class LogEditFragment : Fragment() {
+    companion object {
+        private val TAG: String =
+            "${BuildConfig.APPLICATION_ID}.LogEditFragment"
+    }
 
-    private var binding: FragmentLogEditBinding? = null
+    private var actualBinding: FragmentLogEditBinding? = null
+
+    private val binding
+        get() = actualBinding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,9 +32,9 @@ class LogEditFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = FragmentLogEditBinding.inflate(inflater, container, false)
+        actualBinding = FragmentLogEditBinding.inflate(inflater, container, false)
 
-        binding?.toolbar?.apply {
+        binding.toolbar.apply {
             inflateMenu(R.menu.menu_items)
 
             val arrowBackIcon =
@@ -42,6 +54,7 @@ class LogEditFragment : Fragment() {
                 when (item?.itemId) {
                     R.id.menu_register_log -> {
                         Toast.makeText(this.context, "TEST", Toast.LENGTH_LONG).show()
+                        createNewLog()
                     }
                     else -> {
                         throw IllegalStateException("$item is unexpected here")
@@ -53,12 +66,38 @@ class LogEditFragment : Fragment() {
         }
 
 
-        return binding?.root
+        return binding.root
+    }
+
+    /**
+     * ログを作成する
+     *
+     * @todo ユーティリティ的な場所に移動
+     */
+    fun createNewLog() {
+
+        val longTime = binding.inputDate.text.toString().toLongOrNull() ?: 0
+        val mileage = binding.inputMileage.text.toString().toLongOrNull() ?: 0
+
+        val config = RealmConfiguration.Builder(schema = setOf(DriveLog::class))
+            .build()
+        val realm: Realm = Realm.open(config)
+
+        val newDriveLog = DriveLog().apply {
+            createdDate = Calendar.getInstance().timeInMillis
+            updatedDate = Calendar.getInstance().timeInMillis
+            date = longTime
+            milliMileage = mileage * 1000
+        }
+
+        realm.writeBlocking {
+            copyToRealm(newDriveLog)
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding = null
+        actualBinding = null
     }
 
     /**

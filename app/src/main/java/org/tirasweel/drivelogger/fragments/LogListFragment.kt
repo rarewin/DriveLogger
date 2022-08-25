@@ -1,20 +1,27 @@
 package org.tirasweel.drivelogger.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
-
+import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.db.DriveLog
+import java.util.*
 
 class LogListFragment : Fragment() {
+
+    companion object {
+        private val TAG: String =
+            "${BuildConfig.APPLICATION_ID}.LogListFragment"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +38,11 @@ class LogListFragment : Fragment() {
                     .build()
                 val realm: Realm = Realm.open(config)
                 val driveLogs = realm.query<DriveLog>().find()
+
+                driveLogs.forEach {
+                    val createdDate = Date(it.createdDate)
+                    Log.d(TAG, "$createdDate")
+                }
 
                 adapter = LogRecyclerViewAdapter(driveLogs)
             }

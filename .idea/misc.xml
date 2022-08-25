@@ -10,9 +10,10 @@
         <entry key="app/src/main/res/drawable/ic_baseline_save_alt_24.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_log_edit.xml" value="0.17907801418439717" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.16" />
+        <entry key="app/src/main/res/layout/drivelog_item.xml" value="0.17391304347826086" />
         <entry key="app/src/main/res/layout/fragment_log.xml" value="0.10005065856129686" />
         <entry key="app/src/main/res/layout/fragment_log_edit.xml" value="0.23849440461596455" />
-        <entry key="app/src/main/res/layout/fragment_log_list.xml" value="0.10005065856129686" />
+        <entry key="app/src/main/res/layout/fragment_log_list.xml" value="0.125" />
         <entry key="app/src/main/res/menu/menu_items.xml" value="0.2101851851851852" />
       </map>
     </option>
