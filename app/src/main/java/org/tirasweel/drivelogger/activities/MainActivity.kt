@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import org.tirasweel.drivelogger.databinding.ActivityMainBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.fragments.LogEditFragment
 import org.tirasweel.drivelogger.fragments.LogListFragment
 
 class MainActivity : AppCompatActivity(),
@@ -19,14 +20,23 @@ class MainActivity : AppCompatActivity(),
 
         setContentView(binding.root)
 
-        binding.fabNewDriveLog.setOnClickListener { view ->
-            val intent = Intent(this@MainActivity, LogEditActivity::class.java)
+        binding.fabNewDriveLog.setOnClickListener { _ ->
+            val intent = Intent(this@MainActivity, LogEditActivity::class.java).apply {
+                putExtra(LogEditActivity.IntentKey.OpenMode.name, LogEditFragment.OpenMode.New)
+            }
 
             startActivity(intent)
         }
     }
 
     override fun onItemClick(log: DriveLog) {
-        TODO("Not yet implemented")
+
+        val intent = Intent(this@MainActivity, LogEditActivity::class.java).apply {
+            putExtra(LogEditActivity.IntentKey.OpenMode.name, LogEditFragment.OpenMode.Update)
+            putExtra(LogEditActivity.IntentKey.Date.name, log.date)
+            putExtra(LogEditActivity.IntentKey.Mileage.name, log.milliMileage)
+        }
+
+        startActivity(intent)
     }
 }
