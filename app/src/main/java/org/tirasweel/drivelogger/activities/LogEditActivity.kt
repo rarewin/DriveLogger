@@ -1,7 +1,7 @@
 package org.tirasweel.drivelogger.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.ActivityLogEditBinding
@@ -19,7 +19,10 @@ class LogEditActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         supportFragmentManager.commit {
-            add(R.id.logEditFragmentContainer, LogEditFragment())
+            add(
+                R.id.logEditFragmentContainer,
+                LogEditFragment.newInstance(LogEditFragment.OpenMode.Update)
+            )
         }
     }
 }

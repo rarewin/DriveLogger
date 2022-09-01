@@ -19,12 +19,43 @@ class LogEditFragment : Fragment() {
     companion object {
         private val TAG: String =
             "${BuildConfig.APPLICATION_ID}.LogEditFragment"
+
+        enum class BundleKey {
+            OpenMode
+        }
+
+        fun newInstance(mode: OpenMode): LogEditFragment {
+            val fragment = LogEditFragment()
+
+            val arguments = Bundle().apply {
+                putSerializable(BundleKey.OpenMode.name, mode)
+            }
+
+            fragment.arguments = arguments
+
+            return fragment
+        }
+    }
+
+    enum class OpenMode {
+        New,
+        Update,
     }
 
     private var actualBinding: FragmentLogEditBinding? = null
 
+    private var mode = OpenMode.New
+
     private val binding
         get() = actualBinding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            mode = it.getSerializable(BundleKey.OpenMode.name) as OpenMode
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +65,31 @@ class LogEditFragment : Fragment() {
 
         actualBinding = FragmentLogEditBinding.inflate(inflater, container, false)
 
+        setupToolbar(mode)
+
+        return binding.root
+    }
+
+    /**
+     * メニューアイコン設定
+     *
+     * @param menuId  メニューのID
+     * @param mode    Fragmentのモード
+     */
+    private fun isIconEnabled(menuId: Int, mode: OpenMode): Boolean {
+        return when (menuId) {
+            R.id.menu_register_log -> true  // 常に有効
+            R.id.menu_delete_log -> (mode == OpenMode.Update)  // 編集時のみ有効
+            else -> {
+                throw IllegalArgumentException("$menuId is not supported by this function")
+            }
+        }
+    }
+
+    /**
+     * ツールバー設定をする
+     */
+    private fun setupToolbar(mode: OpenMode) {
         binding.toolbar.apply {
             inflateMenu(R.menu.menu_items)
 
@@ -45,9 +101,14 @@ class LogEditFragment : Fragment() {
                 back()
             }
 
-            menu.findItem(R.id.menu_register_log).apply {
-                isVisible = true
-                isEnabled = true
+            listOf(R.id.menu_register_log, R.id.menu_delete_log).forEach { id ->
+
+                val enabled = isIconEnabled(id, mode)
+
+                menu.findItem(id).apply {
+                    isVisible = enabled
+                    isEnabled = enabled
+                }
             }
 
             setOnMenuItemClickListener { item ->
@@ -64,9 +125,6 @@ class LogEditFragment : Fragment() {
                 true
             }
         }
-
-
-        return binding.root
     }
 
     /**

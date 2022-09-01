@@ -44,7 +44,14 @@ class LogListFragment : Fragment() {
                     Log.d(TAG, "$createdDate")
                 }
 
-                adapter = LogRecyclerViewAdapter(driveLogs)
+                adapter = LogRecyclerViewAdapter(
+                    driveLogs,
+                    object : LogListClickListener {
+                        override fun onItemClick(log: DriveLog) {
+                            TODO("Not yet implemented")
+                        }
+                    }
+                )
             }
         }
         return view

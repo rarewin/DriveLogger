@@ -10,8 +10,13 @@ import org.tirasweel.drivelogger.databinding.DrivelogItemBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import java.util.*
 
+interface LogListClickListener {
+    fun onItemClick(log: DriveLog)
+}
+
 class LogRecyclerViewAdapter(
-    private val values: RealmResults<DriveLog>
+    private val values: RealmResults<DriveLog>,
+    private val clickListener: LogListClickListener
 ) : RecyclerView.Adapter<LogRecyclerViewAdapter.ViewHolder>() {
 
     companion object {
@@ -37,6 +42,12 @@ class LogRecyclerViewAdapter(
             item = values[position]
             textViewDate.text = Date(item?.date ?: 0).toString()
             textViewMileage.text = "${(item?.milliMileage?.toFloat() ?: 0.0f) / 1000.0} km"
+
+            view.setOnClickListener {
+                item?.let { item ->
+                    clickListener.onItemClick(item)
+                }
+            }
         }
     }
 
@@ -47,5 +58,7 @@ class LogRecyclerViewAdapter(
 
         val textViewDate = binding.date
         val textViewMileage = binding.mileage
+
+        val view = binding.root
     }
 }
