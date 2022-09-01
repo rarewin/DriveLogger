@@ -10,13 +10,9 @@ import org.tirasweel.drivelogger.databinding.DrivelogItemBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import java.util.*
 
-interface LogListClickListener {
-    fun onItemClick(log: DriveLog)
-}
-
 class LogRecyclerViewAdapter(
     private val values: RealmResults<DriveLog>,
-    private val clickListener: LogListClickListener
+    private val clickListener: LogListFragment.LogListInteractionListener?
 ) : RecyclerView.Adapter<LogRecyclerViewAdapter.ViewHolder>() {
 
     companion object {
@@ -45,7 +41,7 @@ class LogRecyclerViewAdapter(
 
             view.setOnClickListener {
                 item?.let { item ->
-                    clickListener.onItemClick(item)
+                    clickListener?.onItemClick(item)
                 }
             }
         }

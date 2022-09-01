@@ -1,11 +1,14 @@
 package org.tirasweel.drivelogger.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import org.tirasweel.drivelogger.databinding.ActivityMainBinding
+import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.fragments.LogListFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+    LogListFragment.LogListInteractionListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -21,5 +24,9 @@ class MainActivity : AppCompatActivity() {
 
             startActivity(intent)
         }
+    }
+
+    override fun onItemClick(log: DriveLog) {
+        TODO("Not yet implemented")
     }
 }

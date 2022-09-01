@@ -1,5 +1,6 @@
 package org.tirasweel.drivelogger.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,10 +19,16 @@ import java.util.*
 
 class LogListFragment : Fragment() {
 
+    interface LogListInteractionListener {
+        fun onItemClick(log: DriveLog)
+    }
+
     companion object {
         private val TAG: String =
             "${BuildConfig.APPLICATION_ID}.LogListFragment"
     }
+
+    private var listener: LogListInteractionListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,21 +46,29 @@ class LogListFragment : Fragment() {
                 val realm: Realm = Realm.open(config)
                 val driveLogs = realm.query<DriveLog>().find()
 
-                driveLogs.forEach {
-                    val createdDate = Date(it.createdDate)
+                driveLogs.forEach { log ->
+                    val createdDate = Date(log.createdDate)
                     Log.d(TAG, "$createdDate")
                 }
 
-                adapter = LogRecyclerViewAdapter(
-                    driveLogs,
-                    object : LogListClickListener {
-                        override fun onItemClick(log: DriveLog) {
-                            TODO("Not yet implemented")
-                        }
-                    }
-                )
+                adapter = LogRecyclerViewAdapter(driveLogs, listener)
             }
         }
         return view
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        if (context is LogListInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException("OnFragmentInteractionListener is not implemented")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 }
