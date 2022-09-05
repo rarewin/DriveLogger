@@ -8,12 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
 import org.tirasweel.drivelogger.BuildConfig
-import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import java.util.*
 
@@ -28,33 +27,32 @@ class LogListFragment : Fragment() {
             "${BuildConfig.APPLICATION_ID}.LogListFragment"
     }
 
+    private var actualBinding: FragmentLogListBinding? = null
+
     private var listener: LogListInteractionListener? = null
+
+    private val binding
+        get() = actualBinding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_log_list, container, false)
+    ): View {
+        actualBinding = FragmentLogListBinding.inflate(inflater, container, false)
 
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = LinearLayoutManager(context)
-
-                val config = RealmConfiguration.Builder(schema = setOf(DriveLog::class))
-                    .build()
-                val realm: Realm = Realm.open(config)
-                val driveLogs = realm.query<DriveLog>().find()
-
-                driveLogs.forEach { log ->
-                    val createdDate = Date(log.createdDate)
-                    Log.d(TAG, "$createdDate")
-                }
-
-                adapter = LogRecyclerViewAdapter(driveLogs, listener)
-            }
+        binding.logListSwipeRefresh.setOnRefreshListener {
+            updateList()
+            binding.logListSwipeRefresh.isRefreshing = false
         }
-        return view
+
+        updateList()
+
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        actualBinding = null
     }
 
     override fun onAttach(context: Context) {
@@ -70,5 +68,24 @@ class LogListFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    private fun updateList() {
+        // Set the adapter
+        with(binding.logList) {
+            layoutManager = LinearLayoutManager(context)
+
+            val config = RealmConfiguration.Builder(schema = setOf(DriveLog::class))
+                .build()
+            val realm: Realm = Realm.open(config)
+            val driveLogs = realm.query<DriveLog>().find()
+
+            driveLogs.forEach { log ->
+                val createdDate = Date(log.createdDate)
+                Log.d(TAG, "$createdDate")
+            }
+
+            adapter = LogRecyclerViewAdapter(driveLogs, listener)
+        }
     }
 }
