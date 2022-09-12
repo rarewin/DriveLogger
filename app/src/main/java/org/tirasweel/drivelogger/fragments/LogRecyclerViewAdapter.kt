@@ -16,7 +16,7 @@ class LogRecyclerViewAdapter(
 ) : RecyclerView.Adapter<LogRecyclerViewAdapter.ViewHolder>() {
 
     companion object {
-        private val TAG: String =
+        private const val TAG: String =
             "${BuildConfig.APPLICATION_ID}.LogRecyclerViewAdapter"
     }
 

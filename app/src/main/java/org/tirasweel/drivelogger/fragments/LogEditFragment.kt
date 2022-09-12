@@ -18,7 +18,7 @@ import java.util.*
 
 class LogEditFragment : Fragment() {
     companion object {
-        private val TAG: String =
+        private const val TAG: String =
             "${BuildConfig.APPLICATION_ID}.LogEditFragment"
 
         /**

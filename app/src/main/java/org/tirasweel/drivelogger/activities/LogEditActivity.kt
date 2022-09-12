@@ -12,7 +12,7 @@ import org.tirasweel.drivelogger.fragments.LogEditFragment
 class LogEditActivity : AppCompatActivity() {
 
     companion object {
-        private val TAG: String =
+        private const val TAG: String =
             "${BuildConfig.APPLICATION_ID}.LogEditActivity"
     }
 
