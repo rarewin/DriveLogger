@@ -17,13 +17,10 @@ class LogRecyclerViewAdapter(
 
     companion object {
         private val TAG: String =
-            "${BuildConfig.APPLICATION_ID}.LogEditFragment"
+            "${BuildConfig.APPLICATION_ID}.LogRecyclerViewAdapter"
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
-        Log.d(TAG, "TEST: ${values.size}")
-
         return ViewHolder(
             DrivelogItemBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -36,6 +33,9 @@ class LogRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.apply {
             item = values[position]
+
+            Log.d(TAG, "${item?.id}, ")
+
             textViewDate.text = Date(item?.date ?: 0).toString()
             textViewMileage.text = "${(item?.milliMileage?.toFloat() ?: 0.0f) / 1000.0} km"
 

@@ -18,6 +18,7 @@ class LogEditActivity : AppCompatActivity() {
 
     enum class IntentKey {
         OpenMode,
+        DriveLogId,
         Date,
         Mileage
     }
@@ -31,22 +32,16 @@ class LogEditActivity : AppCompatActivity() {
 
         val bundle = intent.extras
 
-        val mode = bundle?.get(IntentKey.OpenMode.name) as LogEditFragment.OpenMode?
-        val date = bundle?.getLong(IntentKey.Date.name)
-        val mileage = bundle?.getLong(IntentKey.Mileage.name)
+        val id = bundle?.getLong(IntentKey.DriveLogId.name)
 
-        Log.d(TAG, "mode: $mode, date: $date, mileage: $mileage")
-
-        if (mode == null) {
-            TODO("Not yet implemented (OpenMode is required)")
-        }
+        Log.d(TAG, "ID: $id")
 
         setContentView(binding.root)
 
         supportFragmentManager.commit {
             add(
                 R.id.logEditFragmentContainer,
-                LogEditFragment.newInstance(mode)
+                LogEditFragment.newInstance(id)
             )
         }
     }

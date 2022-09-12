@@ -1,18 +1,19 @@
 package org.tirasweel.drivelogger.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import io.realm.kotlin.Realm
-import io.realm.kotlin.RealmConfiguration
+import io.realm.kotlin.ext.query
+import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.utils.RealmUtil
 import java.util.*
 
 class LogEditFragment : Fragment() {
@@ -20,15 +21,20 @@ class LogEditFragment : Fragment() {
         private val TAG: String =
             "${BuildConfig.APPLICATION_ID}.LogEditFragment"
 
-        enum class BundleKey {
-            OpenMode
-        }
-
-        fun newInstance(mode: OpenMode): LogEditFragment {
+        /**
+         * ログ編集フラグメントのインスタンス生成
+         *
+         * @param id  ID(nullなら新規作成)
+         */
+        fun newInstance(id: Long?): LogEditFragment {
             val fragment = LogEditFragment()
 
+            Log.d(TAG, "ID is $id")
+
             val arguments = Bundle().apply {
-                putSerializable(BundleKey.OpenMode.name, mode)
+                if (id != null) {
+                    putLong(BundleKey.LogId.name, id)
+                }
             }
 
             fragment.arguments = arguments
@@ -37,23 +43,30 @@ class LogEditFragment : Fragment() {
         }
     }
 
-    enum class OpenMode {
-        New,
-        Update,
+    enum class BundleKey {
+        LogId
     }
 
     private var actualBinding: FragmentLogEditBinding? = null
 
-    private var mode = OpenMode.New
-
     private val binding
         get() = actualBinding!!
+
+    private var logId: Long? = null
+    private var driveLog: DriveLog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            mode = it.getSerializable(BundleKey.OpenMode.name) as OpenMode
+            val id = it.getLong(BundleKey.LogId.name)
+            if (id != 0L) {
+                logId = id
+
+                // IDからRealmのログデータを取得しておく
+                val realm = RealmUtil.createRealm()
+                driveLog = realm.query<DriveLog>("id == $0", logId).find().first()
+            }
         }
     }
 
@@ -65,7 +78,12 @@ class LogEditFragment : Fragment() {
 
         actualBinding = FragmentLogEditBinding.inflate(inflater, container, false)
 
-        setupToolbar(mode)
+        setupToolbar()
+
+        driveLog?.let { log ->
+            binding.inputDate.setText("${log.createdDate}")
+            binding.inputMileage.setText("${log.milliMileage}")
+        }
 
         return binding.root
     }
@@ -74,12 +92,11 @@ class LogEditFragment : Fragment() {
      * メニューアイコン設定
      *
      * @param menuId  メニューのID
-     * @param mode    Fragmentのモード
      */
-    private fun isIconEnabled(menuId: Int, mode: OpenMode): Boolean {
+    private fun isIconEnabled(menuId: Int?): Boolean {
         return when (menuId) {
             R.id.menu_register_log -> true  // 常に有効
-            R.id.menu_delete_log -> (mode == OpenMode.Update)  // 編集時のみ有効
+            R.id.menu_delete_log -> (logId != null)  // 編集時のみ有効
             else -> {
                 throw IllegalArgumentException("$menuId is not supported by this function")
             }
@@ -89,7 +106,7 @@ class LogEditFragment : Fragment() {
     /**
      * ツールバー設定をする
      */
-    private fun setupToolbar(mode: OpenMode) {
+    private fun setupToolbar() {
         binding.toolbar.apply {
             inflateMenu(R.menu.menu_items)
 
@@ -103,7 +120,7 @@ class LogEditFragment : Fragment() {
 
             listOf(R.id.menu_register_log, R.id.menu_delete_log).forEach { id ->
 
-                val enabled = isIconEnabled(id, mode)
+                val enabled = isIconEnabled(id)
 
                 menu.findItem(id).apply {
                     isVisible = enabled
@@ -114,8 +131,13 @@ class LogEditFragment : Fragment() {
             setOnMenuItemClickListener { item ->
                 when (item?.itemId) {
                     R.id.menu_register_log -> {
-                        Toast.makeText(this.context, "TEST", Toast.LENGTH_LONG).show()
-                        createNewLog()
+                        Log.d(TAG, "log id: $logId")
+                        if (logId == null) {
+                            createNewLog()
+                            activity?.finish()
+                        }
+                    }
+                    R.id.menu_delete_log -> {
                     }
                     else -> {
                         throw IllegalStateException("$item is unexpected here")
@@ -132,23 +154,29 @@ class LogEditFragment : Fragment() {
      *
      * @todo ユーティリティ的な場所に移動
      */
-    fun createNewLog() {
+    private fun createNewLog() {
 
         val longTime = binding.inputDate.text.toString().toLongOrNull() ?: 0
         val mileage = binding.inputMileage.text.toString().toLongOrNull() ?: 0
 
-        val config = RealmConfiguration.Builder(schema = setOf(DriveLog::class))
-            .build()
-        val realm: Realm = Realm.open(config)
-
-        val newDriveLog = DriveLog().apply {
-            createdDate = Calendar.getInstance().timeInMillis
-            updatedDate = Calendar.getInstance().timeInMillis
-            date = longTime
-            milliMileage = mileage * 1000
-        }
+        val realm = RealmUtil.createRealm()
 
         realm.writeBlocking {
+            val maxIdLog =
+                realm.query<DriveLog>().sort("id", Sort.DESCENDING).limit(1).find()
+            val maxId = maxIdLog.firstOrNull()?.id
+            val newId = maxId?.plus(1) ?: 1L
+
+            Log.d(TAG, "newId: $newId")
+
+            val newDriveLog = DriveLog().apply {
+                id = newId
+                createdDate = Calendar.getInstance().timeInMillis
+                updatedDate = Calendar.getInstance().timeInMillis
+                date = longTime
+                milliMileage = mileage * 1000
+            }
+
             copyToRealm(newDriveLog)
         }
     }
