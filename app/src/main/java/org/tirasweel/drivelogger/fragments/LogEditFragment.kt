@@ -81,7 +81,7 @@ class LogEditFragment : Fragment() {
         setupToolbar()
 
         driveLog?.let { log ->
-            binding.inputDate.setText("${log.createdDate}")
+            binding.inputDate.setText("${log.date}")
             binding.inputMileage.setText("${log.milliMileage}")
         }
 

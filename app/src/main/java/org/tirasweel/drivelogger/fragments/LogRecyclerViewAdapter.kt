@@ -34,8 +34,9 @@ class LogRecyclerViewAdapter(
         holder.apply {
             item = values[position]
 
-            Log.d(TAG, "${item?.id}, ")
+            Log.d(TAG, "item [position: $position ID:${item?.id}]")
 
+            textViewId.text = item?.id.toString()
             textViewDate.text = Date(item?.date ?: 0).toString()
             textViewMileage.text = "${(item?.milliMileage?.toFloat() ?: 0.0f) / 1000.0} km"
 
@@ -52,6 +53,7 @@ class LogRecyclerViewAdapter(
     inner class ViewHolder(binding: DrivelogItemBinding) : RecyclerView.ViewHolder(binding.root) {
         var item: DriveLog? = null
 
+        val textViewId = binding.id
         val textViewDate = binding.date
         val textViewMileage = binding.mileage
 
