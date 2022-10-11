@@ -2,7 +2,6 @@ package org.tirasweel.drivelogger.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.RealmUtil
-import java.util.*
 
 class LogListFragment : Fragment() {
 
@@ -81,11 +79,6 @@ class LogListFragment : Fragment() {
 
             val realm = RealmUtil.createRealm()
             val driveLogs = realm.query<DriveLog>().find()
-
-            driveLogs.forEach { log ->
-                val createdDate = Date(log.createdDate)
-                Log.d(TAG, "id: ${log.id}  createdData: $createdDate")
-            }
 
             adapter = LogRecyclerViewAdapter(driveLogs, listener)
         }

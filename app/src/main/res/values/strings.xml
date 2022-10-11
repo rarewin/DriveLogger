@@ -5,4 +5,5 @@
     <string name="menu_delete_log">delete a drive log</string>
     <string name="hint_input_date">date</string>
     <string name="hint_mileage">mileage</string>
+    <string name="open_date_picker">open a date picker</string>
 </resources>

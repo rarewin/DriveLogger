@@ -7,16 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentResultListener
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
+import org.tirasweel.drivelogger.utils.DatePickerFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 
-class LogEditFragment : Fragment() {
+class LogEditFragment : Fragment(), FragmentResultListener {
     companion object {
         private const val TAG: String =
             "${BuildConfig.APPLICATION_ID}.LogEditFragment"
@@ -74,7 +79,7 @@ class LogEditFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         actualBinding = FragmentLogEditBinding.inflate(inflater, container, false)
 
@@ -83,6 +88,32 @@ class LogEditFragment : Fragment() {
         driveLog?.let { log ->
             binding.inputDate.setText("${log.date}")
             binding.inputMileage.setText("${log.milliMileage}")
+        } ?: run {
+            val today = Date(Calendar.getInstance().timeInMillis).toLocaleDateString()
+            binding.inputDate.setText(today)
+        }
+
+        childFragmentManager.setFragmentResultListener(
+            DatePickerFragment.Keys.REQUEST.key,
+            this,
+            this
+        )
+
+        binding.inputDate.setOnClickListener { /* view -> */
+            val datePicker = DatePickerFragment()
+            val bundle = Bundle()
+
+            bundle.apply {
+                driveLog?.let { driveLog ->
+                    val date = LocalDateTime.ofEpochSecond(driveLog.date / 1000, 0, ZoneOffset.UTC)
+
+                    putInt(DatePickerFragment.Keys.YEAR.name, date.year)
+                    putInt(DatePickerFragment.Keys.MONTH.name, date.monthValue)
+                    putInt(DatePickerFragment.Keys.DAY.name, date.dayOfMonth)
+                }
+            }
+            datePicker.arguments = bundle
+            datePicker.show(this.childFragmentManager, "datePicker")
         }
 
         return binding.root
@@ -193,4 +224,21 @@ class LogEditFragment : Fragment() {
         activity?.finish()
     }
 
+    override fun onFragmentResult(requestKey: String, result: Bundle) {
+        when (requestKey) {
+            DatePickerFragment.Keys.REQUEST.key -> {
+                val year = result.getInt(DatePickerFragment.Keys.YEAR.key)
+                val month = result.getInt(DatePickerFragment.Keys.MONTH.key)
+                val day = result.getInt(DatePickerFragment.Keys.DAY.key)
+
+                val cal = Calendar.getInstance()
+                cal.set(1900 + year, month, day)
+                val dateString = cal.time.toLocaleDateString()
+                binding.inputDate.setText(dateString)
+            }
+            else -> {
+                throw IllegalArgumentException("unknown result \"$requestKey\"")
+            }
+        }
+    }
 }

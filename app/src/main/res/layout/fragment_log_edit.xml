@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/editFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.LogEditFragment">
@@ -24,21 +25,42 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
             app:layout_constraintVertical_bias="0.0"
             tools:layout_editor_absoluteX="0dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_date"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_input_date"
-                android:minHeight="48dp"
-                android:textColorHint="#757575"
-                tools:visibility="visible" />
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:editable="false"
+                    android:hint="@string/hint_input_date"
+                    android:minHeight="48dp"
+                    android:textColorHint="#757575"
+                    tools:visibility="visible" />
+
+                <ImageButton
+                    android:id="@+id/buttonDatePick"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:baselineAlignBottom="false"
+                    android:contentDescription="@string/open_date_picker"
+                    android:minHeight="48dp"
+                    android:src="@drawable/ic_baseline_calendar_today_24"
+                    app:tint="@color/design_default_color_secondary" />
+
+            </LinearLayout>
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_mileage"
