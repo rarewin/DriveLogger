@@ -17,8 +17,6 @@ import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.DatePickerFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.util.*
 
 class LogEditFragment : Fragment(), FragmentResultListener {
@@ -58,20 +56,35 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         get() = actualBinding!!
 
     private var logId: Long? = null
+
+    /**
+     * ドライブログ
+     */
     private var driveLog: DriveLog? = null
+
+    /**
+     * 反映前のドライブログ
+     */
+    private var tmpDriveLog: DriveLog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.let {
-            val id = it.getLong(BundleKey.LogId.name)
-            if (id != 0L) {
-                logId = id
+        arguments?.getLong(BundleKey.LogId.name)?.let { id ->
+            logId = id
 
-                // IDからRealmのログデータを取得しておく
-                val realm = RealmUtil.createRealm()
-                driveLog = realm.query<DriveLog>("id == $0", logId).find().first()
-            }
+            // IDからRealmのログデータを取得しておく
+            val realm = RealmUtil.createRealm()
+            driveLog = realm.query<DriveLog>("id == $0", logId).find().firstOrNull()
+        }
+
+        tmpDriveLog = driveLog?.let { driveLog ->
+            DriveLog(driveLog)  // コピーする (もっと良い手ない? 昔はRealmに関数があったみたいだがl
+        } ?: DriveLog().apply {
+            this.id = getNewDriveLogId() // TODO: ここで取得せず作成タイミングで取得した方がよさげ
+            logId = this.id
+
+            date = Calendar.getInstance().timeInMillis  // 現在時刻を入れておく
         }
     }
 
@@ -85,13 +98,18 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
         setupToolbar()
 
-        driveLog?.let { log ->
-            binding.inputDate.setText("${log.date}")
-            binding.inputMileage.setText("${log.milliMileage}")
-        } ?: run {
-            val today = Date(Calendar.getInstance().timeInMillis).toLocaleDateString()
-            binding.inputDate.setText(today)
-        }
+        tmpDriveLog?.let { log ->
+            val date = Date(log.date).toLocaleDateString()
+            binding.inputDate.setText("$date")
+        } ?: error("tmpDriveLog is null")
+
+//        driveLog?.let { log ->
+//            binding.inputDate.setText("${log.date}")
+//            binding.inputMileage.setText("${log.milliMileage}")
+//        } ?: run {
+//            val today = Date(Calendar.getInstance().timeInMillis).toLocaleDateString()
+//            binding.inputDate.setText(today)
+//        }
 
         childFragmentManager.setFragmentResultListener(
             DatePickerFragment.Keys.REQUEST.key,
@@ -104,13 +122,21 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             val bundle = Bundle()
 
             bundle.apply {
-                driveLog?.let { driveLog ->
-                    val date = LocalDateTime.ofEpochSecond(driveLog.date / 1000, 0, ZoneOffset.UTC)
+                tmpDriveLog?.let { driveLog ->
 
-                    putInt(DatePickerFragment.Keys.YEAR.name, date.year)
-                    putInt(DatePickerFragment.Keys.MONTH.name, date.monthValue)
-                    putInt(DatePickerFragment.Keys.DAY.name, date.dayOfMonth)
-                }
+                    val cal = Calendar.getInstance()
+                    cal.timeInMillis = driveLog.date
+
+                    val year = cal.get(Calendar.YEAR)
+                    val month = cal.get(Calendar.MONTH) + 1  // 1月が0
+                    val day = cal.get(Calendar.DAY_OF_MONTH)
+
+                    Log.d(TAG, "$year-$month-$day")
+
+                    putInt(DatePickerFragment.Keys.YEAR.name, year)
+                    putInt(DatePickerFragment.Keys.MONTH.name, month)
+                    putInt(DatePickerFragment.Keys.DAY.name, day)
+                } ?: error("tmpDriveLog is empty")
             }
             datePicker.arguments = bundle
             datePicker.show(this.childFragmentManager, "datePicker")
@@ -180,6 +206,19 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         }
     }
 
+    private fun getNewDriveLogId(): Long {
+        val realm = RealmUtil.createRealm()
+        val maxIdLog =
+            realm.query<DriveLog>().sort("id", Sort.DESCENDING).limit(1).find()
+        val maxId = maxIdLog.firstOrNull()?.id
+
+        return maxId?.plus(1) ?: 1L
+    }
+
+    private fun createOrUpdateDriveLog() {
+
+    }
+
     /**
      * ログを作成する
      *
@@ -192,14 +231,10 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
         val realm = RealmUtil.createRealm()
 
+        val newId = getNewDriveLogId()
+        Log.d(TAG, "newId: $newId")
+
         realm.writeBlocking {
-            val maxIdLog =
-                realm.query<DriveLog>().sort("id", Sort.DESCENDING).limit(1).find()
-            val maxId = maxIdLog.firstOrNull()?.id
-            val newId = maxId?.plus(1) ?: 1L
-
-            Log.d(TAG, "newId: $newId")
-
             val newDriveLog = DriveLog().apply {
                 id = newId
                 createdDate = Calendar.getInstance().timeInMillis
@@ -224,17 +259,28 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         activity?.finish()
     }
 
+    /**
+     * 子フラグメントの結果を取得する
+     */
     override fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
+            // DatePicker
             DatePickerFragment.Keys.REQUEST.key -> {
                 val year = result.getInt(DatePickerFragment.Keys.YEAR.key)
                 val month = result.getInt(DatePickerFragment.Keys.MONTH.key)
                 val day = result.getInt(DatePickerFragment.Keys.DAY.key)
 
-                val cal = Calendar.getInstance()
-                cal.set(1900 + year, month, day)
+                Log.d(TAG, "DatePicker Result: $year-$month-$day")
+
+                val cal = Calendar.getInstance()  // UTCになってるl?
+                cal.timeZone = TimeZone.getDefault()
+                cal.set(year, month, day)
                 val dateString = cal.time.toLocaleDateString()
                 binding.inputDate.setText(dateString)
+
+                tmpDriveLog?.date = cal.timeInMillis
+
+                Log.d(TAG, "date will be changed: ${driveLog?.date} -> ${tmpDriveLog?.date}")
             }
             else -> {
                 throw IllegalArgumentException("unknown result \"$requestKey\"")

@@ -2,6 +2,7 @@ package org.tirasweel.drivelogger.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.databinding.ActivityMainBinding
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity(),
 
         binding.fabNewDriveLog.setOnClickListener { _ ->
             val intent = Intent(this@MainActivity, LogEditActivity::class.java)
-
+            Log.d(TAG, "create new drive log")
             startActivity(intent)
         }
     }

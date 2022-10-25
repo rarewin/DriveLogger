@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/editFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.LogEditFragment">
+    android:layout_height="match_parent">
+    <!-- tools:context=".fragments.LogEditFragment" -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -37,13 +37,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <EditText
                     android:id="@+id/input_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:editable="false"
+                    android:allowUndo="false"
+                    android:cursorVisible="false"
+                    android:focusable="false"
                     android:hint="@string/hint_input_date"
+                    android:inputType="date"
                     android:minHeight="48dp"
                     android:textColorHint="#757575"
                     tools:visibility="visible" />
@@ -59,6 +61,14 @@
                     android:minHeight="48dp"
                     android:src="@drawable/ic_baseline_calendar_today_24"
                     app:tint="@color/design_default_color_secondary" />
+
+                <EditText
+                    android:id="@+id/editTextDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="date" />
 
             </LinearLayout>
 
