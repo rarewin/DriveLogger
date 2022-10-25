@@ -225,8 +225,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
      */
     private fun createNewLog() {
 
-        val longTime = binding.inputDate.text.toString().toLongOrNull() ?: 0
-        val mileage = binding.inputMileage.text.toString().toLongOrNull() ?: 0
+        // val mileage = binding.inputMileage.text.toString().toLongOrNull() ?: 0
 
         val realm = RealmUtil.createRealm()
 
@@ -234,15 +233,15 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         Log.d(TAG, "newId: $newId")
 
         realm.writeBlocking {
-            val newDriveLog = DriveLog().apply {
-                id = newId
-                createdDate = Calendar.getInstance().timeInMillis
-                updatedDate = Calendar.getInstance().timeInMillis
-                date = longTime
-                milliMileage = mileage * 1000
-            }
+            tmpDriveLog?.let { tmpDriveLog ->
+                val newDriveLog = DriveLog(tmpDriveLog).apply {
+                    id = newId
+                    createdDate = Calendar.getInstance().timeInMillis
+                    updatedDate = Calendar.getInstance().timeInMillis
+                }
 
-            copyToRealm(newDriveLog)
+                copyToRealm(newDriveLog)
+            } ?: error("tmpDriveLog is null")
         }
     }
 
