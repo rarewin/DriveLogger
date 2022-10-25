@@ -81,9 +81,8 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         tmpDriveLog = driveLog?.let { driveLog ->
             DriveLog(driveLog)  // コピーする (もっと良い手ない? 昔はRealmに関数があったみたいだがl
         } ?: DriveLog().apply {
-            this.id = getNewDriveLogId() // TODO: ここで取得せず作成タイミングで取得した方がよさげ
-            logId = this.id
-
+//            this.id = getNewDriveLogId() // TODO: ここで取得せず作成タイミングで取得した方がよさげ
+//            logId = this.id
             date = Calendar.getInstance().timeInMillis  // 現在時刻を入れておく
         }
     }
