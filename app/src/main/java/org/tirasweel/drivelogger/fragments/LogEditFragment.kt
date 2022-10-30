@@ -14,6 +14,7 @@ import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDateString
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.DatePickerFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
@@ -58,11 +59,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     private var logId: Long? = null
 
     /**
-     * ドライブログ
-     */
-    private var driveLog: DriveLog? = null
-
-    /**
      * 反映前のドライブログ
      */
     private var tmpDriveLog: DriveLog? = null
@@ -70,11 +66,13 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        var driveLog: DriveLog? = null
+        val realm = RealmUtil.createRealm()
+
         arguments?.getLong(BundleKey.LogId.name)?.let { id ->
             logId = id
 
             // IDからRealmのログデータを取得しておく
-            val realm = RealmUtil.createRealm()
             driveLog = realm.query<DriveLog>("id == $0", logId).find().firstOrNull()
         }
 
@@ -85,6 +83,8 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 //            logId = this.id
             date = Calendar.getInstance().timeInMillis  // 現在時刻を入れておく
         }
+
+        realm.close()
     }
 
     override fun onCreateView(
@@ -188,7 +188,31 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                 when (item?.itemId) {
                     R.id.menu_register_log -> {
                         Log.d(TAG, "log id: $logId")
-                        if (logId == null) {
+
+                        if (logId != null) {
+
+                            // TODO:確認ダイアログ表示する?
+                            val realm = RealmUtil.createRealm()
+
+                            tmpDriveLog?.let { tmpDriveLog ->
+                                Log.d(TAG, "date: ${tmpDriveLog.date.toLocalDateString()}")
+
+                                realm.writeBlocking {
+                                    realm.query<DriveLog>("id == $0", logId).find()
+                                        .firstOrNull()?.let { driveLog ->
+                                            findLatest(driveLog)?.date = tmpDriveLog.date
+//                                    milliMileage = tmpDriveLog.milliMileage
+//                                        updatedDate = Calendar.getInstance().timeInMillis
+//                                    }
+                                        }
+                                }
+                            } ?: error("tmpDriveLog is null")
+
+                            realm.close()
+
+                            activity?.finish()
+
+                        } else {
                             createNewLog()
                             activity?.finish()
                         }
@@ -210,6 +234,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         val maxIdLog =
             realm.query<DriveLog>().sort("id", Sort.DESCENDING).limit(1).find()
         val maxId = maxIdLog.firstOrNull()?.id
+        realm.close()
 
         return maxId?.plus(1) ?: 1L
     }
@@ -243,6 +268,8 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                 copyToRealm(newDriveLog)
             } ?: error("tmpDriveLog is null")
         }
+
+        realm.close()
     }
 
     override fun onDestroyView() {
@@ -278,7 +305,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
                 tmpDriveLog?.date = cal.timeInMillis
 
-                Log.d(TAG, "date will be changed: ${driveLog?.date} -> ${tmpDriveLog?.date}")
+                // Log.d(TAG, "date will be changed: ${driveLog?.date} -> ${tmpDriveLog?.date}")
             }
             else -> {
                 throw IllegalArgumentException("unknown result \"$requestKey\"")

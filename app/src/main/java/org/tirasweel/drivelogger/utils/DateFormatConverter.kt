@@ -12,5 +12,12 @@ class DateFormatConverter {
 
             return SimpleDateFormat(format, locale).format(this)
         }
+
+        fun Long.toLocalDateString(): String {
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = this
+
+            return cal.time.toLocaleDateString()
+        }
     }
 }
