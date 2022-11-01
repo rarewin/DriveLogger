@@ -14,6 +14,7 @@ import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDateString
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.DatePickerFragment
@@ -219,6 +220,27 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                         }
                     }
                     R.id.menu_delete_log -> {
+                        val dialog = ConfirmDialogFragment.newInstance(
+                            this@LogEditFragment,
+                            getString(R.string.message_remove_drivelog)
+                        ) { response ->
+                            Log.d(TAG, "response is $response")
+
+                            if (response) {
+                                val realm = RealmUtil.createRealm()
+                                val log =
+                                    realm.writeBlocking {
+                                        realm.query<DriveLog>("id == $0", logId).find()
+                                            .firstOrNull()?.let { log ->
+                                                findLatest(log)?.let { delete(it) }
+                                            }
+                                    }
+                                realm.close()
+                                activity?.finish()
+                            }
+                        }
+
+                        dialog.show(childFragmentManager, "")
                     }
                     else -> {
                         throw IllegalStateException("$item is unexpected here")

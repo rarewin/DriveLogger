@@ -6,4 +6,7 @@
     <string name="menu_delete_log">走行ログを削除</string>
     <string name="menu_register_log">走行ログを登録</string>
     <string name="description_fab_new_drivelog">走行ログを追加</string>
+    <string name="message_remove_drivelog">このログを削除してもよいですか?</string>
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
 </resources>

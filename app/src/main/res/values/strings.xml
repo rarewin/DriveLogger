@@ -6,4 +6,7 @@
     <string name="hint_input_date">date</string>
     <string name="hint_mileage">mileage</string>
     <string name="open_date_picker">open a date picker</string>
+    <string name="message_remove_drivelog">Do you want to remove this log?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
