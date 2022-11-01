@@ -66,24 +66,25 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var driveLog: DriveLog? = null
         val realm = RealmUtil.createRealm()
+        var driveLog: DriveLog? = null
+        arguments?.getLong(BundleKey.LogId.name, -1L)?.let { id ->
+            // みつからなかった場合はlogIDはnullにしたい
+            if (id < 0) {
+                return@let
+            }
 
-        arguments?.getLong(BundleKey.LogId.name)?.let { id ->
             logId = id
 
             // IDからRealmのログデータを取得しておく
             driveLog = realm.query<DriveLog>("id == $0", logId).find().firstOrNull()
         }
 
-        tmpDriveLog = driveLog?.let { driveLog ->
-            DriveLog(driveLog)  // コピーする (もっと良い手ない? 昔はRealmに関数があったみたいだがl
+        tmpDriveLog = driveLog?.let { log ->
+            DriveLog(log)  // コピーする (もっと良い手ない? 昔はRealmに関数があったみたいだがl
         } ?: DriveLog().apply {
-//            this.id = getNewDriveLogId() // TODO: ここで取得せず作成タイミングで取得した方がよさげ
-//            logId = this.id
             date = Calendar.getInstance().timeInMillis  // 現在時刻を入れておく
         }
-
         realm.close()
     }
 
