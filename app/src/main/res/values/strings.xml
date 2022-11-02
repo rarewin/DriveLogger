@@ -9,4 +9,6 @@
     <string name="message_remove_drivelog">Do you want to remove this log?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="message_register_drivelog">Do you want to register the modification?</string>
+    <string name="message_discard_modification_drivelog">Do you want to discard the changes?</string>
 </resources>

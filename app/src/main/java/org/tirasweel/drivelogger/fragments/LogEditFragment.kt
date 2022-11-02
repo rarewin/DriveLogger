@@ -173,7 +173,16 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             navigationIcon = arrowBackIcon
 
             setNavigationOnClickListener {
-                back()
+                // TODO: 変更有無のチェック
+                val dialog = ConfirmDialogFragment.newInstance(
+                    this@LogEditFragment,
+                    getString(R.string.message_discard_modification_drivelog)
+                ) { response ->
+                    if (response) {
+                        back()
+                    }
+                }
+                dialog.show(childFragmentManager, "DISCARD_CHANGES")
             }
 
             listOf(R.id.menu_register_log, R.id.menu_delete_log).forEach { id ->
@@ -191,33 +200,40 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                     R.id.menu_register_log -> {
                         Log.d(TAG, "log id: $logId")
 
-                        if (logId != null) {
+                        val dialog = ConfirmDialogFragment.newInstance(
+                            this@LogEditFragment,
+                            getString(R.string.message_register_drivelog)
+                        ) { response ->
+                            if (response) {
+                                if (logId != null) {
 
-                            // TODO:確認ダイアログ表示する?
-                            val realm = RealmUtil.createRealm()
+                                    val realm = RealmUtil.createRealm()
 
-                            tmpDriveLog?.let { tmpDriveLog ->
-                                Log.d(TAG, "date: ${tmpDriveLog.date.toLocalDateString()}")
+                                    tmpDriveLog?.let { tmpDriveLog ->
+                                        Log.d(TAG, "date: ${tmpDriveLog.date.toLocalDateString()}")
 
-                                realm.writeBlocking {
-                                    realm.query<DriveLog>("id == $0", logId).find()
-                                        .firstOrNull()?.let { driveLog ->
-                                            findLatest(driveLog)?.date = tmpDriveLog.date
+                                        realm.writeBlocking {
+                                            realm.query<DriveLog>("id == $0", logId).find()
+                                                .firstOrNull()?.let { driveLog ->
+                                                    findLatest(driveLog)?.date = tmpDriveLog.date
 //                                    milliMileage = tmpDriveLog.milliMileage
 //                                        updatedDate = Calendar.getInstance().timeInMillis
 //                                    }
+                                                }
                                         }
+                                    } ?: error("tmpDriveLog is null")
+
+                                    realm.close()
+
+                                    activity?.finish()
+                                } else {
+                                    createNewLog()
+                                    activity?.finish()
                                 }
-                            } ?: error("tmpDriveLog is null")
-
-                            realm.close()
-
-                            activity?.finish()
-
-                        } else {
-                            createNewLog()
-                            activity?.finish()
+                            }
                         }
+
+                        dialog.show(childFragmentManager, "REGISTER_LOG")
                     }
                     R.id.menu_delete_log -> {
                         val dialog = ConfirmDialogFragment.newInstance(
@@ -228,19 +244,18 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
                             if (response) {
                                 val realm = RealmUtil.createRealm()
-                                val log =
-                                    realm.writeBlocking {
-                                        realm.query<DriveLog>("id == $0", logId).find()
-                                            .firstOrNull()?.let { log ->
-                                                findLatest(log)?.let { delete(it) }
-                                            }
-                                    }
+                                realm.writeBlocking {
+                                    realm.query<DriveLog>("id == $0", logId).find()
+                                        .firstOrNull()?.let { log ->
+                                            findLatest(log)?.let { delete(it) }
+                                        }
+                                }
                                 realm.close()
                                 activity?.finish()
                             }
                         }
 
-                        dialog.show(childFragmentManager, "")
+                        dialog.show(childFragmentManager, "DELETE_LOG")
                     }
                     else -> {
                         throw IllegalStateException("$item is unexpected here")
