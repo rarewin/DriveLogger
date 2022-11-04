@@ -102,6 +102,8 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         tmpDriveLog?.let { log ->
             val date = Date(log.date).toLocaleDateString()
             binding.inputDate.setText("$date")
+            val milliMileage = log.milliMileage
+            binding.inputMileage.setText("${milliMileage / 1000.0}")
         } ?: error("tmpDriveLog is null")
 
 //        driveLog?.let { log ->
@@ -200,10 +202,25 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                     R.id.menu_register_log -> {
                         Log.d(TAG, "log id: $logId")
 
+                        // 変換
+                        try {
+                            tmpDriveLog?.apply {
+                                val mileage: Double =
+                                    binding.inputMileage.text.toString()
+                                        .toDoubleOrNull()
+                                        ?: throw java.lang.IllegalArgumentException("failed to convert into to double")
+                                milliMileage = (mileage * 1000.0).toLong()
+                            }
+                        } catch (e: Error) {
+                            // TODO: 入力が不正ですダイアログの表示
+                            return@setOnMenuItemClickListener true
+                        }
+
                         val dialog = ConfirmDialogFragment.newInstance(
                             this@LogEditFragment,
                             getString(R.string.message_register_drivelog)
                         ) { response ->
+
                             if (response) {
                                 if (logId != null) {
 
@@ -215,10 +232,10 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                         realm.writeBlocking {
                                             realm.query<DriveLog>("id == $0", logId).find()
                                                 .firstOrNull()?.let { driveLog ->
-                                                    findLatest(driveLog)?.date = tmpDriveLog.date
-//                                    milliMileage = tmpDriveLog.milliMileage
-//                                        updatedDate = Calendar.getInstance().timeInMillis
-//                                    }
+                                                    findLatest(driveLog)?.apply {
+                                                        date = tmpDriveLog.date
+                                                        milliMileage = tmpDriveLog.milliMileage
+                                                    }
                                                 }
                                         }
                                     } ?: error("tmpDriveLog is null")

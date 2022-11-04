@@ -42,7 +42,7 @@ class ConfirmDialogFragment : DialogFragment() {
                 fragment.childFragmentManager.setFragmentResultListener(
                     Keys.REQUEST.key,
                     fragment.viewLifecycleOwner
-                ) { requestKey, result ->
+                ) { _, result ->
 //                    assert(requestKey == Keys.REQUEST.key)
 
                     val response = result.getBoolean(Keys.RESULT.key)
