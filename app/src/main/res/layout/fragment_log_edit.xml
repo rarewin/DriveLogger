@@ -31,45 +31,30 @@
             app:layout_constraintVertical_bias="0.0"
             tools:layout_editor_absoluteX="0dp">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/title_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="@string/title_date" />
 
-                <EditText
-                    android:id="@+id/input_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:allowUndo="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:hint="@string/hint_input_date"
-                    android:inputType="date"
-                    android:minHeight="48dp"
-                    android:textColorHint="#757575"
-                    tools:visibility="visible" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:allowUndo="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:hint="@string/hint_input_date"
+                android:inputType="date"
+                android:minHeight="48dp"
+                android:textColorHint="#757575"
+                tools:visibility="visible" />
 
-                <ImageButton
-                    android:id="@+id/buttonDatePick"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="1"
-                    android:baselineAlignBottom="false"
-                    android:contentDescription="@string/open_date_picker"
-                    android:minHeight="48dp"
-                    android:src="@drawable/ic_baseline_calendar_today_24"
-                    app:tint="@color/design_default_color_secondary" />
-
-                <EditText
-                    android:id="@+id/editTextDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="date" />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/title_mileage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_mileage" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_mileage"
