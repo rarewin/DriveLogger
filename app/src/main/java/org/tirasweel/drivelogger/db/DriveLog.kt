@@ -60,6 +60,7 @@ class DriveLog : RealmObject {
         updatedDate = 0
         date = 0
         milliMileage = 0
+        memo = ""
     }
 
     constructor(log: DriveLog) {
@@ -68,5 +69,6 @@ class DriveLog : RealmObject {
         updatedDate = log.updatedDate
         date = log.date
         milliMileage = log.milliMileage
+        memo = log.memo
     }
 }

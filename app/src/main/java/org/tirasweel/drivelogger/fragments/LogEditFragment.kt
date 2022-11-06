@@ -104,6 +104,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             binding.inputDate.setText("$date")
             val milliMileage = log.milliMileage
             binding.inputMileage.setText("${milliMileage / 1000.0}")
+            binding.inputMemo.setText(log.memo)
         } ?: error("tmpDriveLog is null")
 
 //        driveLog?.let { log ->
@@ -210,6 +211,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                         .toDoubleOrNull()
                                         ?: throw java.lang.IllegalArgumentException("failed to convert into to double")
                                 milliMileage = (mileage * 1000.0).toLong()
+                                memo = binding.inputMemo.text.toString()
                             }
                         } catch (e: Error) {
                             // TODO: 入力が不正ですダイアログの表示
@@ -235,6 +237,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                                     findLatest(driveLog)?.apply {
                                                         date = tmpDriveLog.date
                                                         milliMileage = tmpDriveLog.milliMileage
+                                                        memo = tmpDriveLog.memo
                                                     }
                                                 }
                                         }
