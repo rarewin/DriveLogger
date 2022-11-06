@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
@@ -78,7 +79,7 @@ class LogListFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
 
             val realm = RealmUtil.createRealm()
-            val driveLogs = realm.query<DriveLog>().find()
+            val driveLogs = realm.query<DriveLog>().sort("date", Sort.ASCENDING).find()
 
             adapter = LogRecyclerViewAdapter(driveLogs, listener)
         }
