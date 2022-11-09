@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_delete_log"
+        android:id="@+id/edit_menu_delete_log"
         android:enabled="false"
         android:icon="@drawable/ic_baseline_delete_forever_24"
         android:title="@string/menu_delete_log"
         android:visible="false"
         app:showAsAction="always" />
     <item
-        android:id="@+id/menu_register_log"
+        android:id="@+id/edit_menu_register_log"
         android:enabled="false"
         android:icon="@drawable/ic_baseline_save_alt_24"
         android:iconTint="?attr/colorOnPrimary"

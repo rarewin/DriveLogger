@@ -156,8 +156,8 @@ class LogEditFragment : Fragment(), FragmentResultListener {
      */
     private fun isIconEnabled(menuId: Int?): Boolean {
         return when (menuId) {
-            R.id.menu_register_log -> true  // 常に有効
-            R.id.menu_delete_log -> (logId != null)  // 編集時のみ有効
+            R.id.edit_menu_register_log -> true  // 常に有効
+            R.id.edit_menu_delete_log -> (logId != null)  // 編集時のみ有効
             else -> {
                 throw IllegalArgumentException("$menuId is not supported by this function")
             }
@@ -169,7 +169,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
      */
     private fun setupToolbar() {
         binding.toolbar.apply {
-            inflateMenu(R.menu.menu_items)
+            inflateMenu(R.menu.edit_menu_items)
 
             val arrowBackIcon =
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_arrow_back_24, null)
@@ -188,7 +188,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                 dialog.show(childFragmentManager, "DISCARD_CHANGES")
             }
 
-            listOf(R.id.menu_register_log, R.id.menu_delete_log).forEach { id ->
+            listOf(R.id.edit_menu_register_log, R.id.edit_menu_delete_log).forEach { id ->
 
                 val enabled = isIconEnabled(id)
 
@@ -200,7 +200,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
             setOnMenuItemClickListener { item ->
                 when (item?.itemId) {
-                    R.id.menu_register_log -> {
+                    R.id.edit_menu_register_log -> {
                         Log.d(TAG, "log id: $logId")
 
                         // 変換
@@ -255,7 +255,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
                         dialog.show(childFragmentManager, "REGISTER_LOG")
                     }
-                    R.id.menu_delete_log -> {
+                    R.id.edit_menu_delete_log -> {
                         val dialog = ConfirmDialogFragment.newInstance(
                             this@LogEditFragment,
                             getString(R.string.message_remove_drivelog)
