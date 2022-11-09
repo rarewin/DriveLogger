@@ -14,4 +14,5 @@
     <string name="title_date">日付</string>
     <string name="title_mileage">走行距離 (km)</string>
     <string name="title_memo">メモ</string>
+    <string name="menu_title_sort">ソート</string>
 </resources>

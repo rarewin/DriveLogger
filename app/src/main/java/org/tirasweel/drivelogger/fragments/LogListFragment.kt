@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.BuildConfig
+import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.RealmUtil
@@ -37,6 +38,10 @@ class LogListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         actualBinding = FragmentLogListBinding.inflate(inflater, container, false)
+
+        binding.loglistToolbar.apply {
+            inflateMenu(R.menu.list_menu_items)
+        }
 
         binding.logListSwipeRefresh.setOnRefreshListener {
             updateList()

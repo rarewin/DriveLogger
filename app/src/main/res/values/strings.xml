@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DriveLogger</string>
     <string name="description_fab_new_drivelog">add a new drive log</string>
@@ -5,7 +6,6 @@
     <string name="menu_delete_log">delete a drive log</string>
     <string name="hint_input_date">date</string>
     <string name="hint_mileage">mileage</string>
-    <string name="open_date_picker">open a date picker</string>
     <string name="message_remove_drivelog">Do you want to remove this log?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -14,4 +14,5 @@
     <string name="title_date">Date</string>
     <string name="title_mileage">mileage (km)</string>
     <string name="title_memo">Memo</string>
+    <string name="menu_title_sort">Sort</string>
 </resources>
