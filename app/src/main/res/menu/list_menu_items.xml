@@ -4,5 +4,6 @@
 
     <item
         android:icon="@drawable/ic_baseline_sort_24"
+        android:title="@string/menu_title_sort"
         app:showAsAction="always" />
 </menu>
