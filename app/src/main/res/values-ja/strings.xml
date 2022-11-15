@@ -15,4 +15,6 @@
     <string name="title_mileage">走行距離 (km)</string>
     <string name="title_memo">メモ</string>
     <string name="menu_title_sort">ソート</string>
+    <string name="sort_date_ascending">日付(昇順)</string>
+    <string name="sort_date_descending">日付(降順)</string>
 </resources>

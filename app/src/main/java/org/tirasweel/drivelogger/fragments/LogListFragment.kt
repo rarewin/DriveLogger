@@ -2,6 +2,7 @@ package org.tirasweel.drivelogger.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,12 +27,52 @@ class LogListFragment : Fragment() {
             "${BuildConfig.APPLICATION_ID}.LogListFragment"
     }
 
+    /**
+     * @brief リストのソート順
+     */
+    enum class SortOrderType {
+        AscendingDate,
+        DescendingDate;
+
+        /**
+         * @brief ソート順(RealmのSortで)
+         */
+        val order
+            get() = when (this) {
+                AscendingDate -> Sort.ASCENDING
+                DescendingDate -> Sort.DESCENDING
+            }
+
+        /**
+         * @brief ソートに使用するプロパティ
+         */
+        val property
+            get() = when (this) {
+                AscendingDate, DescendingDate -> "date"
+            }
+
+        /**
+         * @brief チェックを入れるアイテムID
+         */
+        val menuId
+            get() = when (this) {
+                AscendingDate -> R.id.list_menu_sort_date_ascending
+                DescendingDate -> R.id.list_menu_sort_date_descending
+            }
+    }
+
+
     private var actualBinding: FragmentLogListBinding? = null
 
     private var listener: LogListInteractionListener? = null
 
     private val binding
         get() = actualBinding!!
+
+    /**
+     * @brief ソート順
+     */
+    private var sortOrder: SortOrderType = SortOrderType.DescendingDate  // TODO: デフォルト値の検討と保存の検討
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +82,32 @@ class LogListFragment : Fragment() {
 
         binding.loglistToolbar.apply {
             inflateMenu(R.menu.list_menu_items)
+
+            menu.findItem(sortOrder.menuId).isChecked = true  // TODO: ソート方法の記憶
+
+            setOnMenuItemClickListener { item ->
+                when (item?.itemId) {
+                    R.id.list_menu_sort_log -> {
+                        Log.d(TAG, "sort")
+                    }
+                    R.id.list_menu_sort_date_ascending -> {
+                        item.isChecked = true
+                        sortOrder = SortOrderType.AscendingDate
+                        Log.d(TAG, "ascending")
+                        updateList()
+                    }
+                    R.id.list_menu_sort_date_descending -> {
+                        item.isChecked = true
+                        sortOrder = SortOrderType.DescendingDate
+                        Log.d(TAG, "descending")
+                        updateList()
+                    }
+                    else -> {
+                        throw IllegalStateException("$item is unexpected here")
+                    }
+                }
+                true
+            }
         }
 
         binding.logListSwipeRefresh.setOnRefreshListener {
@@ -84,9 +151,10 @@ class LogListFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
 
             val realm = RealmUtil.createRealm()
-            val driveLogs = realm.query<DriveLog>().sort("date", Sort.ASCENDING).find()
+            val driveLogs = realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
 
             adapter = LogRecyclerViewAdapter(driveLogs, listener)
         }
     }
+
 }
