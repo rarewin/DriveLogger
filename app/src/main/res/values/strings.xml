@@ -15,4 +15,6 @@
     <string name="title_mileage">mileage (km)</string>
     <string name="title_memo">Memo</string>
     <string name="menu_title_sort">Sort</string>
+    <string name="sort_date_ascending">ascending order by date</string>
+    <string name="sort_date_descending">descending order by date</string>
 </resources>
