@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DriveLogger</string>
-    <string name="hint_mileage">走行距離</string>
-    <string name="hint_input_date">日付</string>
     <string name="menu_delete_log">走行ログを削除</string>
     <string name="menu_register_log">走行ログを登録</string>
     <string name="description_fab_new_drivelog">走行ログを追加</string>
@@ -14,7 +12,13 @@
     <string name="title_date">日付</string>
     <string name="title_mileage">走行距離 (km)</string>
     <string name="title_memo">メモ</string>
+    <string name="title_fuel_efficient">燃費 (km/L)</string>
     <string name="menu_title_sort">ソート</string>
     <string name="sort_date_ascending">日付(昇順)</string>
     <string name="sort_date_descending">日付(降順)</string>
+    <string name="hint_input_date">日付</string>
+    <string name="hint_mileage">走行距離</string>
+    <string name="hint_fuel_efficient">燃費(km/L)</string>
+    <string name="hint_total_mileage">総走行距離 (km)</string>
+    <string name="title_total_mileage">総走行距離 (km)</string>
 </resources>

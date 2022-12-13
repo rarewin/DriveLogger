@@ -104,6 +104,15 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             binding.inputDate.setText("$date")
             val milliMileage = log.milliMileage
             binding.inputMileage.setText("${milliMileage / 1000.0}")
+
+            log.fuelEfficient?.let {
+                binding.inputFuelEfficient.setText("$it")
+            }
+
+            log.totalMilliMileage?.let {
+                binding.inputTotalMileage.setText("${it / 1000.0}")
+            }
+
             binding.inputMemo.setText(log.memo)
         } ?: error("tmpDriveLog is null")
 
@@ -211,6 +220,14 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                         .toDoubleOrNull()
                                         ?: throw java.lang.IllegalArgumentException("failed to convert into to double")
                                 milliMileage = (mileage * 1000.0).toLong()
+
+                                fuelEfficient =
+                                    binding.inputFuelEfficient.text.toString().toDoubleOrNull()
+
+                                binding.inputTotalMileage.text.toString().toDoubleOrNull()?.let {
+                                    totalMilliMileage = (it * 1000).toLong()
+                                }
+
                                 memo = binding.inputMemo.text.toString()
                             }
                         } catch (e: Error) {
@@ -237,6 +254,9 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                                     findLatest(driveLog)?.apply {
                                                         date = tmpDriveLog.date
                                                         milliMileage = tmpDriveLog.milliMileage
+                                                        fuelEfficient = tmpDriveLog.fuelEfficient
+                                                        totalMilliMileage =
+                                                            tmpDriveLog.totalMilliMileage
                                                         memo = tmpDriveLog.memo
                                                     }
                                                 }
