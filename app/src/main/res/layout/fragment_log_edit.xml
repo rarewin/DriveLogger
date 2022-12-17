@@ -65,6 +65,34 @@
                 android:minHeight="48dp" />
 
             <TextView
+                android:id="@+id/title_fuel_efficient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_fuel_efficient" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_fuel_efficient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_fuel_efficient"
+                android:inputType="numberDecimal"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:id="@+id/title_total_mileage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_total_mileage" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_total_mileage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_total_mileage"
+                android:inputType="numberDecimal"
+                android:minHeight="48dp" />
+
+            <TextView
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

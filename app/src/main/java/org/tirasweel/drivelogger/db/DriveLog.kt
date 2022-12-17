@@ -50,6 +50,16 @@ class DriveLog : RealmObject {
     // var mileageUnit: MileageUnit = MileageUnit.KiloMeter
 
     /**
+     * 燃費
+     */
+    var fuelEfficient: Double?
+
+    /**
+     * 合計走行距離x1,000
+     */
+    var totalMilliMileage: Long?
+
+    /**
      * メモ
      */
     var memo: String = ""
@@ -60,6 +70,8 @@ class DriveLog : RealmObject {
         updatedDate = 0
         date = 0
         milliMileage = 0
+        fuelEfficient = null
+        totalMilliMileage = null
         memo = ""
     }
 
@@ -69,6 +81,8 @@ class DriveLog : RealmObject {
         updatedDate = log.updatedDate
         date = log.date
         milliMileage = log.milliMileage
+        fuelEfficient = log.fuelEfficient
+        totalMilliMileage = log.totalMilliMileage
         memo = log.memo
     }
 }

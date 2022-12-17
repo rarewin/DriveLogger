@@ -4,8 +4,6 @@
     <string name="description_fab_new_drivelog">add a new drive log</string>
     <string name="menu_register_log">register a log</string>
     <string name="menu_delete_log">delete a drive log</string>
-    <string name="hint_input_date">date</string>
-    <string name="hint_mileage">mileage</string>
     <string name="message_remove_drivelog">Do you want to remove this log?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -14,7 +12,13 @@
     <string name="title_date">Date</string>
     <string name="title_mileage">mileage (km)</string>
     <string name="title_memo">Memo</string>
+    <string name="title_fuel_efficient">Fuel Efficient (km/L)</string>
     <string name="menu_title_sort">Sort</string>
     <string name="sort_date_ascending">ascending order by date</string>
     <string name="sort_date_descending">descending order by date</string>
+    <string name="hint_input_date">date</string>
+    <string name="hint_mileage">mileage</string>
+    <string name="hint_fuel_efficient">Fuel Efficient (km/L)</string>
+    <string name="hint_total_mileage">Total Mileage (km)</string>
+    <string name="title_total_mileage">Total Mileage (km)</string>
 </resources>
