@@ -13,10 +13,10 @@ def getVersionName = { variant ->
             args = ['describe', '--tag', '--dirty']
             standardOutput = stdout
         }
-        return stdout.toString().trim() + "_${variant}"
+        return stdout.toString().trim() + "(${variant})"
     } catch (exception) {
         println("exception")
-        return "0.0.0-invalid_${variant}"
+        return "0.0.0-invalid(${variant})"
     }
 }
 
