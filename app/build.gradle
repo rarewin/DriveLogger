@@ -12,7 +12,6 @@ def getVersionName = { variant ->
             executable = 'git'
             args = ['describe', '--tag', '--dirty']
             standardOutput = stdout
-            standardError = null
         }
         return stdout.toString().trim() + "_${variant}"
     } catch (exception) {
