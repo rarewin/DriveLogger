@@ -15,23 +15,25 @@ def getVersionName = { variant ->
         }
         return stdout.toString().trim() + "(${variant})"
     } catch (exception) {
-        println("exception")
+        println(exception)
         return "0.0.0-invalid(${variant})"
     }
 }
 
 def getVersionCode = { versionName ->
-    def tag = versionName.tokenize('-')[0]
-    def parts = tag.tokenize('.')
-    if (parts.size() != 3
-            || parts[1].length() > 2
-            || parts[2].length() > 2) {
-        throw new RuntimeException("Invalid version tag \"${tag}\", format \"x.y.z\" expected.")
-    }
-
     try {
-        return Integer.parseInt(parts[0]) * 10000 + Integer.parseInt(parts[1]) * 100 + Integer.parseInt(parts[2])
+        def matcher = (versionName =~ /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<revision>[0-9]+).*/)
+        if (!matcher.matches()
+                || matcher.group('minor').length() > 2
+                || matcher.group('revision').length() > 2) {
+            throw new RuntimeException("Invalid version name \"${versionName}\", format \"x.y.z\" expected.")
+        }
+
+        return Integer.parseInt(matcher.group('major')) * 10000 \
+            + Integer.parseInt(matcher.group('minor')) * 100 \
+            + Integer.parseInt(matcher.group('revision'))
     } catch (exception) {
+        println(exception)
         return 0
     }
 }
