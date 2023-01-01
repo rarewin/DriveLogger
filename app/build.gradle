@@ -5,6 +5,38 @@ plugins {
     id 'deploygate'
 }
 
+def getVersionName = { variant ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            executable = 'git'
+            args = ['describe', '--tag', '--dirty']
+            standardOutput = stdout
+            standardError = null
+        }
+        return stdout.toString().trim() + "_${variant}"
+    } catch (exception) {
+        println("exception")
+        return "0.0.0-invalid_${variant}"
+    }
+}
+
+def getVersionCode = { versionName ->
+    def tag = versionName.tokenize('-')[0]
+    def parts = tag.tokenize('.')
+    if (parts.size() != 3
+            || parts[1].length() > 2
+            || parts[2].length() > 2) {
+        throw new RuntimeException("Invalid version tag \"${tag}\", format \"x.y.z\" expected.")
+    }
+
+    try {
+        return Integer.parseInt(parts[0]) * 10000 + Integer.parseInt(parts[1]) * 100 + Integer.parseInt(parts[2])
+    } catch (exception) {
+        return 0
+    }
+}
+
 android {
     compileSdk 33
 
@@ -12,8 +44,6 @@ android {
         applicationId "org.tirasweel.drivelogger"
         minSdk 29
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +67,17 @@ android {
     namespace 'org.tirasweel.drivelogger'
     ndkVersion '24.0.8215888'
     buildToolsVersion '30.0.3'
+
+    applicationVariants.all { variant ->
+        def versionTag = getVersionName(variant.buildType.name)
+        def myVersionCode = getVersionCode(versionTag)
+        def myVersionName = versionTag
+        variant.outputs.each { output ->
+            println("${variant.name} [${myVersionCode}, ${myVersionName}]")
+            output.versionNameOverride = myVersionName
+            output.versionCodeOverride = myVersionCode
+        }
+    }
 }
 
 dependencies {
