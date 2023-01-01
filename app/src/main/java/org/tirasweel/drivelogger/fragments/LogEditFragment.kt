@@ -2,6 +2,7 @@ package org.tirasweel.drivelogger.fragments
 
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -155,6 +156,27 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             datePicker.show(this.childFragmentManager, "datePicker")
         }
 
+        binding.root.setOnKeyListener { v, keyCode, event ->
+            Log.d(TAG, "KEY: ${v}, ${keyCode}, ${event}")
+
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_BACK -> {
+                        confirmBack()
+                        return@setOnKeyListener true
+                    }
+                    else -> {
+                        return@setOnKeyListener false
+                    }
+                }
+            }
+
+            return@setOnKeyListener false
+        }
+
+        binding.root.isFocusableInTouchMode = true
+        binding.root.requestFocus()
+
         return binding.root
     }
 
@@ -174,6 +196,22 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     }
 
     /**
+     * 戻る確認
+     */
+    private fun confirmBack() {
+        // TODO: 変更有無のチェック
+        val dialog = ConfirmDialogFragment.newInstance(
+            this@LogEditFragment,
+            getString(R.string.message_discard_modification_drivelog)
+        ) { response ->
+            if (response) {
+                back()
+            }
+        }
+        dialog.show(childFragmentManager, "DISCARD_CHANGES")
+    }
+
+    /**
      * ツールバー設定をする
      */
     private fun setupToolbar() {
@@ -185,16 +223,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             navigationIcon = arrowBackIcon
 
             setNavigationOnClickListener {
-                // TODO: 変更有無のチェック
-                val dialog = ConfirmDialogFragment.newInstance(
-                    this@LogEditFragment,
-                    getString(R.string.message_discard_modification_drivelog)
-                ) { response ->
-                    if (response) {
-                        back()
-                    }
-                }
-                dialog.show(childFragmentManager, "DISCARD_CHANGES")
+                confirmBack()
             }
 
             listOf(R.id.edit_menu_register_log, R.id.edit_menu_delete_log).forEach { id ->
