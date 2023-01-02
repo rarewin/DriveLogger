@@ -259,8 +259,8 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
                                 memo = binding.inputMemo.text.toString()
                             }
-                        } catch (e: Error) {
-                            // TODO: 入力が不正ですダイアログの表示
+                        } catch (e: Throwable) {
+                            Log.e(TAG, "$e")
                             return@setOnMenuItemClickListener true
                         }
 
