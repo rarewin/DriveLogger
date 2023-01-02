@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
@@ -274,6 +275,12 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                             }
                         } catch (e: Throwable) {
                             Log.e(TAG, "$e")
+                            Toast.makeText(
+                                activity,
+                                R.string.message_invalid_input,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
                             return@setOnMenuItemClickListener true
                         }
 
