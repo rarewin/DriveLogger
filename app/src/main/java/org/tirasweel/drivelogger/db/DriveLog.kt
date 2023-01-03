@@ -69,7 +69,7 @@ class DriveLog : RealmObject {
         createdDate = 0
         updatedDate = 0
         date = 0
-        milliMileage = 0
+        milliMileage = -1
         fuelEfficient = null
         totalMilliMileage = null
         memo = ""

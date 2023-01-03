@@ -107,7 +107,10 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             val date = Date(log.date).toLocaleDateString()
             binding.inputDate.setText("$date")
             val milliMileage = log.milliMileage
-            binding.inputMileage.setText("${milliMileage / 1000.0}")
+
+            if (milliMileage >= 0.0) { // マイナスの場合は空にしておく
+                binding.inputMileage.setText("${milliMileage / 1000.0}")
+            }
 
             log.fuelEfficient?.let {
                 binding.inputFuelEfficient.setText("$it")
@@ -272,6 +275,13 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                 }
 
                                 memo = binding.inputMemo.text.toString()
+
+                                if ((milliMileage < 0)
+                                    || (fuelEfficient?.let { (it < 0) } == true)
+                                    || (totalMilliMileage?.let { (it < 0) } == true)
+                                ) {
+                                    throw java.lang.IllegalArgumentException("unexpected value")
+                                }
                             }
                         } catch (e: Throwable) {
                             Log.e(TAG, "$e")
