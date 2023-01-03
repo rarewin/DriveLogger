@@ -21,4 +21,6 @@
     <string name="hint_fuel_efficient">Fuel Efficient (km/L)</string>
     <string name="hint_total_mileage">Total Mileage (km)</string>
     <string name="title_total_mileage">Total Mileage (km)</string>
+    <string name="hint_required">This field is required</string>
+    <string name="message_invalid_input">Field contains invalid value</string>
 </resources>

@@ -1,11 +1,14 @@
 package org.tirasweel.drivelogger.fragments
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
@@ -104,7 +107,10 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             val date = Date(log.date).toLocaleDateString()
             binding.inputDate.setText("$date")
             val milliMileage = log.milliMileage
-            binding.inputMileage.setText("${milliMileage / 1000.0}")
+
+            if (milliMileage >= 0.0) { // マイナスの場合は空にしておく
+                binding.inputMileage.setText("${milliMileage / 1000.0}")
+            }
 
             log.fuelEfficient?.let {
                 binding.inputFuelEfficient.setText("$it")
@@ -155,6 +161,17 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             datePicker.arguments = bundle
             datePicker.show(this.childFragmentManager, "datePicker")
         }
+
+        binding.inputMileage.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (binding.inputMileage.text.toString().toDoubleOrNull() == null) {
+                    binding.inputMileage.error = getString(R.string.hint_required)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         binding.root.setOnKeyListener { v, keyCode, event ->
             Log.d(TAG, "KEY: ${v}, ${keyCode}, ${event}")
@@ -258,9 +275,22 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                 }
 
                                 memo = binding.inputMemo.text.toString()
+
+                                if ((milliMileage < 0)
+                                    || (fuelEfficient?.let { (it < 0) } == true)
+                                    || (totalMilliMileage?.let { (it < 0) } == true)
+                                ) {
+                                    throw java.lang.IllegalArgumentException("unexpected value")
+                                }
                             }
-                        } catch (e: Error) {
-                            // TODO: 入力が不正ですダイアログの表示
+                        } catch (e: Throwable) {
+                            Log.e(TAG, "$e")
+                            Toast.makeText(
+                                activity,
+                                R.string.message_invalid_input,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
                             return@setOnMenuItemClickListener true
                         }
 

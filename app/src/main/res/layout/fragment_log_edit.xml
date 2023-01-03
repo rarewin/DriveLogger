@@ -31,80 +31,112 @@
             app:layout_constraintVertical_bias="0.0"
             tools:layout_editor_absoluteX="0dp">
 
-            <TextView
-                android:id="@+id/title_date"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/title_date" />
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:errorEnabled="true"
+                app:hintEnabled="true"
+                app:hintAnimationEnabled="true"
+                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:allowUndo="false"
-                android:cursorVisible="false"
-                android:focusable="false"
-                android:hint="@string/hint_input_date"
-                android:inputType="date"
-                android:minHeight="48dp"
-                android:textColorHint="#757575"
-                tools:visibility="visible" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:allowUndo="false"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:hint="@string/hint_input_date"
+                    android:inputType="date"
+                    android:textColorHint="#757575"
+                    tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/title_mileage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/title_mileage" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_mileage"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_mileage"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp" />
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:errorEnabled="true"
+                app:hintEnabled="true"
+                app:hintAnimationEnabled="true"
+                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox">
 
-            <TextView
-                android:id="@+id/title_fuel_efficient"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/title_fuel_efficient" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_mileage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_mileage"
+                    android:inputType="numberDecimal" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_fuel_efficient"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_fuel_efficient"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/title_total_mileage"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/title_total_mileage" />
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:errorEnabled="true"
+                app:hintEnabled="true"
+                app:hintAnimationEnabled="true"
+                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_total_mileage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_total_mileage"
-                android:inputType="numberDecimal"
-                android:minHeight="48dp" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_fuel_efficient"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_fuel_efficient"
+                    android:inputType="numberDecimal" />
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/title_memo" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/input_memo"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:gravity="start|top"
-                android:inputType="textMultiLine" />
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:errorEnabled="true"
+                app:hintEnabled="true"
+                app:hintAnimationEnabled="true"
+                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_total_mileage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_total_mileage"
+                    android:inputType="numberDecimal" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:errorEnabled="true"
+                app:hintEnabled="true"
+                app:hintAnimationEnabled="true"
+                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox">
+
+                <EditText
+                    android:id="@+id/input_memo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:gravity="start|top"
+                    android:hint="@string/title_memo"
+                    android:inputType="textMultiLine" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
