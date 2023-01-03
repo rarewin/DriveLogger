@@ -1,8 +1,6 @@
 package org.tirasweel.drivelogger.fragments
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -162,16 +160,25 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             datePicker.show(this.childFragmentManager, "datePicker")
         }
 
-        binding.inputMileage.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//        binding.inputMileage.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                if (binding.inputMileage.text.toString().toDoubleOrNull() == null) {
+//                    binding.inputMileage.error = getString(R.string.hint_required)
+//                }
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {}
+//        })
+
+        binding.inputMileage.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
                 if (binding.inputMileage.text.toString().toDoubleOrNull() == null) {
                     binding.inputMileage.error = getString(R.string.hint_required)
                 }
             }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
+        }
 
         binding.root.setOnKeyListener { v, keyCode, event ->
             Log.d(TAG, "KEY: ${v}, ${keyCode}, ${event}")
