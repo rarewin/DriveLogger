@@ -84,7 +84,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         }
 
         tmpDriveLog = driveLog?.let { log ->
-            DriveLog(log)  // コピーする (もっと良い手ない? 昔はRealmに関数があったみたいだがl
+            DriveLog(log)  // コピーする (もっと良い手ない? 昔はRealmに関数があったみたいだが
         } ?: DriveLog().apply {
             date = Calendar.getInstance().timeInMillis  // 現在時刻を入れておく
         }
@@ -267,37 +267,15 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
                         // 変換
                         try {
-                            tmpDriveLog?.apply {
-                                val mileage: Double =
-                                    binding.inputMileage.text.toString()
-                                        .toDoubleOrNull()
-                                        ?: throw java.lang.IllegalArgumentException("failed to convert into to double")
-                                milliMileage = (mileage * 1000.0).toLong()
-
-                                fuelEfficient =
-                                    binding.inputFuelEfficient.text.toString().toDoubleOrNull()
-
-                                binding.inputTotalMileage.text.toString().toDoubleOrNull()?.let {
-                                    totalMilliMileage = (it * 1000).toLong()
-                                }
-
-                                memo = binding.inputMemo.text.toString()
-
-                                if ((milliMileage < 0)
-                                    || (fuelEfficient?.let { (it < 0) } == true)
-                                    || (totalMilliMileage?.let { (it < 0) } == true)
-                                ) {
-                                    throw java.lang.IllegalArgumentException("unexpected value")
-                                }
-                            }
+                            tmpDriveLog = getEditedDriveLog()
                         } catch (e: Throwable) {
                             Log.e(TAG, "$e")
                             Toast.makeText(
                                 activity,
                                 R.string.message_invalid_input,
                                 Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            ).show()
+
                             return@setOnMenuItemClickListener true
                         }
 
@@ -371,6 +349,41 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                 true
             }
         }
+    }
+
+    /**
+     * @brief 現在編集中の内容からDriveLogを生成する
+     * @return 生成されたDriveLogインスタンス
+     */
+    private fun getEditedDriveLog(): DriveLog {
+        var edited = DriveLog()
+
+        edited.apply {
+            val mileage: Double =
+                binding.inputMileage.text.toString()
+                    .toDoubleOrNull()
+                    ?: throw java.lang.IllegalArgumentException("failed to convert into to double")
+            milliMileage = (mileage * 1000.0).toLong()
+
+            fuelEfficient =
+                binding.inputFuelEfficient.text.toString().toDoubleOrNull()
+
+            binding.inputTotalMileage.text.toString().toDoubleOrNull()?.let {
+                totalMilliMileage = (it * 1000).toLong()
+            }
+
+            memo = binding.inputMemo.text.toString()
+
+            if ((milliMileage < 0)
+                || (fuelEfficient?.let { (it < 0) } == true)
+                || (totalMilliMileage?.let { (it < 0) } == true)
+            ) {
+                throw java.lang.IllegalArgumentException("unexpected value")
+            }
+        }
+
+        return edited
+
     }
 
     private fun getNewDriveLogId(): Long {
