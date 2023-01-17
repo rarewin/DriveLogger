@@ -88,4 +88,5 @@ class DriveLog : RealmObject {
 
         return log
     }
+
 }

@@ -221,17 +221,35 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         }
     }
 
+
+    /**
+     * @brief 現在の編集内容とdriveLogを比較して, 編集されているかチェックする
+     */
+    private fun isEdited(): Boolean = driveLog?.let { log ->
+        val edited = getEditedDriveLog()
+
+        return !(log.date == edited.date
+                && log.milliMileage == edited.milliMileage
+                && log.fuelEfficient == edited.fuelEfficient
+                && log.memo == edited.memo)
+    } ?: true
+
     /**
      * 戻る確認
      */
     private fun confirmBack() {
-        // TODO: 変更有無のチェック
+
+        // 編集されていなければ何も聞かずに編集終了
+        if (!isEdited()) {
+            activity?.finish()
+        }
+
         val dialog = ConfirmDialogFragment.newInstance(
             this@LogEditFragment,
             getString(R.string.message_discard_modification_drivelog)
         ) { response ->
             if (response) {
-                back()
+                activity?.finish()
             }
         }
         dialog.show(childFragmentManager, "DISCARD_CHANGES")
@@ -307,7 +325,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                     Log.d(TAG, "newId: $newId")
 
                                     realm.writeBlocking {
-                                        val newDriveLog = getEditedDriveLog().apply {
+                                        val newDriveLog = editedLog.apply {
                                             id = newId
                                             createdDate = Calendar.getInstance().timeInMillis
                                             updatedDate = Calendar.getInstance().timeInMillis
@@ -430,13 +448,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     override fun onDestroyView() {
         super.onDestroyView()
         actualBinding = null
-    }
-
-    /**
-     * 戻るを押されたとき. @todo 編集していればダイアログを表示する
-     */
-    private fun back() {
-        activity?.finish()
     }
 
     /**
