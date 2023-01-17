@@ -418,10 +418,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         return maxId?.plus(1) ?: 1L
     }
 
-    private fun createOrUpdateDriveLog() {
-
-    }
-
     /**
      * ログを作成する
      *
