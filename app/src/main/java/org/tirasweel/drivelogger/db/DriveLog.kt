@@ -75,14 +75,18 @@ class DriveLog : RealmObject {
         memo = ""
     }
 
-    constructor(log: DriveLog) {
-        id = log.id
-        createdDate = log.createdDate
-        updatedDate = log.updatedDate
-        date = log.date
-        milliMileage = log.milliMileage
-        fuelEfficient = log.fuelEfficient
-        totalMilliMileage = log.totalMilliMileage
-        memo = log.memo
+    fun clone(): DriveLog {
+        var log = DriveLog()
+
+        log.id = this.id
+        log.createdDate = this.createdDate
+        log.updatedDate = this.updatedDate
+        log.date = this.date
+        log.milliMileage = this.milliMileage
+        log.fuelEfficient = this.fuelEfficient
+        log.memo = this.memo
+
+        return log
     }
+
 }
