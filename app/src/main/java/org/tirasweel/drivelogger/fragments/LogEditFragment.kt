@@ -2,11 +2,11 @@ package org.tirasweel.drivelogger.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
@@ -85,6 +85,12 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             // IDからRealmのログデータを取得しておく
             driveLog = realm.query<DriveLog>("id == $0", id).find().firstOrNull()
         }
+
+        // 戻るボタンでの動作
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            Log.d(TAG, "onBackPressed")
+            confirmBack()
+        }.isEnabled = true
     }
 
     override fun onDestroy() {
@@ -182,29 +188,30 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             }
         }
 
-        binding.root.setOnKeyListener { v, keyCode, event ->
-            Log.d(TAG, "KEY: ${v}, ${keyCode}, ${event}")
-
-            if (event.action == KeyEvent.ACTION_DOWN) {
-                when (keyCode) {
-                    KeyEvent.KEYCODE_BACK -> {
-                        confirmBack()
-                        return@setOnKeyListener true
-                    }
-                    else -> {
-                        return@setOnKeyListener false
-                    }
-                }
-            }
-
-            return@setOnKeyListener false
-        }
+//        binding.root.setOnKeyListener { v, keyCode, event ->
+//            Log.d(TAG, "KEY: ${v}, ${keyCode}, ${event}")
+//
+//            if (event.action == KeyEvent.ACTION_DOWN) {
+//                when (keyCode) {
+//                    KeyEvent.KEYCODE_BACK -> {
+//                        confirmBack()
+//                        return@setOnKeyListener true
+//                    }
+//                    else -> {
+//                        return@setOnKeyListener false
+//                    }
+//                }
+//            }
+//
+//            return@setOnKeyListener false
+//        }
 
         binding.root.isFocusableInTouchMode = true
         binding.root.requestFocus()
 
         return binding.root
     }
+
 
     /**
      * メニューアイコン設定
@@ -416,29 +423,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         val maxId = maxIdLog.firstOrNull()?.id
 
         return maxId?.plus(1) ?: 1L
-    }
-
-    /**
-     * ログを作成する
-     *
-     * @todo ユーティリティ的な場所に移動
-     */
-    private fun createNewLog() {
-
-        val newId = getNewDriveLogId()
-        Log.d(TAG, "newId: $newId")
-
-        realm.writeBlocking {
-            driveLog?.let { log ->
-                val newDriveLog = log.clone().apply {
-                    id = newId
-                    createdDate = Calendar.getInstance().timeInMillis
-                    updatedDate = Calendar.getInstance().timeInMillis
-                }
-
-                copyToRealm(newDriveLog)
-            } ?: error("tmpDriveLog is null")
-        }
     }
 
     override fun onDestroyView() {
