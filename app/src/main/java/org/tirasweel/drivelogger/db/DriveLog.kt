@@ -2,6 +2,7 @@ package org.tirasweel.drivelogger.db
 
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
+import kotlinx.serialization.Serializable
 
 //enum class MileageUnit : RealmObject {
 //    KiloMeter,
@@ -17,6 +18,7 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 //    private var enumDescription: String = MileageUnit.KiloMeter.name
 //}
 
+@Serializable
 class DriveLog : RealmObject {
     /**
      * ID
