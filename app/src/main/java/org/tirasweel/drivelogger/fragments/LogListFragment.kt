@@ -102,6 +102,9 @@ class LogListFragment : Fragment() {
                         Log.d(TAG, "descending")
                         updateList()
                     }
+                    R.id.list_menu_import_export -> {
+                        Log.d(TAG, "import/export")
+                    }
                     else -> {
                         throw IllegalStateException("$item is unexpected here")
                     }
