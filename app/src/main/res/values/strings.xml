@@ -25,4 +25,5 @@
     <string name="message_invalid_input">Field contains invalid value</string>
     <string name="text_km" translatable="false">%.2f km</string>
     <string name="menu_title_import_export">Import/Export</string>
+    <string name="menu_title_export">Export</string>
 </resources>

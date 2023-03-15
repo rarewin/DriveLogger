@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
@@ -105,6 +107,10 @@ class LogListFragment : Fragment() {
                     R.id.list_menu_import_export -> {
                         Log.d(TAG, "import/export")
                     }
+                    R.id.list_menu_export -> {
+                        Log.d(TAG, "open export dialog")
+                        executeExport();
+                    }
                     else -> {
                         throw IllegalStateException("$item is unexpected here")
                     }
@@ -121,6 +127,16 @@ class LogListFragment : Fragment() {
         updateList()
 
         return binding.root
+    }
+
+    private fun executeExport() {
+        val realm = RealmUtil.createRealm()
+        val driveLogs = realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
+
+        driveLogs.forEach {
+            Log.d(TAG, Json.encodeToString(it))
+        }
+
     }
 
     override fun onDestroyView() {

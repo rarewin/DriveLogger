@@ -24,4 +24,5 @@
     <string name="hint_required">この項目は必須です</string>
     <string name="message_invalid_input">項目の内容が不正です</string>
     <string name="menu_title_import_export">インポート/エクスポート</string>
+    <string name="menu_title_export">エクスポート</string>
 </resources>
