@@ -17,6 +17,8 @@ import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.RealmUtil
+import java.io.File
+import java.io.FileWriter
 
 class LogListFragment : Fragment() {
 
@@ -109,7 +111,7 @@ class LogListFragment : Fragment() {
                     }
                     R.id.list_menu_export -> {
                         Log.d(TAG, "open export dialog")
-                        executeExport();
+                        executeExport()
                     }
                     else -> {
                         throw IllegalStateException("$item is unexpected here")
@@ -133,10 +135,16 @@ class LogListFragment : Fragment() {
         val realm = RealmUtil.createRealm()
         val driveLogs = realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
 
-        driveLogs.forEach {
-            Log.d(TAG, Json.encodeToString(it))
-        }
+        context?.getExternalFilesDir("DriveLogs")?.let { dir ->
+            val file = File(dir, "export.json")
+            val writer = FileWriter(file)
 
+            driveLogs.forEach { log ->
+                writer.write(Json.encodeToString(log))
+            }
+
+            writer.close()
+        }
     }
 
     override fun onDestroyView() {
