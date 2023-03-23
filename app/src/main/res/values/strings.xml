@@ -26,4 +26,5 @@
     <string name="text_km" translatable="false">%.2f km</string>
     <string name="menu_title_import_export">Import/Export</string>
     <string name="menu_title_export">Export</string>
+    <string name="message_export_file_already_exists">An export file already exists. Do you want to overwrite it?</string>
 </resources>

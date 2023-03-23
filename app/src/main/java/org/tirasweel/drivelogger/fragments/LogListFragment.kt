@@ -16,6 +16,7 @@ import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
 import java.io.File
 import java.io.FileWriter
@@ -131,19 +132,42 @@ class LogListFragment : Fragment() {
         return binding.root
     }
 
-    private fun executeExport() {
-        val realm = RealmUtil.createRealm()
-        val driveLogs = realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
 
+    private fun executeExport() {
         context?.getExternalFilesDir("DriveLogs")?.let { dir ->
             val file = File(dir, "export.json")
-            val writer = FileWriter(file)
 
-            driveLogs.forEach { log ->
-                writer.write(Json.encodeToString(log))
+            val export = {
+                val writer = FileWriter(file)
+
+                val realm = RealmUtil.createRealm()
+                val driveLogs = realm.query<DriveLog>().find()
+
+                driveLogs.forEach { log ->
+                    writer.write(Json.encodeToString(log))
+                }
+
+                writer.close()
             }
 
-            writer.close()
+            // 既にファイルが存在する場合、ダイアログで確認する.
+            if (file.exists()) {
+                val dialog = ConfirmDialogFragment.newInstance(
+                    this,
+                    null,
+                    getString(R.string.message_export_file_already_exists)
+                ) { response ->
+                    if (response) {
+                        export()
+                    } else {
+                        return@newInstance
+                    }
+                }
+                dialog.show(childFragmentManager, "OVERWRITE_CHECK_EXPORT_FILE")
+            } else {
+                export()
+            }
+
         }
     }
 
