@@ -22,7 +22,9 @@ import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDate
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.DatePickerFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
 class LogEditFragment : Fragment(), FragmentResultListener {
     companion object {
@@ -114,7 +116,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                 logDate = log.date
 
                 val date = Date(log.date).toLocaleDateString()
-                binding.inputDate.setText("$date")
+                binding.inputDate.setText(date)
 
                 val milliMileage = log.milliMileage
 
@@ -135,7 +137,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             logDate = date
 
             val dateString = Date(date).toLocaleDateString()
-            binding.inputDate.setText("$dateString")
+            binding.inputDate.setText(dateString)
         }
 
         childFragmentManager.setFragmentResultListener(
@@ -253,6 +255,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
         val dialog = ConfirmDialogFragment.newInstance(
             this@LogEditFragment,
+            null,
             getString(R.string.message_discard_modification_drivelog)
         ) { response ->
             if (response) {
@@ -307,6 +310,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
                         val dialog = ConfirmDialogFragment.newInstance(
                             this@LogEditFragment,
+                            null,
                             getString(R.string.message_register_drivelog)
                         ) { response ->
 
@@ -351,6 +355,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                     R.id.edit_menu_delete_log -> {
                         val dialog = ConfirmDialogFragment.newInstance(
                             this@LogEditFragment,
+                            null,
                             getString(R.string.message_remove_drivelog)
                         ) { response ->
                             Log.d(TAG, "response is $response")
@@ -385,7 +390,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
      * @return 生成されたDriveLogインスタンス
      */
     private fun getEditedDriveLog(): DriveLog {
-        var edited = DriveLog()
+        val edited = DriveLog()
 
         edited.apply {
             date = logDate ?: throw java.lang.IllegalArgumentException("logDate is null")

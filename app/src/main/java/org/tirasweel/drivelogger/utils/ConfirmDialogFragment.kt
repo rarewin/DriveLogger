@@ -18,6 +18,8 @@ class ConfirmDialogFragment : DialogFragment() {
 
         RESULT,
 
+        TITLE,
+
         MESSAGE;
 
         val key: String
@@ -27,15 +29,17 @@ class ConfirmDialogFragment : DialogFragment() {
     companion object {
         fun newInstance(
             fragment: Fragment,
+            title: String?,
             message: String,
             listener: (Boolean) -> Unit
         ): ConfirmDialogFragment {
-            var dialog = ConfirmDialogFragment()
+            val dialog = ConfirmDialogFragment()
 
             dialog.apply {
                 val bundle = Bundle()
                 bundle.apply {
                     putString(Keys.MESSAGE.key, message)
+                    putString(Keys.TITLE.key, title)
                     arguments = bundle
                 }
 
@@ -59,12 +63,14 @@ class ConfirmDialogFragment : DialogFragment() {
 
         arguments?.let {
             message = it.getString(Keys.MESSAGE.key, "")
+            title = it.getString(Keys.TITLE.key, "")
         }
 
         val builder = AlertDialog.Builder(requireContext())
 
         builder
             .setMessage(message)
+            .setTitle(title)
             .setPositiveButton(R.string.yes) { _, _ ->
                 setFragmentResult(
                     Keys.REQUEST.name,
