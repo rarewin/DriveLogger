@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.kotlin.query.RealmResults
 import org.tirasweel.drivelogger.BuildConfig
+import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.DrivelogItemBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
-import java.util.*
+import java.util.Date
 
 class LogRecyclerViewAdapter(
     private val values: RealmResults<DriveLog>,
@@ -32,6 +33,7 @@ class LogRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
         holder.apply {
             item = values[position]
 
@@ -39,7 +41,10 @@ class LogRecyclerViewAdapter(
 
             textViewId.text = item?.id.toString()
             textViewDate.text = Date(item?.date ?: 0).toLocaleDateString()
-            textViewMileage.text = "${(item?.milliMileage?.toFloat() ?: 0.0f) / 1000.0} km"
+            textViewMileage.text = view.context.getString(
+                R.string.text_km,
+                (item?.milliMileage?.toFloat() ?: 0.0f) / 1000.0
+            )
 
             view.setOnClickListener {
                 item?.let { item ->
