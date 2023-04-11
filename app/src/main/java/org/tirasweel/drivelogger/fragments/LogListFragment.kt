@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.kotlin.ext.query
@@ -148,6 +149,9 @@ class LogListFragment : Fragment() {
                 }
 
                 writer.close()
+
+                Toast.makeText(context, R.string.message_export_file_successful, Toast.LENGTH_LONG)
+                    .show()
             }
 
             // 既にファイルが存在する場合、ダイアログで確認する.

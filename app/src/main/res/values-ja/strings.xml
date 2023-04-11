@@ -26,4 +26,5 @@
     <string name="menu_title_import_export">インポート/エクスポート</string>
     <string name="menu_title_export">エクスポート</string>
     <string name="message_export_file_already_exists">エクスポートファイルは既に存在します。上書きしますか?</string>
+    <string name="message_export_file_successful">エクスポートに成功しました</string>
 </resources>
