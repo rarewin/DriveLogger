@@ -6,15 +6,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
+import java.io.File
+import java.io.FileWriter
 
 class LogListFragment : Fragment() {
 
@@ -102,6 +108,13 @@ class LogListFragment : Fragment() {
                         Log.d(TAG, "descending")
                         updateList()
                     }
+                    R.id.list_menu_import_export -> {
+                        Log.d(TAG, "import/export")
+                    }
+                    R.id.list_menu_export -> {
+                        Log.d(TAG, "open export dialog")
+                        executeExport()
+                    }
                     else -> {
                         throw IllegalStateException("$item is unexpected here")
                     }
@@ -118,6 +131,48 @@ class LogListFragment : Fragment() {
         updateList()
 
         return binding.root
+    }
+
+
+    private fun executeExport() {
+        context?.getExternalFilesDir("DriveLogs")?.let { dir ->
+            val file = File(dir, "export.json")
+
+            val export = {
+                val writer = FileWriter(file)
+
+                val realm = RealmUtil.createRealm()
+                val driveLogs = realm.query<DriveLog>().find()
+
+                driveLogs.forEach { log ->
+                    writer.write(Json.encodeToString(log))
+                }
+
+                writer.close()
+
+                Toast.makeText(context, R.string.message_export_file_successful, Toast.LENGTH_LONG)
+                    .show()
+            }
+
+            // 既にファイルが存在する場合、ダイアログで確認する.
+            if (file.exists()) {
+                val dialog = ConfirmDialogFragment.newInstance(
+                    this,
+                    null,
+                    getString(R.string.message_export_file_already_exists)
+                ) { response ->
+                    if (response) {
+                        export()
+                    } else {
+                        return@newInstance
+                    }
+                }
+                dialog.show(childFragmentManager, "OVERWRITE_CHECK_EXPORT_FILE")
+            } else {
+                export()
+            }
+
+        }
     }
 
     override fun onDestroyView() {
