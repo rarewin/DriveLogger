@@ -108,13 +108,21 @@ class LogListFragment : Fragment() {
                         Log.d(TAG, "descending")
                         updateList()
                     }
+
                     R.id.list_menu_import_export -> {
                         Log.d(TAG, "import/export")
                     }
+
                     R.id.list_menu_export -> {
                         Log.d(TAG, "open export dialog")
                         executeExport()
                     }
+
+                    R.id.list_menu_import -> {
+                        Log.d(TAG, "open import dialog")
+                        executeImport()
+                    }
+
                     else -> {
                         throw IllegalStateException("$item is unexpected here")
                     }
@@ -133,6 +141,18 @@ class LogListFragment : Fragment() {
         return binding.root
     }
 
+    private fun executeImport() {
+        context?.getExternalFilesDir("DriveLogs")?.let { dir ->
+            val file = File(dir, "export.json")
+
+            if (!file.exists()) {
+                Log.d(TAG, "no exported file")
+                return@let
+            }
+
+            Log.d(TAG, "found exported file")
+        }
+    }
 
     private fun executeExport() {
         context?.getExternalFilesDir("DriveLogs")?.let { dir ->
