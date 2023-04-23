@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.tirasweel.drivelogger.BuildConfig
@@ -19,7 +21,9 @@ import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
+import java.io.BufferedReader
 import java.io.File
+import java.io.FileReader
 import java.io.FileWriter
 
 class LogListFragment : Fragment() {
@@ -151,6 +155,33 @@ class LogListFragment : Fragment() {
             }
 
             Log.d(TAG, "found exported file")
+
+            val reader = FileReader(file)
+            val bufReader = BufferedReader(reader)
+
+            val json = bufReader.readText()
+
+            val driveLogs = try {
+                Json.decodeFromString<List<DriveLog>>(json)
+            } catch (e: SerializationException) {
+                Log.e(TAG, "Decode Error: $e")
+                TODO("ファイル形式が不正である事のダイアログ表示")
+                return@let
+            }
+
+            // TODO: 取り込むかのダイアログを表示する
+
+            val realm = RealmUtil.createRealm()
+            var id = RealmUtil.getNewDriveLogId(realm)
+
+            driveLogs.forEach { log ->
+                log.id = id
+                realm.writeBlocking {
+                    copyToRealm(log)
+                }
+                id++
+            }
+            updateList()
         }
     }
 
@@ -162,11 +193,9 @@ class LogListFragment : Fragment() {
                 val writer = FileWriter(file)
 
                 val realm = RealmUtil.createRealm()
-                val driveLogs = realm.query<DriveLog>().find()
+                val driveLogs = realm.query<DriveLog>().find().map { it }
 
-                driveLogs.forEach { log ->
-                    writer.write(Json.encodeToString(log))
-                }
+                writer.write(Json.encodeToString(driveLogs))
 
                 writer.close()
 
