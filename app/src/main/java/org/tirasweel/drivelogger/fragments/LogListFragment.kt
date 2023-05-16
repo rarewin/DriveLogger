@@ -8,9 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.tirasweel.drivelogger.BuildConfig
@@ -208,7 +212,11 @@ class LogListFragment : Fragment() {
             val realm = RealmUtil.createRealm()
             val driveLogs = realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
 
-            adapter = LogRecyclerViewAdapter(driveLogs, listener)
+            val driveLogsAdapter = DriveLogsAdapter(listener)
+
+            adapter = driveLogsAdapter
+
+            driveLogsAdapter.submitList(driveLogs)
         }
     }
 

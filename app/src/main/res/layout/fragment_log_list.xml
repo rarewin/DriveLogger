@@ -34,8 +34,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/loglist_toolbar"
             app:layout_constraintVertical_bias="0.052"
-            tools:context=".fragments.LogListFragment"
-            tools:listitem="@layout/drivelog_item" />
+            tools:context=".fragments.LogListFragment" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
