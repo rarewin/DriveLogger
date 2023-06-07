@@ -53,12 +53,18 @@ class DriveLogRowComposeView @JvmOverloads constructor(
 }
 
 @Composable
-fun DriveLogRow(driveLog: DriveLog, modifier: Modifier = Modifier) {
+fun DriveLogRow(
+    driveLog: DriveLog,
+    clickListener: LogListFragment.LogListInteractionListener? = null,
+    modifier: Modifier = Modifier
+) {
     Card(
         colors = CardDefaults.cardColors(
             contentColor = MaterialTheme.colorScheme.primary,
         ),
-        modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+        modifier = modifier
+            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .clickable { clickListener?.onItemClick(driveLog) }
     ) {
         Column(modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
             Text(text = driveLog.createdDate.toLocalDateString())
@@ -78,8 +84,8 @@ fun DriveLogRowPreview() {
             fuelEfficient = 24.8
         }
         DriveLogRow(
-            driveLog,
-            Modifier.fillMaxWidth()
+            driveLog = driveLog,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -94,8 +100,8 @@ fun DriveLogRowDarkPreview() {
             fuelEfficient = 24.8
         }
         DriveLogRow(
-            driveLog,
-            Modifier.fillMaxWidth()
+            driveLog = driveLog,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

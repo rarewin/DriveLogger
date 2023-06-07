@@ -2,25 +2,28 @@ package org.tirasweel.drivelogger.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
-import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.compose.DriveLogListScreen
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
 import java.io.File
@@ -71,7 +74,6 @@ class LogListFragment : Fragment() {
             }
     }
 
-
     private var actualBinding: FragmentLogListBinding? = null
 
     private var listener: LogListInteractionListener? = null
@@ -85,56 +87,76 @@ class LogListFragment : Fragment() {
     private var sortOrder: SortOrderType = SortOrderType.DescendingDate  // TODO: デフォルト値の検討と保存の検討
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        actualBinding = FragmentLogListBinding.inflate(inflater, container, false)
+        // actualBinding = FragmentLogListBinding.inflate(inflater, container, false)
 
-        binding.loglistToolbar.apply {
-            inflateMenu(R.menu.list_menu_items)
+//        binding.loglistToolbar.apply {
+//            inflateMenu(R.menu.list_menu_items)
+//
+//            menu.findItem(sortOrder.menuId).isChecked = true  // TODO: ソート方法の記憶
+//
+//            setOnMenuItemClickListener { item ->
+//                when (item?.itemId) {
+//                    R.id.list_menu_sort_log -> {
+//                        Log.d(TAG, "sort")
+//                    }
+//                    R.id.list_menu_sort_date_ascending -> {
+//                        item.isChecked = true
+//                        sortOrder = SortOrderType.AscendingDate
+//                        Log.d(TAG, "ascending")
+//                        updateList()
+//                    }
+//                    R.id.list_menu_sort_date_descending -> {
+//                        item.isChecked = true
+//                        sortOrder = SortOrderType.DescendingDate
+//                        Log.d(TAG, "descending")
+//                        updateList()
+//                    }
+//                    R.id.list_menu_import_export -> {
+//                        Log.d(TAG, "import/export")
+//                    }
+//                    R.id.list_menu_export -> {
+//                        Log.d(TAG, "open export dialog")
+//                        executeExport()
+//                    }
+//                    else -> {
+//                        throw IllegalStateException("$item is unexpected here")
+//                    }
+//                }
+//                true
+//            }
+//        }
+//
+//        binding.logListSwipeRefresh.setOnRefreshListener {
+//            updateList()
+//            binding.logListSwipeRefresh.isRefreshing = false
+//        }
 
-            menu.findItem(sortOrder.menuId).isChecked = true  // TODO: ソート方法の記憶
+        // updateList()
 
-            setOnMenuItemClickListener { item ->
-                when (item?.itemId) {
-                    R.id.list_menu_sort_log -> {
-                        Log.d(TAG, "sort")
-                    }
-                    R.id.list_menu_sort_date_ascending -> {
-                        item.isChecked = true
-                        sortOrder = SortOrderType.AscendingDate
-                        Log.d(TAG, "ascending")
-                        updateList()
-                    }
-                    R.id.list_menu_sort_date_descending -> {
-                        item.isChecked = true
-                        sortOrder = SortOrderType.DescendingDate
-                        Log.d(TAG, "descending")
-                        updateList()
-                    }
-                    R.id.list_menu_import_export -> {
-                        Log.d(TAG, "import/export")
-                    }
-                    R.id.list_menu_export -> {
-                        Log.d(TAG, "open export dialog")
-                        executeExport()
-                    }
-                    else -> {
-                        throw IllegalStateException("$item is unexpected here")
+        val driveLogs = getDriveLogs()
+
+        return ComposeView(requireContext()).apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                DriveLoggerTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        DriveLogListScreen(
+                            driveLogs = driveLogs,
+                            clickListener = listener,
+                        )
                     }
                 }
-                true
             }
         }
-
-        binding.logListSwipeRefresh.setOnRefreshListener {
-            updateList()
-            binding.logListSwipeRefresh.isRefreshing = false
-        }
-
-        updateList()
-
-        return binding.root
     }
 
 
@@ -196,7 +218,7 @@ class LogListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        updateList()
+        // updateList()
     }
 
     override fun onDetach() {
@@ -218,6 +240,12 @@ class LogListFragment : Fragment() {
 
             driveLogsAdapter.submitList(driveLogs)
         }
+    }
+
+    private fun getDriveLogs(): List<DriveLog> {
+        val realm = RealmUtil.createRealm()
+
+        return realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
     }
 
 }
