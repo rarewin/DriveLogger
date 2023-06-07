@@ -67,11 +67,11 @@ class LogListFragment : Fragment() {
         /**
          * @brief チェックを入れるアイテムID
          */
-        val menuId
-            get() = when (this) {
-                AscendingDate -> R.id.list_menu_sort_date_ascending
-                DescendingDate -> R.id.list_menu_sort_date_descending
-            }
+//        val menuId
+//            get() = when (this) {
+//                AscendingDate -> R.id.list_menu_sort_date_ascending
+//                DescendingDate -> R.id.list_menu_sort_date_descending
+//            }
     }
 
     private var actualBinding: FragmentLogListBinding? = null
