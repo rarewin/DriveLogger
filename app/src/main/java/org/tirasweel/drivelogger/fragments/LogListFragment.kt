@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.viewModels
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
 import kotlinx.serialization.encodeToString
@@ -21,11 +21,13 @@ import kotlinx.serialization.json.Json
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.compose.DriveLogListScreen
+import org.tirasweel.drivelogger.compose.DriveLogListTopAppBarClickListener
 import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
+import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
 import java.io.File
 import java.io.FileWriter
 
@@ -39,6 +41,8 @@ class LogListFragment : Fragment() {
         private const val TAG: String =
             "${BuildConfig.APPLICATION_ID}.LogListFragment"
     }
+
+    private val viewModel: DriveLogListViewModel by viewModels()
 
     /**
      * @brief リストのソート順
@@ -74,17 +78,12 @@ class LogListFragment : Fragment() {
 //            }
     }
 
-    private var actualBinding: FragmentLogListBinding? = null
+    private var _binding: FragmentLogListBinding? = null
 
     private var listener: LogListInteractionListener? = null
 
     private val binding
-        get() = actualBinding!!
-
-    /**
-     * @brief ソート順
-     */
-    private var sortOrder: SortOrderType = SortOrderType.DescendingDate  // TODO: デフォルト値の検討と保存の検討
+        get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -137,8 +136,6 @@ class LogListFragment : Fragment() {
 
         // updateList()
 
-        val driveLogs = getDriveLogs()
-
         return ComposeView(requireContext()).apply {
             // Dispose of the Composition when the view's LifecycleOwner
             // is destroyed
@@ -150,15 +147,19 @@ class LogListFragment : Fragment() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         DriveLogListScreen(
-                            driveLogs = driveLogs,
+                            driveLogListViewModel = viewModel,
                             clickListener = listener,
+                            appBarClickListener = object : DriveLogListTopAppBarClickListener {
+                                override fun onClickExport() {
+                                    TODO("Not yet implemented")
+                                }
+                            },
                         )
                     }
                 }
             }
         }
     }
-
 
     private fun executeExport() {
         context?.getExternalFilesDir("DriveLogs")?.let { dir ->
@@ -203,7 +204,7 @@ class LogListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        actualBinding = null
+        _binding = null
     }
 
     override fun onAttach(context: Context) {
@@ -226,26 +227,5 @@ class LogListFragment : Fragment() {
         listener = null
     }
 
-    private fun updateList() {
-        // Set the adapter
-        with(binding.logList) {
-            layoutManager = LinearLayoutManager(context)
-
-            val realm = RealmUtil.createRealm()
-            val driveLogs = realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
-
-            val driveLogsAdapter = DriveLogsAdapter(listener)
-
-            adapter = driveLogsAdapter
-
-            driveLogsAdapter.submitList(driveLogs)
-        }
-    }
-
-    private fun getDriveLogs(): List<DriveLog> {
-        val realm = RealmUtil.createRealm()
-
-        return realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
-    }
 
 }

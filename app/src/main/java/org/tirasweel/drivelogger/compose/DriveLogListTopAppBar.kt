@@ -16,16 +16,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import org.tirasweel.drivelogger.R
-import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
+import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
+
+interface DriveLogListTopAppBarClickListener {
+    fun onClickExport()
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DriveLogListTopAppBar(
     modifier: Modifier = Modifier,
+    driveLogListViewModel: DriveLogListViewModel,
     initialImportExportMenuExpanded: Boolean = false,
     initialSortMenuExpanded: Boolean = false,
+    clickListener: DriveLogListTopAppBarClickListener? = null,
 ) {
     var importExportMenuExpanded by remember { mutableStateOf(initialImportExportMenuExpanded) }
     var sortMenuExpanded by remember { mutableStateOf(initialSortMenuExpanded) }
@@ -46,7 +51,7 @@ fun DriveLogListTopAppBar(
             ) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.menu_title_export)) },
-                    onClick = { /*TODO*/ },
+                    onClick = { clickListener?.onClickExport() },
                 )
             }
         }
@@ -63,23 +68,24 @@ fun DriveLogListTopAppBar(
                 expanded = sortMenuExpanded,
                 onDismissRequest = { sortMenuExpanded = false },
             ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.sort_date_ascending)) },
-                    onClick = { /*TODO*/ },
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.sort_date_descending)) },
-                    onClick = { /*TODO*/ },
+                DriveLogListSortMenu(
+                    modifier = modifier,
+                    driveLogListViewModel = driveLogListViewModel,
                 )
             }
         }
     })
 }
 
+/*
 @Preview
 @Composable
 fun DriveLogListTopAppBarPreview() {
     DriveLoggerTheme {
-        DriveLogListTopAppBar(modifier = Modifier)
+        DriveLogListTopAppBar(
+            modifier = Modifier,
+            sortOrder = SortOrderType.DescendingDate,
+        )
     }
 }
+ */
