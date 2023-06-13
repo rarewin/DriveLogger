@@ -107,6 +107,11 @@ class LogListFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.reloadDriveLogs()
+    }
+
     private fun executeExport() {
         context?.getExternalFilesDir("DriveLogs")?.let { dir ->
             val file = File(dir, "export.json")

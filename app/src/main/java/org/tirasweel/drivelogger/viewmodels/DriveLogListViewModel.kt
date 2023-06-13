@@ -33,9 +33,12 @@ class DriveLogListViewModel : ViewModel() {
 
     fun setDriveLogOrder(orderType: SortOrderType) {
         _sortOrder.value = orderType
-        _driveLogsStateFlow.value = getDriveLogs()
+        reloadDriveLogs()
     }
 
+    fun reloadDriveLogs() {
+        _driveLogsStateFlow.value = getDriveLogs()
+    }
 
     private fun getDriveLogs(): List<DriveLog> = realm.query<DriveLog>()
         .sort(_sortOrder.value.property, _sortOrder.value.order)
