@@ -33,7 +33,7 @@ fun DriveLogRow(
             .clickable { clickListener?.onItemClick(driveLog) }
     ) {
         Column(modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
-            Text(text = driveLog.createdDate.toLocalDateString())
+            Text(text = driveLog.date.toLocalDateString())
             Text(text = String.format("%.2f km/L", driveLog.milliMileage / 1000.0))
             Text(text = String.format("%.2f", driveLog.fuelEfficient ?: 0.0))
         }
