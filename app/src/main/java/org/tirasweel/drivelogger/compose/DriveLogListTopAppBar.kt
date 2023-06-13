@@ -1,11 +1,13 @@
 package org.tirasweel.drivelogger.compose
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -16,7 +18,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
 
 interface DriveLogListTopAppBarClickListener {
@@ -77,15 +81,17 @@ fun DriveLogListTopAppBar(
     })
 }
 
-/*
 @Preview
 @Composable
 fun DriveLogListTopAppBarPreview() {
     DriveLoggerTheme {
-        DriveLogListTopAppBar(
-            modifier = Modifier,
-            sortOrder = SortOrderType.DescendingDate,
-        )
+        Surface(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            DriveLogListTopAppBar(
+                modifier = Modifier,
+                driveLogListViewModel = DriveLogListViewModel(),
+            )
+        }
     }
 }
- */

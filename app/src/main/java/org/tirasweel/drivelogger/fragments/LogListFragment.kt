@@ -22,7 +22,6 @@ import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.compose.DriveLogListScreen
 import org.tirasweel.drivelogger.compose.DriveLogListTopAppBarClickListener
-import org.tirasweel.drivelogger.databinding.FragmentLogListBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
@@ -67,68 +66,15 @@ class LogListFragment : Fragment() {
             get() = when (this) {
                 AscendingDate, DescendingDate -> "date"
             }
-
-        /**
-         * @brief チェックを入れるアイテムID
-         */
-//        val menuId
-//            get() = when (this) {
-//                AscendingDate -> R.id.list_menu_sort_date_ascending
-//                DescendingDate -> R.id.list_menu_sort_date_descending
-//            }
     }
 
-    private var _binding: FragmentLogListBinding? = null
-
     private var listener: LogListInteractionListener? = null
-
-    private val binding
-        get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // actualBinding = FragmentLogListBinding.inflate(inflater, container, false)
-
-//        binding.loglistToolbar.apply {
-//            inflateMenu(R.menu.list_menu_items)
-//
-//            menu.findItem(sortOrder.menuId).isChecked = true  // TODO: ソート方法の記憶
-//
-//            setOnMenuItemClickListener { item ->
-//                when (item?.itemId) {
-//                    R.id.list_menu_sort_log -> {
-//                        Log.d(TAG, "sort")
-//                    }
-//                    R.id.list_menu_sort_date_ascending -> {
-//                        item.isChecked = true
-//                        sortOrder = SortOrderType.AscendingDate
-//                        Log.d(TAG, "ascending")
-//                        updateList()
-//                    }
-//                    R.id.list_menu_sort_date_descending -> {
-//                        item.isChecked = true
-//                        sortOrder = SortOrderType.DescendingDate
-//                        Log.d(TAG, "descending")
-//                        updateList()
-//                    }
-//                    R.id.list_menu_import_export -> {
-//                        Log.d(TAG, "import/export")
-//                    }
-//                    R.id.list_menu_export -> {
-//                        Log.d(TAG, "open export dialog")
-//                        executeExport()
-//                    }
-//                    else -> {
-//                        throw IllegalStateException("$item is unexpected here")
-//                    }
-//                }
-//                true
-//            }
-//        }
-//
 //        binding.logListSwipeRefresh.setOnRefreshListener {
 //            updateList()
 //            binding.logListSwipeRefresh.isRefreshing = false
@@ -151,7 +97,7 @@ class LogListFragment : Fragment() {
                             clickListener = listener,
                             appBarClickListener = object : DriveLogListTopAppBarClickListener {
                                 override fun onClickExport() {
-                                    TODO("Not yet implemented")
+                                    executeExport()
                                 }
                             },
                         )
@@ -202,11 +148,6 @@ class LogListFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
@@ -217,15 +158,9 @@ class LogListFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // updateList()
-    }
-
     override fun onDetach() {
         super.onDetach()
         listener = null
     }
-
 
 }

@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import org.tirasweel.drivelogger.fragments.LogListFragment
+import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
 
 @Composable
@@ -47,33 +49,13 @@ fun DriveLogListScreen(
     }
 }
 
-/*
 @Preview
 @Composable
 private fun DriveLogListScreenPreview() {
-    val driveLogs = listOf(
-        DriveLog().apply {
-            id = 0
-            createdDate = 111
-            date = 111111
-            milliMileage = 2300
-            fuelEfficient = 17.1
-        },
-        DriveLog().apply {
-            id = 1
-            createdDate = 110
-            date = 11122301
-            milliMileage = 2330
-            fuelEfficient = 23.1
-        },
-    )
-
     DriveLoggerTheme {
         DriveLogListScreen(
             modifier = Modifier.fillMaxWidth(),
-            driveLogs = driveLogs,
-            sortOrder = SortOrderType.DescendingDate,
+            driveLogListViewModel = DriveLogListViewModel(),
         )
     }
 }
-*/
