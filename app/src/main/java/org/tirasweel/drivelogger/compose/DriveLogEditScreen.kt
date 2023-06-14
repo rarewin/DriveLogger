@@ -14,16 +14,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.viewmodels.DriveLogEditViewModel
 
 interface DriveLogEditScreenClickListener {
     fun onClickBack()
@@ -71,13 +70,16 @@ fun DriveLogEditTopAppBar(
 
 @Composable
 fun DriveLogEditScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    clickListener: DriveLogEditScreenClickListener? = null,
+    driveLogEditViewModel: DriveLogEditViewModel,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
             DriveLogEditTopAppBar(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                clickListener = clickListener,
             )
         }
     ) { contentPadding ->
@@ -99,65 +101,58 @@ fun DriveLogEditScreen(
                 maxLines = 1,
             )
 
-            val textMileage = remember { mutableStateOf(TextFieldValue()) }
-
             TextField(
                 modifier = modifier.padding(
                     horizontal = 10.dp,
                     vertical = 5.dp,
                 ),
-                value = textMileage.value,
+                value = driveLogEditViewModel.textMileage.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_mileage))
                 },
-                onValueChange = { textMileage.value = it },
+                onValueChange = { driveLogEditViewModel.setTextMileage(it) },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
-
-            val textFuelEfficient = remember { mutableStateOf(TextFieldValue()) }
 
             TextField(
                 modifier = modifier.padding(
                     horizontal = 10.dp,
                     vertical = 5.dp,
                 ),
-                value = textFuelEfficient.value,
+                value = driveLogEditViewModel.textFuelEfficient.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_fuel_efficient))
                 },
-                onValueChange = { textFuelEfficient.value = it },
+                onValueChange = { driveLogEditViewModel.setTextFuelEfficient(it) },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
 
-            val textTotalMileage = remember { mutableStateOf(TextFieldValue()) }
-
             TextField(
                 modifier = modifier.padding(
                     horizontal = 10.dp,
                     vertical = 5.dp,
                 ),
-                value = textTotalMileage.value,
+                value = driveLogEditViewModel.textTotalMileage.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_total_mileage))
                 },
-                onValueChange = { textTotalMileage.value = it },
+                onValueChange = { driveLogEditViewModel.setTextTotalMileage(it) },
                 maxLines = 1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
-
-            val textMemo = remember { mutableStateOf(TextFieldValue()) }
 
             TextField(
                 modifier = modifier.padding(
                     horizontal = 10.dp,
                     vertical = 5.dp,
                 ),
-                value = textMemo.value,
+                value = driveLogEditViewModel.textMemo.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_memo))
                 },
-                onValueChange = { textMemo.value = it },
+                onValueChange = { driveLogEditViewModel.setTextMemo(it) },
                 minLines = 3,
             )
         }
@@ -169,7 +164,8 @@ fun DriveLogEditScreen(
 private fun DriveLogEditScreenPreview() {
     Surface {
         DriveLogEditScreen(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            driveLogEditViewModel = DriveLogEditViewModel(),
         )
     }
 }
