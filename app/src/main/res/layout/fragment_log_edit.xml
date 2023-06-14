@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:gravity="start|top"
-                    android:hint="@string/title_memo"
+                    android:hint="@string/hint_memo"
                     android:inputType="textMultiLine" />
 
             </com.google.android.material.textfield.TextInputLayout>

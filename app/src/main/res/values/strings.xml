@@ -11,7 +11,7 @@
     <string name="message_discard_modification_drivelog">Do you want to discard the changes?</string>
     <string name="title_date">Date</string>
     <string name="title_mileage">mileage (km)</string>
-    <string name="title_memo">Memo</string>
+    <string name="hint_memo">Memo</string>
     <string name="title_fuel_efficient">Fuel Efficient (km/L)</string>
     <string name="menu_title_sort">Sort</string>
     <string name="sort_date_ascending">ascending order by date</string>
