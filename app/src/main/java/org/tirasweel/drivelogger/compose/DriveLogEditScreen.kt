@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -13,9 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
@@ -93,52 +98,66 @@ fun DriveLogEditScreen(
                 onValueChange = {},
                 maxLines = 1,
             )
+
+            val textMileage = remember { mutableStateOf(TextFieldValue()) }
+
             TextField(
                 modifier = modifier.padding(
                     horizontal = 10.dp,
                     vertical = 5.dp,
                 ),
-                value = "",
+                value = textMileage.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_mileage))
                 },
-                onValueChange = {},
+                onValueChange = { textMileage.value = it },
                 maxLines = 1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
+
+            val textFuelEfficient = remember { mutableStateOf(TextFieldValue()) }
+
             TextField(
                 modifier = modifier.padding(
                     horizontal = 10.dp,
                     vertical = 5.dp,
                 ),
-                value = "",
+                value = textFuelEfficient.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_fuel_efficient))
                 },
-                onValueChange = {},
+                onValueChange = { textFuelEfficient.value = it },
                 maxLines = 1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
+
+            val textTotalMileage = remember { mutableStateOf(TextFieldValue()) }
+
             TextField(
                 modifier = modifier.padding(
                     horizontal = 10.dp,
                     vertical = 5.dp,
                 ),
-                value = "",
+                value = textTotalMileage.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_total_mileage))
                 },
-                onValueChange = {},
+                onValueChange = { textTotalMileage.value = it },
                 maxLines = 1,
             )
+
+            val textMemo = remember { mutableStateOf(TextFieldValue()) }
+
             TextField(
                 modifier = modifier.padding(
                     horizontal = 10.dp,
                     vertical = 5.dp,
                 ),
-                value = "",
+                value = textMemo.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_memo))
                 },
-                onValueChange = {},
+                onValueChange = { textMemo.value = it },
                 minLines = 3,
             )
         }

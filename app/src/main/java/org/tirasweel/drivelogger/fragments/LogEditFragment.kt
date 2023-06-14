@@ -7,6 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
@@ -15,8 +19,10 @@ import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.compose.DriveLogEditScreen
 import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDateString
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
@@ -211,7 +217,16 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         binding.root.isFocusableInTouchMode = true
         binding.root.requestFocus()
 
-        return binding.root
+        return ComposeView(requireContext()).apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                DriveLoggerTheme {
+                    DriveLogEditScreen(modifier = Modifier.fillMaxWidth())
+                }
+            }
+        }
     }
 
 
