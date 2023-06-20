@@ -1,13 +1,18 @@
 package org.tirasweel.drivelogger.compose
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.viewmodels.DriveLogEditViewModel
 
@@ -28,6 +32,10 @@ interface DriveLogEditScreenClickListener {
     fun onClickBack()
 
     fun onClickSave()
+
+    fun onClickDate()
+
+    fun onClickDelete()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +43,10 @@ interface DriveLogEditScreenClickListener {
 fun DriveLogEditTopAppBar(
     modifier: Modifier = Modifier,
     clickListener: DriveLogEditScreenClickListener? = null,
+    driveLogEditViewModel: DriveLogEditViewModel,
 ) {
+    val isEditMode = (driveLogEditViewModel.driveLog.value != null)
+
     TopAppBar(
         modifier = modifier,
         title = {},
@@ -64,6 +75,19 @@ fun DriveLogEditTopAppBar(
                     )
                 }
             }
+            if (isEditMode) {
+                Box(
+                    modifier = Modifier,
+                ) {
+                    IconButton(onClick = { clickListener?.onClickDelete() }) {
+                        Icon(
+                            modifier = Modifier,
+                            painter = painterResource(id = R.drawable.ic_baseline_delete_forever_24),
+                            contentDescription = null,
+                        )
+                    }
+                }
+            }
         }
     )
 }
@@ -80,6 +104,7 @@ fun DriveLogEditScreen(
             DriveLogEditTopAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 clickListener = clickListener,
+                driveLogEditViewModel = driveLogEditViewModel,
             )
         }
     ) { contentPadding ->
@@ -89,17 +114,31 @@ fun DriveLogEditScreen(
                 .fillMaxWidth()
         ) {
             TextField(
-                modifier = modifier.padding(
-                    horizontal = 10.dp,
-                    vertical = 5.dp,
-                ),
-                value = "",
+                modifier = modifier
+                    .padding(
+                        horizontal = 10.dp,
+                        vertical = 5.dp,
+                    ),
+                leadingIcon = {
+                    Icon(
+                        modifier = Modifier.clickable {
+                            clickListener?.onClickDate()
+                        },
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                    )
+                },
+                value = driveLogEditViewModel.textDate.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_input_date))
                 },
                 onValueChange = {},
                 maxLines = 1,
+                readOnly = true,
             )
+
+            val isErrorOnMileage =
+                (driveLogEditViewModel.textMileage.value.toDoubleOrNull() == null)
 
             TextField(
                 modifier = modifier.padding(
@@ -113,6 +152,25 @@ fun DriveLogEditScreen(
                 onValueChange = { driveLogEditViewModel.setTextMileage(it) },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = isErrorOnMileage,
+                supportingText = {
+                    if (isErrorOnMileage) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(id = R.string.hint_required),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                trailingIcon = {
+                    if (isErrorOnMileage) {
+                        Icon(
+                            Icons.Filled.Info,
+                            "error",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
             )
 
             TextField(

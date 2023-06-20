@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.viewModels
@@ -25,13 +24,11 @@ import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
-import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDateString
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.DatePickerFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
 import org.tirasweel.drivelogger.viewmodels.DriveLogEditViewModel
 import java.util.Calendar
-import java.util.Date
 import java.util.TimeZone
 
 class LogEditFragment : Fragment(), FragmentResultListener {
@@ -94,6 +91,8 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                 return@let
             }
 
+            viewModel.setDriveLog(id)
+
             // IDからRealmのログデータを取得しておく
             driveLog = realm.query<DriveLog>("id == $0", id).find().firstOrNull()
         }
@@ -112,59 +111,33 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
         actualBinding = FragmentLogEditBinding.inflate(inflater, container, false)
 
-        setupToolbar()
-
-        // ログの内容を表示する. 新規作成なら今日の日付だけ入れておく.
-        driveLog?.let { log ->
-            realm.run {
-                logDate = log.date
-
-                val date = Date(log.date).toLocaleDateString()
-                binding.inputDate.setText(date)
-
-                log.totalMilliMileage?.let {
-                    binding.inputTotalMileage.setText("${it / 1000.0}")
-                }
-
-                binding.inputMemo.setText(log.memo)
-            }
-        } ?: run {
-            val date = Calendar.getInstance().timeInMillis
-            logDate = date
-
-            val dateString = Date(date).toLocaleDateString()
-            binding.inputDate.setText(dateString)
-        }
+//        // ログの内容を表示する. 新規作成なら今日の日付だけ入れておく.
+//        driveLog?.let { log ->
+//            realm.run {
+//                logDate = log.date
+//
+//                val date = Date(log.date).toLocaleDateString()
+//                binding.inputDate.setText(date)
+//
+//                log.totalMilliMileage?.let {
+//                    binding.inputTotalMileage.setText("${it / 1000.0}")
+//                }
+//
+//                binding.inputMemo.setText(log.memo)
+//            }
+//        } ?: run {
+//            val date = Calendar.getInstance().timeInMillis
+//            logDate = date
+//
+//            val dateString = Date(date).toLocaleDateString()
+//            binding.inputDate.setText(dateString)
+//        }
 
         childFragmentManager.setFragmentResultListener(
             DatePickerFragment.Keys.REQUEST.key,
             this,
             this
         )
-
-        binding.inputDate.setOnClickListener { _ -> /* view -> */
-            val datePicker = DatePickerFragment()
-            val bundle = Bundle()
-
-            bundle.apply {
-                logDate?.let { date ->
-                    val cal = Calendar.getInstance()
-                    cal.timeInMillis = date
-
-                    val year = cal.get(Calendar.YEAR)
-                    val month = cal.get(Calendar.MONTH) + 1  // 1月が0
-                    val day = cal.get(Calendar.DAY_OF_MONTH)
-
-                    Log.d(TAG, "$year-$month-$day")
-
-                    putInt(DatePickerFragment.Keys.YEAR.name, year)
-                    putInt(DatePickerFragment.Keys.MONTH.name, month)
-                    putInt(DatePickerFragment.Keys.DAY.name, day)
-                } ?: error("logDate is empty")
-            }
-            datePicker.arguments = bundle
-            datePicker.show(this.childFragmentManager, "datePicker")
-        }
 
 //        binding.inputMileage.addTextChangedListener(object : TextWatcher {
 //            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -177,14 +150,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 //
 //            override fun afterTextChanged(s: Editable?) {}
 //        })
-
-        binding.inputMileage.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                if (binding.inputMileage.text.toString().toDoubleOrNull() == null) {
-                    binding.inputMileage.error = getString(R.string.hint_required)
-                }
-            }
-        }
 
 //        binding.root.setOnKeyListener { v, keyCode, event ->
 //            Log.d(TAG, "KEY: ${v}, ${keyCode}, ${event}")
@@ -204,10 +169,10 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 //            return@setOnKeyListener false
 //        }
 
-        binding.root.isFocusableInTouchMode = true
-        binding.root.requestFocus()
+//        binding.root.isFocusableInTouchMode = true
+//        binding.root.requestFocus()
 
-        viewModel.setDriveLog(driveLog)
+        // viewModel.setDriveLog(driveLog)
 
         return ComposeView(requireContext()).apply {
             // Dispose of the Composition when the view's LifecycleOwner
@@ -224,7 +189,104 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                             }
 
                             override fun onClickSave() {
-                                TODO("Not yet implemented")
+                                // 変換
+                                val editedLog = try {
+                                    getEditedDriveLog()
+                                } catch (e: Throwable) {
+                                    Log.e(TAG, "$e")
+                                    Toast.makeText(
+                                        activity,
+                                        R.string.message_invalid_input,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                    return
+                                }
+
+                                val dialog = ConfirmDialogFragment.newInstance(
+                                    this@LogEditFragment,
+                                    null,
+                                    getString(R.string.message_register_drivelog)
+                                ) { response ->
+
+                                    if (response) {
+
+                                        viewModel.driveLog.value.let {
+
+//                                            realm.writeBlocking {
+//
+//                                                findLatest(it)?.let { log ->
+//                                                    Log.d(TAG, "date: ${log.date.toLocalDateString()}")
+//
+//                                                    log.updatedDate = Calendar.getInstance().timeInMillis
+//                                                    log.date = editedLog.date
+//                                                    log.milliMileage = editedLog.milliMileage
+//                                                    log.fuelEfficient = editedLog.fuelEfficient
+//                                                    log.totalMilliMileage = editedLog.totalMilliMileage
+//                                                    log.memo = editedLog.memo
+//                                                }
+//                                            }
+                                        } ?: run {
+//                                            val newId = getNewDriveLogId()
+//                                            Log.d(TAG, "newId: $newId")
+//
+//                                            realm.writeBlocking {
+//                                                val newDriveLog = editedLog.apply {
+//                                                    id = newId
+//                                                    createdDate = Calendar.getInstance().timeInMillis
+//                                                    updatedDate = Calendar.getInstance().timeInMillis
+//                                                }
+//
+//                                                copyToRealm(newDriveLog)
+//                                            }
+                                        }
+
+                                        activity?.finish()
+                                    }
+                                }
+
+                                dialog.show(childFragmentManager, "REGISTER_LOG")
+                            }
+
+                            override fun onClickDate() {
+                                val datePicker = DatePickerFragment()
+                                val bundle = Bundle()
+
+                                bundle.apply {
+                                    logDate?.let { date ->
+                                        val cal = Calendar.getInstance()
+                                        cal.timeInMillis = date
+
+                                        val year = cal.get(Calendar.YEAR)
+                                        val month = cal.get(Calendar.MONTH) + 1  // 1月が0
+                                        val day = cal.get(Calendar.DAY_OF_MONTH)
+
+                                        Log.d(TAG, "$year-$month-$day")
+
+                                        putInt(DatePickerFragment.Keys.YEAR.name, year)
+                                        putInt(DatePickerFragment.Keys.MONTH.name, month)
+                                        putInt(DatePickerFragment.Keys.DAY.name, day)
+                                    } ?: error("logDate is empty")
+                                }
+                                datePicker.arguments = bundle
+                                datePicker.show(childFragmentManager, "datePicker")
+                            }
+
+                            override fun onClickDelete() {
+                                val dialog = ConfirmDialogFragment.newInstance(
+                                    this@LogEditFragment,
+                                    null,
+                                    getString(R.string.message_remove_drivelog)
+                                ) { response ->
+                                    Log.d(TAG, "response is $response")
+
+                                    if (response) {
+                                        viewModel.deleteCurrentLog()
+                                        activity?.finish()
+                                    }
+                                }
+
+                                dialog.show(childFragmentManager, "DELETE_LOG")
                             }
                         },
                         driveLogEditViewModel = viewModel,
@@ -235,20 +297,20 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     }
 
 
-    /**
-     * メニューアイコン設定
-     *
-     * @param menuId  メニューのID
-     */
-    private fun isIconEnabled(menuId: Int?): Boolean {
-        return when (menuId) {
-            R.id.edit_menu_register_log -> true  // 常に有効
-            R.id.edit_menu_delete_log -> (driveLog != null)  // 編集時のみ有効
-            else -> {
-                throw IllegalArgumentException("$menuId is not supported by this function")
-            }
-        }
-    }
+//    /**
+//     * メニューアイコン設定
+//     *
+//     * @param menuId  メニューのID
+//     */
+//    private fun isIconEnabled(menuId: Int?): Boolean {
+//        return when (menuId) {
+//            R.id.edit_menu_register_log -> true  // 常に有効
+//            R.id.edit_menu_delete_log -> (driveLog != null)  // 編集時のみ有効
+//            else -> {
+//                throw IllegalArgumentException("$menuId is not supported by this function")
+//            }
+//        }
+//    }
 
 
     /**
@@ -283,128 +345,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             }
         }
         dialog.show(childFragmentManager, "DISCARD_CHANGES")
-    }
-
-    /**
-     * ツールバー設定をする
-     */
-    private fun setupToolbar() {
-        binding.toolbar.apply {
-            inflateMenu(R.menu.edit_menu_items)
-
-            val arrowBackIcon =
-                ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_arrow_back_24, null)
-            navigationIcon = arrowBackIcon
-
-            setNavigationOnClickListener {
-                confirmBack()
-            }
-
-            listOf(R.id.edit_menu_register_log, R.id.edit_menu_delete_log).forEach { id ->
-
-                val enabled = isIconEnabled(id)
-
-                menu.findItem(id).apply {
-                    isVisible = enabled
-                    isEnabled = enabled
-                }
-            }
-
-            setOnMenuItemClickListener { item ->
-                when (item?.itemId) {
-                    R.id.edit_menu_register_log -> {
-
-                        // 変換
-                        val editedLog = try {
-                            getEditedDriveLog()
-                        } catch (e: Throwable) {
-                            Log.e(TAG, "$e")
-                            Toast.makeText(
-                                activity,
-                                R.string.message_invalid_input,
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            return@setOnMenuItemClickListener true
-                        }
-
-                        val dialog = ConfirmDialogFragment.newInstance(
-                            this@LogEditFragment,
-                            null,
-                            getString(R.string.message_register_drivelog)
-                        ) { response ->
-
-                            if (response) {
-
-                                driveLog?.let {
-
-                                    realm.writeBlocking {
-
-                                        findLatest(it)?.let { log ->
-                                            Log.d(TAG, "date: ${log.date.toLocalDateString()}")
-
-                                            log.updatedDate = Calendar.getInstance().timeInMillis
-                                            log.date = editedLog.date
-                                            log.milliMileage = editedLog.milliMileage
-                                            log.fuelEfficient = editedLog.fuelEfficient
-                                            log.totalMilliMileage = editedLog.totalMilliMileage
-                                            log.memo = editedLog.memo
-                                        }
-                                    }
-                                } ?: run {
-                                    val newId = getNewDriveLogId()
-                                    Log.d(TAG, "newId: $newId")
-
-                                    realm.writeBlocking {
-                                        val newDriveLog = editedLog.apply {
-                                            id = newId
-                                            createdDate = Calendar.getInstance().timeInMillis
-                                            updatedDate = Calendar.getInstance().timeInMillis
-                                        }
-
-                                        copyToRealm(newDriveLog)
-                                    }
-                                }
-
-                                activity?.finish()
-                            }
-                        }
-
-                        dialog.show(childFragmentManager, "REGISTER_LOG")
-                    }
-
-                    R.id.edit_menu_delete_log -> {
-                        val dialog = ConfirmDialogFragment.newInstance(
-                            this@LogEditFragment,
-                            null,
-                            getString(R.string.message_remove_drivelog)
-                        ) { response ->
-                            Log.d(TAG, "response is $response")
-
-                            if (response) {
-                                realm.writeBlocking {
-                                    driveLog?.let { log ->
-                                        findLatest(log)?.let {
-                                            delete(it)
-                                        }
-                                    } ?: error("driveLog is null?")
-                                }
-
-                                activity?.finish()
-                            }
-                        }
-
-                        dialog.show(childFragmentManager, "DELETE_LOG")
-                    }
-
-                    else -> {
-                        throw IllegalStateException("$item is unexpected here")
-                    }
-                }
-
-                true
-            }
-        }
     }
 
     /**
@@ -474,6 +414,9 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                 cal.timeZone = TimeZone.getDefault()
                 cal.set(year, month, day)
                 val dateString = cal.time.toLocaleDateString()
+
+                viewModel.setTextDate(dateString)
+
                 binding.inputDate.setText(dateString)
 
                 logDate = cal.timeInMillis
