@@ -253,7 +253,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                 val bundle = Bundle()
 
                                 bundle.apply {
-                                    logDate?.let { date ->
+                                    viewModel.date.value.let { date ->
                                         val cal = Calendar.getInstance()
                                         cal.timeInMillis = date
 
@@ -266,7 +266,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                                         putInt(DatePickerFragment.Keys.YEAR.name, year)
                                         putInt(DatePickerFragment.Keys.MONTH.name, month)
                                         putInt(DatePickerFragment.Keys.DAY.name, day)
-                                    } ?: error("logDate is empty")
+                                    }
                                 }
                                 datePicker.arguments = bundle
                                 datePicker.show(childFragmentManager, "datePicker")
@@ -417,9 +417,9 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
                 viewModel.setTextDate(dateString)
 
-                binding.inputDate.setText(dateString)
+                // binding.inputDate.setText(dateString)
 
-                logDate = cal.timeInMillis
+                // logDate = cal.timeInMillis
 
                 // Log.d(TAG, "date will be changed: ${driveLog?.date} -> ${tmpDriveLog?.date}")
             }

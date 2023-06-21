@@ -1,5 +1,6 @@
 package org.tirasweel.drivelogger.viewmodels
 
+import android.icu.util.Calendar
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -7,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import io.realm.kotlin.ext.query
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDateString
+import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.RealmUtil
+import java.util.Date
 
 class DriveLogEditViewModel : ViewModel() {
 
@@ -15,10 +18,12 @@ class DriveLogEditViewModel : ViewModel() {
 
     private var _driveLog: MutableState<DriveLog?> = mutableStateOf(null)
 
+    private var _date: MutableState<Long> = mutableStateOf(Calendar.getInstance().timeInMillis)
+
     /**
      * 日付
      */
-    private var _textDate = mutableStateOf("")
+    private var _textDate: MutableState<String> = mutableStateOf(Date(_date.value).toLocaleDateString())
 
     /**
      * 走行距離
@@ -40,6 +45,9 @@ class DriveLogEditViewModel : ViewModel() {
      */
     private var _textMemo = mutableStateOf("")
 
+    val date: State<Long>
+        get() = _date
+
     val driveLog: State<DriveLog?>
         get() = _driveLog
 
@@ -47,6 +55,7 @@ class DriveLogEditViewModel : ViewModel() {
         realm.query<DriveLog>("id == $0", id).find().firstOrNull()?.also { log ->
             _driveLog.value = log
 
+            _date.value = log.date
             _textDate.value = log.date.toLocalDateString()
             _textMileage.value = "${log.milliMileage / 1000.0}"
             _textFuelEfficient.value = log.fuelEfficient.toString()
