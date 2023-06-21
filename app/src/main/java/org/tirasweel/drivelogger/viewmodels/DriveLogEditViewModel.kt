@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import io.realm.kotlin.delete
 import io.realm.kotlin.ext.query
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDateString
@@ -104,6 +105,12 @@ class DriveLogEditViewModel : ViewModel() {
     }
 
     fun deleteCurrentLog() {
-        TODO("Not yet implemented")
+        realm.writeBlocking {
+            _driveLog.value?.let { log ->
+                findLatest(log)?.let {
+                    delete(it)
+                }
+            }
+        }
     }
 }
