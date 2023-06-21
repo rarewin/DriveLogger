@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -18,7 +17,6 @@ import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.compose.DriveLogEditScreen
 import org.tirasweel.drivelogger.compose.DriveLogEditScreenClickListener
 import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
-import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
@@ -164,18 +162,18 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
                             override fun onClickSave() {
                                 // 変換
-                                val editedLog = try {
-                                    getEditedDriveLog()
-                                } catch (e: Throwable) {
-                                    Log.e(TAG, "$e")
-                                    Toast.makeText(
-                                        activity,
-                                        R.string.message_invalid_input,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-
-                                    return
-                                }
+//                                val editedLog = try {
+//                                    getEditedDriveLog()
+//                                } catch (e: Throwable) {
+//                                    Log.e(TAG, "$e")
+//                                    Toast.makeText(
+//                                        activity,
+//                                        R.string.message_invalid_input,
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
+//
+//                                    return
+//                                }
 
                                 val dialog = ConfirmDialogFragment.newInstance(
                                     this@LogEditFragment,
@@ -305,9 +303,9 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     private fun confirmBack() {
 
         // 編集されていなければ何も聞かずに編集終了
-//        if (!isEdited()) {
-//            activity?.finish()
-//        }
+        if (!viewModel.isEdited()) {
+            activity?.finish()
+        }
 
         val dialog = ConfirmDialogFragment.newInstance(
             this@LogEditFragment,
@@ -319,43 +317,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             }
         }
         dialog.show(childFragmentManager, "DISCARD_CHANGES")
-    }
-
-    /**
-     * @brief 現在編集中の内容からDriveLogを生成する
-     * @return 生成されたDriveLogインスタンス
-     */
-    private fun getEditedDriveLog(): DriveLog {
-        val edited = DriveLog()
-
-        edited.apply {
-//            date = logDate ?: throw java.lang.IllegalArgumentException("logDate is null")
-
-//            val mileage: Double =
-//                binding.inputMileage.text.toString()
-//                    .toDoubleOrNull()
-//                    ?: throw java.lang.IllegalArgumentException("failed to convert into to double")
-//            milliMileage = (mileage * 1000.0).toLong()
-
-//            fuelEfficient =
-//                binding.inputFuelEfficient.text.toString().toDoubleOrNull()
-
-            binding.inputTotalMileage.text.toString().toDoubleOrNull()?.let {
-                totalMilliMileage = (it * 1000).toLong()
-            }
-
-            memo = binding.inputMemo.text.toString()
-
-            if ((milliMileage < 0)
-                || (fuelEfficient?.let { (it < 0) } == true)
-                || (totalMilliMileage?.let { (it < 0) } == true)
-            ) {
-                throw java.lang.IllegalArgumentException("unexpected value")
-            }
-        }
-
-        return edited
-
     }
 
 //    private fun getNewDriveLogId(): Long {
