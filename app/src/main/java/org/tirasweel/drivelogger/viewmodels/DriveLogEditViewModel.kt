@@ -6,6 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDateString
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
@@ -151,4 +152,39 @@ class DriveLogEditViewModel : ViewModel() {
             }
         }
     }
+
+    fun saveCurrentLog() {
+        if (!isEdited()) {
+            return
+        }
+
+        val edited = getEditedDriveLog()
+
+        realm.writeBlocking {
+            _driveLog.value?.let { log ->
+                findLatest(log)?.apply {
+                    date = edited.date
+                    milliMileage = edited.milliMileage
+                    fuelEfficient = edited.fuelEfficient
+                    totalMilliMileage = edited.totalMilliMileage
+                    memo = edited.memo
+                }
+            } ?: run {
+                edited.id = getNewDriveLogId()
+                copyToRealm(edited)
+            }
+        }
+    }
+
+    private fun getNewDriveLogId(): Long {
+        val maxId = realm.query<DriveLog>()
+            .sort("id", Sort.DESCENDING)
+            .limit(1)
+            .find()
+            .firstOrNull()?.id
+
+        return maxId?.plus(1) ?: 1L
+    }
+
+
 }

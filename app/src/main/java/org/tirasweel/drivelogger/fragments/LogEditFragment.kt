@@ -161,58 +161,13 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                             }
 
                             override fun onClickSave() {
-                                // 変換
-//                                val editedLog = try {
-//                                    getEditedDriveLog()
-//                                } catch (e: Throwable) {
-//                                    Log.e(TAG, "$e")
-//                                    Toast.makeText(
-//                                        activity,
-//                                        R.string.message_invalid_input,
-//                                        Toast.LENGTH_SHORT
-//                                    ).show()
-//
-//                                    return
-//                                }
-
                                 val dialog = ConfirmDialogFragment.newInstance(
                                     this@LogEditFragment,
                                     null,
                                     getString(R.string.message_register_drivelog)
                                 ) { response ->
-
                                     if (response) {
-
-                                        viewModel.driveLog.value.let {
-
-//                                            realm.writeBlocking {
-//
-//                                                findLatest(it)?.let { log ->
-//                                                    Log.d(TAG, "date: ${log.date.toLocalDateString()}")
-//
-//                                                    log.updatedDate = Calendar.getInstance().timeInMillis
-//                                                    log.date = editedLog.date
-//                                                    log.milliMileage = editedLog.milliMileage
-//                                                    log.fuelEfficient = editedLog.fuelEfficient
-//                                                    log.totalMilliMileage = editedLog.totalMilliMileage
-//                                                    log.memo = editedLog.memo
-//                                                }
-//                                            }
-                                        } ?: run {
-//                                            val newId = getNewDriveLogId()
-//                                            Log.d(TAG, "newId: $newId")
-//
-//                                            realm.writeBlocking {
-//                                                val newDriveLog = editedLog.apply {
-//                                                    id = newId
-//                                                    createdDate = Calendar.getInstance().timeInMillis
-//                                                    updatedDate = Calendar.getInstance().timeInMillis
-//                                                }
-//
-//                                                copyToRealm(newDriveLog)
-//                                            }
-                                        }
-
+                                        viewModel.saveCurrentLog()
                                         activity?.finish()
                                     }
                                 }
@@ -318,14 +273,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         }
         dialog.show(childFragmentManager, "DISCARD_CHANGES")
     }
-
-//    private fun getNewDriveLogId(): Long {
-//        val maxIdLog =
-//            realm.query<DriveLog>().sort("id", Sort.DESCENDING).limit(1).find()
-//        val maxId = maxIdLog.firstOrNull()?.id
-//
-//        return maxId?.plus(1) ?: 1L
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
