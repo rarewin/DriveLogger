@@ -13,9 +13,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.viewModels
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.compose.DriveLogEditScreen
@@ -26,7 +23,6 @@ import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.DatePickerFragment
-import org.tirasweel.drivelogger.utils.RealmUtil
 import org.tirasweel.drivelogger.viewmodels.DriveLogEditViewModel
 import java.util.Calendar
 import java.util.TimeZone
@@ -69,22 +65,8 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     private val binding
         get() = actualBinding!!
 
-    /**
-     * 編集前のドライブログ
-     */
-    private var driveLog: DriveLog? = null
-
-    /**
-     * ログの日付
-     */
-    private var logDate: Long? = null
-
-    private lateinit var realm: Realm
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        realm = RealmUtil.createRealm()
 
         arguments?.getLong(BundleKey.LogId.name, -1L)?.let { id ->
             if (id < 0) {
@@ -92,15 +74,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
             }
 
             viewModel.setDriveLog(id)
-
-            // IDからRealmのログデータを取得しておく
-            driveLog = realm.query<DriveLog>("id == $0", id).find().firstOrNull()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        realm.close()
     }
 
     override fun onCreateView(
@@ -316,14 +290,14 @@ class LogEditFragment : Fragment(), FragmentResultListener {
     /**
      * @brief 現在の編集内容とdriveLogを比較して, 編集されているかチェックする
      */
-    private fun isEdited(): Boolean = driveLog?.let { log ->
-        val edited = getEditedDriveLog()
-
-        return !(log.date == edited.date
-                && log.milliMileage == edited.milliMileage
-                && log.fuelEfficient == edited.fuelEfficient
-                && log.memo == edited.memo)
-    } ?: true
+//    private fun isEdited(): Boolean = driveLog?.let { log ->
+//        val edited = getEditedDriveLog()
+//
+//        return !(log.date == edited.date
+//                && log.milliMileage == edited.milliMileage
+//                && log.fuelEfficient == edited.fuelEfficient
+//                && log.memo == edited.memo)
+//    } ?: true
 
     /**
      * 戻る確認
@@ -355,7 +329,7 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         val edited = DriveLog()
 
         edited.apply {
-            date = logDate ?: throw java.lang.IllegalArgumentException("logDate is null")
+//            date = logDate ?: throw java.lang.IllegalArgumentException("logDate is null")
 
 //            val mileage: Double =
 //                binding.inputMileage.text.toString()
@@ -384,13 +358,13 @@ class LogEditFragment : Fragment(), FragmentResultListener {
 
     }
 
-    private fun getNewDriveLogId(): Long {
-        val maxIdLog =
-            realm.query<DriveLog>().sort("id", Sort.DESCENDING).limit(1).find()
-        val maxId = maxIdLog.firstOrNull()?.id
-
-        return maxId?.plus(1) ?: 1L
-    }
+//    private fun getNewDriveLogId(): Long {
+//        val maxIdLog =
+//            realm.query<DriveLog>().sort("id", Sort.DESCENDING).limit(1).find()
+//        val maxId = maxIdLog.firstOrNull()?.id
+//
+//        return maxId?.plus(1) ?: 1L
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
