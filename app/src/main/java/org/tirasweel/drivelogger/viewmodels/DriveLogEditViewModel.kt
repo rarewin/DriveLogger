@@ -114,6 +114,10 @@ class DriveLogEditViewModel : ViewModel() {
         }
     }
 
+    /**
+     * @brief 現在の編集内容とdriveLogを比較して, 編集されているかチェックする
+     * @return 編集されていたらtrue
+     */
     fun isEdited(): Boolean {
         val edited = getEditedDriveLog()
 

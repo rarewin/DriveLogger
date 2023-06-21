@@ -16,7 +16,6 @@ import org.tirasweel.drivelogger.BuildConfig
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.compose.DriveLogEditScreen
 import org.tirasweel.drivelogger.compose.DriveLogEditScreenClickListener
-import org.tirasweel.drivelogger.databinding.FragmentLogEditBinding
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
@@ -58,11 +57,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         LogId
     }
 
-    private var actualBinding: FragmentLogEditBinding? = null
-
-    private val binding
-        get() = actualBinding!!
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -81,70 +75,11 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         savedInstanceState: Bundle?
     ): View {
 
-        actualBinding = FragmentLogEditBinding.inflate(inflater, container, false)
-
-//        // ログの内容を表示する. 新規作成なら今日の日付だけ入れておく.
-//        driveLog?.let { log ->
-//            realm.run {
-//                logDate = log.date
-//
-//                val date = Date(log.date).toLocaleDateString()
-//                binding.inputDate.setText(date)
-//
-//                log.totalMilliMileage?.let {
-//                    binding.inputTotalMileage.setText("${it / 1000.0}")
-//                }
-//
-//                binding.inputMemo.setText(log.memo)
-//            }
-//        } ?: run {
-//            val date = Calendar.getInstance().timeInMillis
-//            logDate = date
-//
-//            val dateString = Date(date).toLocaleDateString()
-//            binding.inputDate.setText(dateString)
-//        }
-
         childFragmentManager.setFragmentResultListener(
             DatePickerFragment.Keys.REQUEST.key,
             this,
             this
         )
-
-//        binding.inputMileage.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                if (binding.inputMileage.text.toString().toDoubleOrNull() == null) {
-//                    binding.inputMileage.error = getString(R.string.hint_required)
-//                }
-//            }
-//
-//            override fun afterTextChanged(s: Editable?) {}
-//        })
-
-//        binding.root.setOnKeyListener { v, keyCode, event ->
-//            Log.d(TAG, "KEY: ${v}, ${keyCode}, ${event}")
-//
-//            if (event.action == KeyEvent.ACTION_DOWN) {
-//                when (keyCode) {
-//                    KeyEvent.KEYCODE_BACK -> {
-//                        confirmBack()
-//                        return@setOnKeyListener true
-//                    }
-//                    else -> {
-//                        return@setOnKeyListener false
-//                    }
-//                }
-//            }
-//
-//            return@setOnKeyListener false
-//        }
-
-//        binding.root.isFocusableInTouchMode = true
-//        binding.root.requestFocus()
-
-        // viewModel.setDriveLog(driveLog)
 
         return ComposeView(requireContext()).apply {
             // Dispose of the Composition when the view's LifecycleOwner
@@ -223,35 +158,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         }
     }
 
-
-//    /**
-//     * メニューアイコン設定
-//     *
-//     * @param menuId  メニューのID
-//     */
-//    private fun isIconEnabled(menuId: Int?): Boolean {
-//        return when (menuId) {
-//            R.id.edit_menu_register_log -> true  // 常に有効
-//            R.id.edit_menu_delete_log -> (driveLog != null)  // 編集時のみ有効
-//            else -> {
-//                throw IllegalArgumentException("$menuId is not supported by this function")
-//            }
-//        }
-//    }
-
-
-    /**
-     * @brief 現在の編集内容とdriveLogを比較して, 編集されているかチェックする
-     */
-//    private fun isEdited(): Boolean = driveLog?.let { log ->
-//        val edited = getEditedDriveLog()
-//
-//        return !(log.date == edited.date
-//                && log.milliMileage == edited.milliMileage
-//                && log.fuelEfficient == edited.fuelEfficient
-//                && log.memo == edited.memo)
-//    } ?: true
-
     /**
      * 戻る確認
      */
@@ -274,11 +180,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
         dialog.show(childFragmentManager, "DISCARD_CHANGES")
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        actualBinding = null
-    }
-
     /**
      * 子フラグメントの結果を取得する
      */
@@ -298,12 +199,6 @@ class LogEditFragment : Fragment(), FragmentResultListener {
                 val dateString = cal.time.toLocaleDateString()
 
                 viewModel.setTextDate(dateString)
-
-                // binding.inputDate.setText(dateString)
-
-                // logDate = cal.timeInMillis
-
-                // Log.d(TAG, "date will be changed: ${driveLog?.date} -> ${tmpDriveLog?.date}")
             }
 
             else -> {
