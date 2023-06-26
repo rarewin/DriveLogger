@@ -8,8 +8,8 @@ import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
-import org.tirasweel.drivelogger.fragments.LogListFragment.SortOrderType
 import org.tirasweel.drivelogger.utils.RealmUtil
 
 class DriveLogListViewModel : ViewModel() {

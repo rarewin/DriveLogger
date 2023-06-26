@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
-import org.tirasweel.drivelogger.fragments.LogListFragment.SortOrderType
+import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
 
