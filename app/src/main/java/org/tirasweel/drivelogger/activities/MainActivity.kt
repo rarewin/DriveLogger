@@ -18,7 +18,7 @@ import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.compose.DriveLogListScreen
 import org.tirasweel.drivelogger.compose.DriveLogListTopAppBarClickListener
 import org.tirasweel.drivelogger.db.DriveLog
-import org.tirasweel.drivelogger.fragments.LogListFragment
+import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
 import org.tirasweel.drivelogger.utils.RealmUtil
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     DriveLogListScreen(
                         driveLogListViewModel = viewModel,
-                        clickListener = object : LogListFragment.LogListInteractionListener {
+                        clickListener = object : LogListInteractionListener {
                             override fun onItemClick(log: DriveLog) {
 
                                 val intent =

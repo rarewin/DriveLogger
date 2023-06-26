@@ -10,7 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import org.tirasweel.drivelogger.fragments.LogListFragment
+import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
 
@@ -18,7 +18,7 @@ import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
 fun DriveLogListScreen(
     modifier: Modifier = Modifier,
     driveLogListViewModel: DriveLogListViewModel,
-    clickListener: LogListFragment.LogListInteractionListener? = null,
+    clickListener: LogListInteractionListener? = null,
     appBarClickListener: DriveLogListTopAppBarClickListener? = null,
 ) {
     Scaffold(

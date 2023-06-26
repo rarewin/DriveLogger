@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.db.DriveLog
-import org.tirasweel.drivelogger.fragments.LogListFragment
+import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDateString
 
@@ -22,7 +22,7 @@ import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocalDate
 fun DriveLogRow(
     modifier: Modifier = Modifier,
     driveLog: DriveLog,
-    clickListener: LogListFragment.LogListInteractionListener? = null,
+    clickListener: LogListInteractionListener? = null,
 ) {
     Card(
         colors = CardDefaults.cardColors(
