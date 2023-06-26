@@ -29,6 +29,9 @@ fun DriveLogListScreen(
                 driveLogListViewModel = driveLogListViewModel,
                 clickListener = appBarClickListener,
             )
+        },
+        bottomBar = {
+            DriveLogNavigationBar()
         }
     ) { contentPadding ->
         val driveLogs by driveLogListViewModel.driveLogsStateFlow.collectAsState()
