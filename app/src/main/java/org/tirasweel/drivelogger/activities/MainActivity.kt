@@ -2,6 +2,7 @@ package org.tirasweel.drivelogger.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -47,7 +48,16 @@ class MainActivity : ComponentActivity() {
                     DriveLogListScreen(
                         driveLogListViewModel = viewModel,
                         clickListener = object : LogListInteractionListener {
-                            override fun onItemClick(log: DriveLog) {
+
+                            /* 追加ボタン */
+                            override fun onFabAddClicked() {
+                                val intent = Intent(this@MainActivity, LogEditActivity::class.java)
+                                Log.d(TAG, "create new drive log")
+                                startActivity(intent)
+                            }
+
+                            /* 既存ログ */
+                            override fun onItemClicked(log: DriveLog) {
 
                                 val intent =
                                     Intent(

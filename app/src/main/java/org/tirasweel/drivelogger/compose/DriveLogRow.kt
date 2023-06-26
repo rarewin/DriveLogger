@@ -30,7 +30,7 @@ fun DriveLogRow(
         ),
         modifier = modifier
             .padding(vertical = 4.dp, horizontal = 8.dp)
-            .clickable { clickListener?.onItemClick(driveLog) }
+            .clickable { clickListener?.onItemClicked(driveLog) }
     ) {
         Column(modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
             Text(text = driveLog.date.toLocalDateString())
