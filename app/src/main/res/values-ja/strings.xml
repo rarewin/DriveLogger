@@ -29,4 +29,5 @@
     <string name="message_export_file_successful">エクスポートに成功しました</string>
     <string name="screen_title_drive_logging">走行記録</string>
     <string name="screen_title_refuel_logging">給油記録</string>
+    <string name="title_cancel">キャンセル</string>
 </resources>

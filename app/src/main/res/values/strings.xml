@@ -30,4 +30,6 @@
     <string name="message_export_file_successful">Export successful</string>
     <string name="screen_title_drive_logging">DriveLog</string>
     <string name="screen_title_refuel_logging">RefuelLog</string>
+    <string name="title_ok" translatable="false">OK</string>
+    <string name="title_cancel">Cancel</string>
 </resources>

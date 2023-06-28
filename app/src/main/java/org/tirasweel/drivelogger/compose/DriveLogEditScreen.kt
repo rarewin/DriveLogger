@@ -1,5 +1,6 @@
 package org.tirasweel.drivelogger.compose
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,8 +19,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,7 +38,7 @@ interface DriveLogEditScreenClickListener {
 
     fun onClickSave()
 
-    fun onClickDate()
+//    fun onClickDate()
 
     fun onClickDelete()
 }
@@ -92,12 +97,15 @@ fun DriveLogEditTopAppBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DriveLogEditScreen(
     modifier: Modifier = Modifier,
     clickListener: DriveLogEditScreenClickListener? = null,
     driveLogEditViewModel: DriveLogEditViewModel,
 ) {
+    val debugTag = object {}.javaClass.enclosingMethod?.name
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -122,7 +130,8 @@ fun DriveLogEditScreen(
                 leadingIcon = {
                     Icon(
                         modifier = Modifier.clickable {
-                            clickListener?.onClickDate()
+                            // clickListener?.onClickDate()
+                            driveLogEditViewModel.isDatePickerDisplayed.value = true
                         },
                         imageVector = Icons.Default.DateRange,
                         contentDescription = null,
@@ -213,6 +222,42 @@ fun DriveLogEditScreen(
                 onValueChange = { driveLogEditViewModel.setTextMemo(it) },
                 minLines = 3,
             )
+        }
+    }
+
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = driveLogEditViewModel.date.value,  // TODO: 時差で日付がズレる
+    )
+
+    if (driveLogEditViewModel.isDatePickerDisplayed.value) {
+        DatePickerDialog(
+            modifier = Modifier,
+            onDismissRequest = { driveLogEditViewModel.isDatePickerDisplayed.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        Log.d(debugTag, "date: ${datePickerState.selectedDateMillis}")
+                        datePickerState.selectedDateMillis?.let {
+                            driveLogEditViewModel.setDate(it)
+                            driveLogEditViewModel.isDatePickerDisplayed.value = false
+                        }
+                    },
+                    enabled = (datePickerState.selectedDateMillis != null),
+                ) {
+                    Text(stringResource(id = R.string.title_ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        driveLogEditViewModel.isDatePickerDisplayed.value = false
+                    }
+                ) {
+                    Text(stringResource(id = R.string.title_cancel))
+                }
+            },
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }

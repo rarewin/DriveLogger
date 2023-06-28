@@ -24,7 +24,8 @@ class DriveLogEditViewModel : ViewModel() {
     /**
      * 日付
      */
-    private var _textDate: MutableState<String> = mutableStateOf(Date(_date.value).toLocaleDateString())
+    private var _textDate: MutableState<String> =
+        mutableStateOf(Date(_date.value).toLocaleDateString())
 
     /**
      * 走行距離
@@ -49,8 +50,15 @@ class DriveLogEditViewModel : ViewModel() {
     val date: State<Long>
         get() = _date
 
+    fun setDate(dateMillis: Long) {
+        _date.value = dateMillis
+        _textDate = mutableStateOf(Date(_date.value).toLocaleDateString())  // TODO: 自動で連携する方法を探す
+    }
+
     val driveLog: State<DriveLog?>
         get() = _driveLog
+
+    var isDatePickerDisplayed = mutableStateOf(false)
 
     fun setDriveLog(id: Long) {
         realm.query<DriveLog>("id == $0", id).find().firstOrNull()?.also { log ->
