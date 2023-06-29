@@ -3,6 +3,7 @@ package org.tirasweel.drivelogger.activities
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,6 +42,10 @@ class LogEditActivity : ComponentActivity() {
             viewModel.setDriveLog(id)
         }
 
+        onBackPressedDispatcher.addCallback(this) {
+            confirmBack()
+        }
+
         setContent {
             DriveLoggerTheme {
                 DriveLogEditScreen(
@@ -48,7 +53,7 @@ class LogEditActivity : ComponentActivity() {
                     clickListener = object : DriveLogEditScreenClickListener {
                         override fun onClickBack() {
                             Log.d(TAG, "onBackPressed")
-                            // confirmBack()
+                            confirmBack()
                         }
 
                         override fun onClickSave() {
@@ -83,6 +88,22 @@ class LogEditActivity : ComponentActivity() {
                 )
             }
         }
+    }
 
+    private fun confirmBack() {
+        // 編集されていなければ何も聞かずに編集終了
+        if (!viewModel.isEdited()) {
+            finish()
+        }
+
+        ConfirmDialogFragment.createAlertDialog(
+            this,
+            null,
+            getString(R.string.message_discard_modification_drivelog)
+        ) { response ->
+            if (response) {
+                finish()
+            }
+        }.show()
     }
 }

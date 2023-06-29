@@ -19,7 +19,9 @@ class DriveLogEditViewModel : ViewModel() {
 
     private var _driveLog: MutableState<DriveLog?> = mutableStateOf(null)
 
-    private var _date: MutableState<Long> = mutableStateOf(Calendar.getInstance().timeInMillis)
+    private val initialDateValue = Calendar.getInstance().timeInMillis
+
+    private var _date: MutableState<Long> = mutableStateOf(initialDateValue)
 
     /**
      * 日付
@@ -126,26 +128,40 @@ class DriveLogEditViewModel : ViewModel() {
      * @brief 現在の編集内容とdriveLogを比較して, 編集されているかチェックする
      * @return 編集されていたらtrue
      */
-    fun isEdited(): Boolean {
-        val edited = getEditedDriveLog()
+    internal fun isEdited(): Boolean {
 
-        return !(_driveLog.value?.date == edited.date &&
-                _driveLog.value?.milliMileage == edited.milliMileage &&
-                _driveLog.value?.fuelEfficient == edited.fuelEfficient &&
-                _driveLog.value?.memo == edited.memo)
+        return _driveLog.value?.let { log ->
+            return getEditedDriveLog()?.let { edited ->
+                return !(log.date == edited.date &&
+                        log.milliMileage == edited.milliMileage &&
+                        log.fuelEfficient == edited.fuelEfficient &&
+                        log.memo == edited.memo)
+
+            } ?: true // 元の値があるのにgetEditedDriveLog()がnullなのは何かしら編集されているはず
+        } ?: (_date.value != initialDateValue ||
+                _textMileage.value.isNotEmpty() ||
+                _textFuelEfficient.value.isNotEmpty() ||
+                _textMileage.value.isNotEmpty() ||
+                _textMemo.value.isNotEmpty())
+    }
+
+    /**
+     * セーブ可能かどうか確認する
+     * @return セーブ可能ならtrue
+     */
+    internal fun canSave(): Boolean {
+        return (isEdited() && getEditedDriveLog() != null)
     }
 
     /**
      * @brief 現在編集中の内容からDriveLogを生成する
      * @return 生成されたDriveLogインスタンス
      */
-    private fun getEditedDriveLog(): DriveLog {
+    private fun getEditedDriveLog(): DriveLog? {
         return DriveLog().apply {
             date = _date.value
 
-            val mileage: Double =
-                _textMileage.value.toDoubleOrNull()
-                    ?: throw java.lang.IllegalArgumentException("failed to convert into to double")
+            val mileage: Double = _textMileage.value.toDoubleOrNull() ?: return null
             milliMileage = (mileage * 1000.0).toLong()
 
             fuelEfficient = _textFuelEfficient.value.toDoubleOrNull()
@@ -160,7 +176,7 @@ class DriveLogEditViewModel : ViewModel() {
                 || (fuelEfficient?.let { (it < 0) } == true)
                 || (totalMilliMileage?.let { (it < 0) } == true)
             ) {
-                throw java.lang.IllegalArgumentException("unexpected value")
+                return null
             }
         }
     }
@@ -170,20 +186,20 @@ class DriveLogEditViewModel : ViewModel() {
             return
         }
 
-        val edited = getEditedDriveLog()
-
-        realm.writeBlocking {
-            _driveLog.value?.let { log ->
-                findLatest(log)?.apply {
-                    date = edited.date
-                    milliMileage = edited.milliMileage
-                    fuelEfficient = edited.fuelEfficient
-                    totalMilliMileage = edited.totalMilliMileage
-                    memo = edited.memo
+        getEditedDriveLog()?.let { edited ->
+            realm.writeBlocking {
+                _driveLog.value?.let { log ->
+                    findLatest(log)?.apply {
+                        date = edited.date
+                        milliMileage = edited.milliMileage
+                        fuelEfficient = edited.fuelEfficient
+                        totalMilliMileage = edited.totalMilliMileage
+                        memo = edited.memo
+                    }
+                } ?: run {
+                    edited.id = getNewDriveLogId()
+                    copyToRealm(edited)
                 }
-            } ?: run {
-                edited.id = getNewDriveLogId()
-                copyToRealm(edited)
             }
         }
     }

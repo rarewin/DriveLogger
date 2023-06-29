@@ -59,7 +59,9 @@ fun DriveLogEditTopAppBar(
             Box(
                 modifier = Modifier
             ) {
-                IconButton(onClick = { clickListener?.onClickBack() }) {
+                IconButton(
+                    onClick = { clickListener?.onClickBack() },
+                ) {
                     Icon(
                         modifier = Modifier,
                         painter = painterResource(id = R.drawable.ic_baseline_arrow_back_24),
@@ -72,7 +74,10 @@ fun DriveLogEditTopAppBar(
             Box(
                 modifier = Modifier,
             ) {
-                IconButton(onClick = { clickListener?.onClickSave() }) {
+                IconButton(
+                    onClick = { clickListener?.onClickSave() },
+                    enabled = driveLogEditViewModel.canSave(),
+                ) {
                     Icon(
                         modifier = Modifier,
                         painter = painterResource(id = R.drawable.ic_baseline_save_alt_24),
@@ -84,7 +89,9 @@ fun DriveLogEditTopAppBar(
                 Box(
                     modifier = Modifier,
                 ) {
-                    IconButton(onClick = { clickListener?.onClickDelete() }) {
+                    IconButton(
+                        onClick = { clickListener?.onClickDelete() },
+                    ) {
                         Icon(
                             modifier = Modifier,
                             painter = painterResource(id = R.drawable.ic_baseline_delete_forever_24),
