@@ -213,6 +213,4 @@ class DriveLogEditViewModel : ViewModel() {
 
         return maxId?.plus(1) ?: 1L
     }
-
-
 }

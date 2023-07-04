@@ -1,5 +1,7 @@
 package org.tirasweel.drivelogger.activities
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -24,10 +26,19 @@ class LogEditActivity : ComponentActivity() {
     }
 
     enum class IntentKey {
-        OpenMode,
         DriveLogId,
-        Date,
-        Mileage
+    }
+
+    enum class ResultKey {
+        Result,
+    }
+
+    enum class ActivityResult {
+        LogCreated,
+        LogUpdated,
+        LogDeleted,
+        Canceled,
+        Error,
     }
 
     private val viewModel: DriveLogEditViewModel by viewModels()
@@ -64,6 +75,13 @@ class LogEditActivity : ComponentActivity() {
                             ) { response ->
                                 if (response) {
                                     viewModel.saveCurrentLog()
+                                    val intent = Intent().apply {
+                                        putExtra(
+                                            ResultKey.Result.name,
+                                            ActivityResult.LogCreated.ordinal
+                                        )
+                                    }
+                                    setResult(Activity.RESULT_OK, intent)
                                     finish()
                                 }
                             }.show()
@@ -79,6 +97,13 @@ class LogEditActivity : ComponentActivity() {
 
                                 if (response) {
                                     viewModel.deleteCurrentLog()
+                                    val intent = Intent().apply {
+                                        putExtra(
+                                            ResultKey.Result.name,
+                                            ActivityResult.LogDeleted.ordinal
+                                        )
+                                    }
+                                    setResult(Activity.RESULT_OK, intent)
                                     finish()
                                 }
                             }.show()
@@ -93,6 +118,10 @@ class LogEditActivity : ComponentActivity() {
     private fun confirmBack() {
         // 編集されていなければ何も聞かずに編集終了
         if (!viewModel.isEdited()) {
+            val intent = Intent().apply {
+                putExtra(ResultKey.Result.name, ActivityResult.Canceled.ordinal)
+            }
+            setResult(Activity.RESULT_OK, intent)
             finish()
         }
 
@@ -102,6 +131,10 @@ class LogEditActivity : ComponentActivity() {
             getString(R.string.message_discard_modification_drivelog)
         ) { response ->
             if (response) {
+                val intent = Intent().apply {
+                    putExtra(ResultKey.Result.name, ActivityResult.LogCreated.ordinal)
+                }
+                setResult(Activity.RESULT_OK, intent)
                 finish()
             }
         }.show()

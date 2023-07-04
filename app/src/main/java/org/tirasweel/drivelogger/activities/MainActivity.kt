@@ -1,11 +1,13 @@
 package org.tirasweel.drivelogger.activities
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +32,7 @@ import java.io.FileWriter
 class MainActivity : ComponentActivity() {
 
     companion object {
-        private val TAG: String =
+        private const val TAG: String =
             "${BuildConfig.APPLICATION_ID}.MainActivity"
     }
 
@@ -38,6 +40,27 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val startForResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                when (result.resultCode) {
+                    Activity.RESULT_OK -> {
+                        val ret = result.data?.getIntExtra(
+                            LogEditActivity.ResultKey.Result.name,
+                            LogEditActivity.ActivityResult.Error.ordinal,
+                        )
+                        when (ret) {
+                            LogEditActivity.ActivityResult.LogCreated.ordinal,
+                            LogEditActivity.ActivityResult.LogDeleted.ordinal,
+                            LogEditActivity.ActivityResult.LogUpdated.ordinal -> {
+                                viewModel.reloadDriveLogs()
+                            }
+
+                            else -> {}
+                        }
+                    }
+                }
+            }
 
         setContent {
             DriveLoggerTheme {
@@ -53,7 +76,7 @@ class MainActivity : ComponentActivity() {
                             override fun onFabAddClicked() {
                                 val intent = Intent(this@MainActivity, LogEditActivity::class.java)
                                 Log.d(TAG, "create new drive log")
-                                startActivity(intent)
+                                startForResult.launch(intent)
                             }
 
                             /* 既存ログ */
