@@ -35,7 +35,9 @@ fun DriveLogRow(
         Column(modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
             Text(text = driveLog.date.toLocalDateString())
             Text(text = String.format("%.2f km/L", driveLog.milliMileage / 1000.0))
-            Text(text = String.format("%.2f", driveLog.fuelEfficient ?: 0.0))
+            Text(text = driveLog.fuelEfficient?.let { fuelEfficient ->
+                String.format("%.2f", fuelEfficient)
+            } ?: "---")
         }
     }
 }

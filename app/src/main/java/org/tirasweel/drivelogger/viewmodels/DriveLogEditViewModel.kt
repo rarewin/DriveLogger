@@ -69,7 +69,10 @@ class DriveLogEditViewModel : ViewModel() {
             _date.value = log.date
             _textDate.value = log.date.toLocalDateString()
             _textMileage.value = "${log.milliMileage / 1000.0}"
-            _textFuelEfficient.value = log.fuelEfficient.toString()
+
+            log.fuelEfficient?.let { fuelEfficient ->
+                _textFuelEfficient.value = fuelEfficient.toString()
+            }
 
             log.totalMilliMileage?.let { milliTotalMileage ->
                 _textTotalMileage.value = "${milliTotalMileage / 1000.0}"
