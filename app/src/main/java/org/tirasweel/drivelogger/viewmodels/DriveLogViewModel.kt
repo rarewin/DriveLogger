@@ -27,7 +27,7 @@ class DriveLogViewModel : ViewModel() {
         var isConfirmDialogForDeleteLogDisplayed = mutableStateOf(false)
 
         /** 保存確認ダイアログ表示状態 */
-        var isConfirmDialogForSaveLog = mutableStateOf(false)
+        var isConfirmDialogForOverwriteLog = mutableStateOf(false)
 
         /** DatePicker表示状態 */
         var isDatePickerDisplayed = mutableStateOf(false)
@@ -170,17 +170,22 @@ class DriveLogViewModel : ViewModel() {
         .sort(logListState.sortOrder.value.property, logListState.sortOrder.value.order)
         .find()
 
+    private fun updateDriveLogList() {
+        _driveLogList.value = getDriveLogs()
+    }
 
     /**
      * 編集中のログをDBから削除する
      */
     fun deleteEditingLog() {
-        realm.writeBlocking {
-            logFormState.editingLog.value?.let { log ->
+        logFormState.editingLog.value?.let { log ->
+            realm.writeBlocking {
                 findLatest(log)?.let {
                     delete(it)
                 }
             }
+
+            updateDriveLogList()
         }
     }
 
@@ -213,6 +218,8 @@ class DriveLogViewModel : ViewModel() {
                     copyToRealm(edited)
                 }
             }
+
+            updateDriveLogList()
         }
     }
 

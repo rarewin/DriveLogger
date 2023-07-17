@@ -41,6 +41,12 @@ interface DriveLogEditScreenClickListener {
 
     /** 変更破棄確認ダイアログの結果 */
     fun onConfirmDiscardModification(confirm: Boolean)
+
+    /** 上書き確認ダイアログの結果 */
+    fun onConfirmOverwrite(confirm: Boolean)
+
+    /** 削除確認ダイアログの結果 */
+    fun onConfirmDelete(confirm: Boolean)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -278,6 +284,7 @@ fun DriveLogEditScreen(
 
         AlertDialog(
             onDismissRequest = {
+                clickListener?.onConfirmDelete(false)
             },
             text = {
                 Text(text = stringResource(R.string.message_remove_drivelog))
@@ -285,8 +292,8 @@ fun DriveLogEditScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        driveLogViewModel.deleteEditingLog()
                         isDisplayed.value = false
+                        clickListener?.onConfirmDelete(true)
                     }
                 ) {
                     Text(stringResource(id = R.string.yes))
@@ -296,6 +303,7 @@ fun DriveLogEditScreen(
                 TextButton(
                     onClick = {
                         isDisplayed.value = false
+                        clickListener?.onConfirmDelete(false)
                     }
                 ) {
                     Text(stringResource(id = R.string.no))
@@ -304,21 +312,23 @@ fun DriveLogEditScreen(
         )
     }
 
-    // 保存確認ダイアログ
-    if (driveLogViewModel.uiState.isConfirmDialogForSaveLog.value) {
+    // 上書き保存確認ダイアログ
+    if (driveLogViewModel.uiState.isConfirmDialogForOverwriteLog.value) {
         val isDisplayed =
-            driveLogViewModel.uiState.isConfirmDialogForSaveLog
+            driveLogViewModel.uiState.isConfirmDialogForOverwriteLog
 
         AlertDialog(
             onDismissRequest = {
+                clickListener?.onConfirmOverwrite(false)
+                isDisplayed.value = false
             },
             text = {
-                Text(text = stringResource(R.string.message_save_drivelog))
+                Text(text = stringResource(R.string.message_overwrite_drivelog))
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        driveLogViewModel.saveCurrentLog()
+                        clickListener?.onConfirmOverwrite(true)
                         isDisplayed.value = false
                     }
                 ) {
@@ -328,6 +338,7 @@ fun DriveLogEditScreen(
             dismissButton = {
                 TextButton(
                     onClick = {
+                        clickListener?.onConfirmOverwrite(false)
                         isDisplayed.value = false
                     }
                 ) {

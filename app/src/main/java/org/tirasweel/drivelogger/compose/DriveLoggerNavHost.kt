@@ -1,5 +1,6 @@
 package org.tirasweel.drivelogger.compose
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -72,20 +73,35 @@ fun DriveLoggerNavHost(
                     override fun onClickSave() {
                         if (driveLogViewModel.logFormState.isEdited()) {
                             // 編集箇所があれば確認する
-                            driveLogViewModel.uiState.isConfirmDialogForSaveLog.value = true
+                            driveLogViewModel.uiState.isConfirmDialogForOverwriteLog.value = true
                         } else {
-                            driveLogViewModel.saveCurrentLog()
-                            navController.popBackStack()
+                            Log.e("DriveLoggerNavHost", "invalid transition")
                         }
                     }
 
                     override fun onClickDelete() {
-                        TODO("Not yet implemented")
+                        driveLogViewModel.uiState.isConfirmDialogForDeleteLogDisplayed.value = true
                     }
 
                     override fun onConfirmDiscardModification(confirm: Boolean) {
                         if (confirm) {
                             // 変更を破棄して前の画面に戻る
+                            navController.popBackStack()
+                        }
+                    }
+
+                    override fun onConfirmOverwrite(confirm: Boolean) {
+                        if (confirm) {
+                            // 変更を保存して前の画面に戻る
+                            driveLogViewModel.saveCurrentLog()
+                            navController.popBackStack()
+                        }
+                    }
+
+                    override fun onConfirmDelete(confirm: Boolean) {
+                        if (confirm) {
+                            // 現在のログを削除して前の画面に戻る
+                            driveLogViewModel.deleteEditingLog()
                             navController.popBackStack()
                         }
                     }

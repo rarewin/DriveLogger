@@ -7,7 +7,7 @@
     <string name="message_remove_drivelog">このログを削除してもよいですか?</string>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
-    <string name="message_save_drivelog">変更を保存してもよろしいですか?</string>
+    <string name="message_overwrite_drivelog">変更を保存してもよろしいですか?</string>
     <string name="message_discard_modification_drivelog">変更を破棄してよろしいですか?</string>
     <string name="title_date">日付</string>
     <string name="title_mileage">走行距離 (km)</string>

@@ -20,50 +20,32 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class DriveLog : RealmObject {
-    /**
-     * ID
-     */
+    /** ID */
     @PrimaryKey
     var id: Long
 
-    /**
-     * 作成日
-     */
+    /** 作成日 */
     var createdDate: Long
 
-    /**
-     * 更新日
-     */
+    /** 更新日 */
     var updatedDate: Long
 
-    /**
-     * 日付
-     */
+    /** 日付 */
     var date: Long
 
-    /**
-     * 走行距離x1,000
-     */
+    /** 走行距離x1,000 */
     var milliMileage: Long
 
-    /**
-     * 距離の単位
-     */
+    /** 距離の単位 */
     // var mileageUnit: MileageUnit = MileageUnit.KiloMeter
 
-    /**
-     * 燃費
-     */
+    /** 燃費 */
     var fuelEfficient: Double?
 
-    /**
-     * 合計走行距離x1,000
-     */
+    /** 合計走行距離x1,000 */
     var totalMilliMileage: Long?
 
-    /**
-     * メモ
-     */
+    /** メモ */
     var memo: String = ""
 
     constructor() {
@@ -76,19 +58,4 @@ class DriveLog : RealmObject {
         totalMilliMileage = null
         memo = ""
     }
-
-    fun clone(): DriveLog {
-        var log = DriveLog()
-
-        log.id = this.id
-        log.createdDate = this.createdDate
-        log.updatedDate = this.updatedDate
-        log.date = this.date
-        log.milliMileage = this.milliMileage
-        log.fuelEfficient = this.fuelEfficient
-        log.memo = this.memo
-
-        return log
-    }
-
 }
