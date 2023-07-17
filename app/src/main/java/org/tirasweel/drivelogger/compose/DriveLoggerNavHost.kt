@@ -31,7 +31,7 @@ fun DriveLoggerNavHost(
                 driveLogViewModel = driveLogViewModel,
                 clickListener = object : LogListInteractionListener {
                     override fun onFabAddClicked() {
-                        driveLogViewModel.clearDriveLog()
+                        driveLogViewModel.logFormState.resetLogForm()
                         navController.navigate(DriveLogEdit.route)
                     }
 
@@ -51,18 +51,27 @@ fun DriveLoggerNavHost(
                 navBackStackEntry.arguments?.getString(DriveLogEdit.logIdArg)?.toLongOrNull()
 
             logId?.let { id ->
-                driveLogViewModel.setDriveLog(id)
-            } ?: driveLogViewModel.clearDriveLog()
+                driveLogViewModel.logFormState.setEditingDriveLog(id)
+            } ?: driveLogViewModel.logFormState.resetLogForm()
 
             DriveLogEditScreen(
                 driveLogViewModel = driveLogViewModel,
                 clickListener = object : DriveLogEditScreenClickListener {
                     override fun onClickBack() {
-                        navController.popBackStack()
+                        if (driveLogViewModel.logFormState.isEdited()) {
+                            // 編集箇所があれば破棄してよいか確認する
+                            driveLogViewModel.uiState
+                                .isConfirmDialogForDiscardModificationDisplayed
+                                .value = true
+                        } else {
+                            // 編集箇所がなければ何も確認せずに戻る
+                            navController.popBackStack()
+                        }
                     }
 
                     override fun onClickSave() {
-                        if (driveLogViewModel.isEdited()) {
+                        if (driveLogViewModel.logFormState.isEdited()) {
+                            // 編集箇所があれば確認する
                             driveLogViewModel.uiState.isConfirmDialogForSaveLog.value = true
                         } else {
                             driveLogViewModel.saveCurrentLog()
@@ -72,6 +81,13 @@ fun DriveLoggerNavHost(
 
                     override fun onClickDelete() {
                         TODO("Not yet implemented")
+                    }
+
+                    override fun onConfirmDiscardModification(confirm: Boolean) {
+                        if (confirm) {
+                            // 変更を破棄して前の画面に戻る
+                            navController.popBackStack()
+                        }
                     }
                 }
             )

@@ -35,9 +35,13 @@ class DriveLogViewModel : ViewModel() {
 
     /** ログの編集フォームの状態 */
     inner class LogFormState {
+        internal var editingLog: MutableState<DriveLog?> = mutableStateOf(null)
+
+        /** フォーム作成時のタイムスタンプ */
+        private var initialDateValue = Calendar.getInstance().timeInMillis  // TODO: リセット必要
 
         /** 日付用タイムスタンプ  */
-        var date = mutableStateOf(Calendar.getInstance().timeInMillis)
+        var date = mutableStateOf(initialDateValue)
 
         /** 日付 */
         val textDate: State<String>
@@ -57,6 +61,28 @@ class DriveLogViewModel : ViewModel() {
         /** メモ */
         var textMemo = mutableStateOf("")
 
+        /** 編集中のログを設定 */
+        fun setEditingDriveLog(id: Long) {
+            realm.query<DriveLog>("id == $0", id).find().firstOrNull()?.also { log ->
+                editingLog.value = log
+
+                date.value = log.date
+
+                textMileage.value = "${log.milliMileage / 1000.0}"
+
+                log.fuelEfficient?.let { fuelEfficient ->
+                    textFuelEfficient.value = fuelEfficient.toString()
+                }
+
+                log.totalMilliMileage?.let { totalMilliMileage ->
+                    textTotalMileage.value = "${totalMilliMileage / 1000.0}"
+                }
+
+                textMemo.value = log.memo
+
+            }
+        }
+
         /**
          * @brief 現在編集中の内容からDriveLogを生成する
          * @return 生成されたDriveLogインスタンス
@@ -72,9 +98,46 @@ class DriveLogViewModel : ViewModel() {
                 milliMileage = mileage.toLong()
 
                 fuelEfficient = this@LogFormState.textFuelEfficient.value.toDoubleOrNull()
-                totalMilliMileage = this@LogFormState.textTotalMileage.value.toLongOrNull()
+
+                totalMilliMileage = this@LogFormState.textTotalMileage.value
+                    .toDoubleOrNull()
+                    ?.times(1000)
+                    ?.toLong()
+
                 memo = this@LogFormState.textMemo.value
             }
+        }
+
+        /**
+         * @brief 現在の編集内容とdriveLogを比較して, 編集されているかチェックする
+         * @return 編集されていたらtrue
+         */
+        internal fun isEdited(): Boolean {
+
+            return editingLog.value?.let { log ->
+                return logFormState.toDriveLogOrNull()?.let { edited ->
+                    return !(log.date == edited.date &&
+                            log.milliMileage == edited.milliMileage &&
+                            log.fuelEfficient == edited.fuelEfficient &&
+                            log.memo == edited.memo)
+
+                } ?: true // 元の値があるのにgetEditedDriveLog()がnullなのは何かしら編集されているはず
+            } ?: (logFormState.date.value != initialDateValue ||
+                    logFormState.textMileage.value.isNotEmpty() ||
+                    logFormState.textFuelEfficient.value.isNotEmpty() ||
+                    logFormState.textMileage.value.isNotEmpty() ||
+                    logFormState.textMemo.value.isNotEmpty()
+                    )
+        }
+
+        internal fun isEditingMode(): Boolean = (editingLog.value != null)
+
+        /**
+         * ログ入力フォームをリセットする
+         */
+        fun resetLogForm() {
+            logFormState = LogFormState()
+            logFormState.editingLog.value = null
         }
     }
 
@@ -88,15 +151,10 @@ class DriveLogViewModel : ViewModel() {
     var uiState = UiState()
 
     /** ログフォーム状態のインスタンス */
-    var logForm = LogFormState()
+    var logFormState = LogFormState()
 
     /** リスト状態のインスタンス */
     var logListState = LogListState()
-
-    /** 編集中ログ */
-    private var _driveLog: MutableState<DriveLog?> = mutableStateOf(null)
-
-    private val initialDateValue = Calendar.getInstance().timeInMillis
 
     /** ドライブログのリスト */
     private var _driveLogList: MutableState<List<DriveLog>>
@@ -112,22 +170,13 @@ class DriveLogViewModel : ViewModel() {
         .sort(logListState.sortOrder.value.property, logListState.sortOrder.value.order)
         .find()
 
-    val driveLog: State<DriveLog?>
-        get() = _driveLog
 
-    fun setDriveLog(id: Long) {
-        realm.query<DriveLog>("id == $0", id).find().firstOrNull()?.also { log ->
-            _driveLog.value = log
-        }
-    }
-
-    fun clearDriveLog() {
-        _driveLog.value = null
-    }
-
-    fun deleteCurrentLog() {
+    /**
+     * 編集中のログをDBから削除する
+     */
+    fun deleteEditingLog() {
         realm.writeBlocking {
-            _driveLog.value?.let { log ->
+            logFormState.editingLog.value?.let { log ->
                 findLatest(log)?.let {
                     delete(it)
                 }
@@ -136,33 +185,11 @@ class DriveLogViewModel : ViewModel() {
     }
 
     /**
-     * @brief 現在の編集内容とdriveLogを比較して, 編集されているかチェックする
-     * @return 編集されていたらtrue
-     */
-    internal fun isEdited(): Boolean {
-
-        return _driveLog.value?.let { log ->
-            return logForm.toDriveLogOrNull()?.let { edited ->
-                return !(log.date == edited.date &&
-                        log.milliMileage == edited.milliMileage &&
-                        log.fuelEfficient == edited.fuelEfficient &&
-                        log.memo == edited.memo)
-
-            } ?: true // 元の値があるのにgetEditedDriveLog()がnullなのは何かしら編集されているはず
-        } ?: (logForm.date.value != initialDateValue ||
-                logForm.textMileage.value.isNotEmpty() ||
-                logForm.textFuelEfficient.value.isNotEmpty() ||
-                logForm.textMileage.value.isNotEmpty() ||
-                logForm.textMemo.value.isNotEmpty()
-                )
-    }
-
-    /**
      * セーブ可能かどうか確認する
      * @return セーブ可能ならtrue
      */
     internal fun canSave(): Boolean {
-        return (isEdited() && logForm.toDriveLogOrNull() != null)
+        return (logFormState.isEdited() && logFormState.toDriveLogOrNull() != null)
     }
 
     fun saveCurrentLog() {
@@ -171,9 +198,9 @@ class DriveLogViewModel : ViewModel() {
             return
         }
 
-        logForm.toDriveLogOrNull()?.let { edited ->
+        logFormState.toDriveLogOrNull()?.let { edited ->
             realm.writeBlocking {
-                _driveLog.value?.let { log ->
+                logFormState.editingLog.value?.let { log ->
                     findLatest(log)?.apply {
                         date = edited.date
                         milliMileage = edited.milliMileage

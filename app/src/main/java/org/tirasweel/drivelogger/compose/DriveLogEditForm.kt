@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import org.tirasweel.drivelogger.R
-import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 
 
@@ -29,7 +28,7 @@ import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 @Composable
 fun DriveLogEditForm(
     modifier: Modifier = Modifier,
-    editedLog: DriveLog,
+    // editedLog: DriveLog,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()

@@ -13,9 +13,6 @@ fun DriveLoggerApp(
     driveLogViewModel: DriveLogViewModel,
 ) {
     val navController = rememberNavController()
-    // val currentBackStack by navController.currentBackStackEntryAsState()
-    // val currentDestination = currentBackStack?.destination
-    // val currentScreen = driveLogScreenList.find { it.route == currentDestination?.route }
 
     DriveLoggerNavHost(
         modifier = modifier,

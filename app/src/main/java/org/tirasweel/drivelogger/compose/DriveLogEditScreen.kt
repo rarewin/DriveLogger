@@ -37,9 +37,10 @@ interface DriveLogEditScreenClickListener {
 
     fun onClickSave()
 
-//    fun onClickDate()
-
     fun onClickDelete()
+
+    /** 変更破棄確認ダイアログの結果 */
+    fun onConfirmDiscardModification(confirm: Boolean)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +50,7 @@ fun DriveLogEditTopAppBar(
     clickListener: DriveLogEditScreenClickListener? = null,
     driveLogViewModel: DriveLogViewModel,
 ) {
-    val isEditMode = (driveLogViewModel.driveLog.value != null)
+    val isEditMode = (driveLogViewModel.logFormState.isEditingMode())
 
     TopAppBar(
         modifier = modifier,
@@ -60,7 +61,7 @@ fun DriveLogEditTopAppBar(
             ) {
                 IconButton(
                     onClick = {
-                        if (driveLogViewModel.isEdited()) {
+                        if (driveLogViewModel.logFormState.isEdited()) {
                             driveLogViewModel
                                 .uiState
                                 .isConfirmDialogForDiscardModificationDisplayed
@@ -156,7 +157,7 @@ fun DriveLogEditScreen(
                         contentDescription = null,
                     )
                 },
-                value = driveLogViewModel.logForm.textDate.value,
+                value = driveLogViewModel.logFormState.textDate.value,
                 placeholder = {
                     Text(stringResource(R.string.hint_input_date))
                 },
@@ -166,11 +167,11 @@ fun DriveLogEditScreen(
             )
 
             val isErrorOnMileage =
-                (driveLogViewModel.logForm.textMileage.value.toDoubleOrNull() == null)
+                (driveLogViewModel.logFormState.textMileage.value.toDoubleOrNull() == null)
 
             DriveLogEditTextFormPlain(
                 modifier = fieldsModifier,
-                data = driveLogViewModel.logForm.textMileage,
+                data = driveLogViewModel.logFormState.textMileage,
                 hintStringId = R.string.hint_mileage,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 isError = isErrorOnMileage,
@@ -178,28 +179,28 @@ fun DriveLogEditScreen(
 
             DriveLogEditTextFormPlain(
                 modifier = fieldsModifier,
-                data = driveLogViewModel.logForm.textFuelEfficient,
+                data = driveLogViewModel.logFormState.textFuelEfficient,
                 hintStringId = R.string.hint_fuel_efficient,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
 
             DriveLogEditTextFormPlain(
                 modifier = fieldsModifier,
-                data = driveLogViewModel.logForm.textTotalMileage,
+                data = driveLogViewModel.logFormState.textTotalMileage,
                 hintStringId = R.string.hint_total_mileage,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
 
             DriveLogEditTextFormPlain(
                 modifier = fieldsModifier,
-                data = driveLogViewModel.logForm.textMemo,
+                data = driveLogViewModel.logFormState.textMemo,
                 hintStringId = R.string.hint_memo,
             )
         }
     }
 
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = driveLogViewModel.logForm.date.value,  // TODO: 時差で日付がズレる
+        initialSelectedDateMillis = driveLogViewModel.logFormState.date.value,  // TODO: 時差で日付がズレる
     )
 
     if (driveLogViewModel.uiState.isDatePickerDisplayed.value) {
@@ -213,7 +214,7 @@ fun DriveLogEditScreen(
                     onClick = {
                         Log.d(debugTag, "date: ${datePickerState.selectedDateMillis}")
                         datePickerState.selectedDateMillis?.let {
-                            driveLogViewModel.logForm.date.value = it
+                            driveLogViewModel.logFormState.date.value = it
                             driveLogViewModel.uiState.isDatePickerDisplayed.value = false
                         }
                     },
@@ -237,37 +238,37 @@ fun DriveLogEditScreen(
     }
 
     // 変更破棄確認ダイアログ
-    if (driveLogViewModel.uiState.isConfirmDialogForDiscardModificationDisplayed.value) {
-
-        val isDisplayed =
-            driveLogViewModel.uiState.isConfirmDialogForDiscardModificationDisplayed
-
-        AlertDialog(
-            onDismissRequest = {
-            },
-            text = {
-                Text(text = stringResource(R.string.message_discard_modification_drivelog))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        isDisplayed.value = false
-                        clickListener?.onClickBack()
+    driveLogViewModel.uiState.isConfirmDialogForDiscardModificationDisplayed.let { isDisplayed ->
+        if (isDisplayed.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    clickListener?.onConfirmDiscardModification(false)
+                },
+                text = {
+                    Text(text = stringResource(R.string.message_discard_modification_drivelog))
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            isDisplayed.value = false
+                            clickListener?.onConfirmDiscardModification(true)
+                        }
+                    ) {
+                        Text(stringResource(id = R.string.yes))
                     }
-                ) {
-                    Text(stringResource(id = R.string.yes))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        isDisplayed.value = false
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            isDisplayed.value = false
+                            clickListener?.onConfirmDiscardModification(false)
+                        }
+                    ) {
+                        Text(stringResource(id = R.string.no))
                     }
-                ) {
-                    Text(stringResource(id = R.string.no))
                 }
-            }
-        )
+            )
+        }
     }
 
     // 削除確認ダイアログ
@@ -284,7 +285,7 @@ fun DriveLogEditScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        driveLogViewModel.deleteCurrentLog()
+                        driveLogViewModel.deleteEditingLog()
                         isDisplayed.value = false
                     }
                 ) {
