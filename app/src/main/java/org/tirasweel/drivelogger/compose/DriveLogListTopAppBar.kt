@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
-import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
+import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
 interface DriveLogListTopAppBarClickListener {
     fun onClickExport()
@@ -31,7 +31,7 @@ interface DriveLogListTopAppBarClickListener {
 @Composable
 fun DriveLogListTopAppBar(
     modifier: Modifier = Modifier,
-    driveLogListViewModel: DriveLogListViewModel,
+    driveLogViewModel: DriveLogViewModel,
     initialImportExportMenuExpanded: Boolean = false,
     initialSortMenuExpanded: Boolean = false,
     clickListener: DriveLogListTopAppBarClickListener? = null,
@@ -74,7 +74,7 @@ fun DriveLogListTopAppBar(
             ) {
                 DriveLogListSortMenu(
                     modifier = modifier,
-                    driveLogListViewModel = driveLogListViewModel,
+                    driveLogViewModel = driveLogViewModel,
                 )
             }
         }
@@ -90,7 +90,7 @@ fun DriveLogListTopAppBarPreview() {
         ) {
             DriveLogListTopAppBar(
                 modifier = Modifier,
-                driveLogListViewModel = DriveLogListViewModel(),
+                driveLogViewModel = DriveLogViewModel(),
             )
         }
     }

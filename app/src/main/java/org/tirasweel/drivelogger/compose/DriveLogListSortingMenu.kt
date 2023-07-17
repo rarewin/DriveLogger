@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
-import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
+import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
 @Composable
 fun DriveLogListSortMenu(
     modifier: Modifier = Modifier,
-    driveLogListViewModel: DriveLogListViewModel,
+    driveLogViewModel: DriveLogViewModel,
 ) {
     DropdownMenuItem(
         modifier = modifier,
@@ -34,8 +34,8 @@ fun DriveLogListSortMenu(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = (if (driveLogListViewModel.sortOrder.value == SortOrderType.AscendingDate) {
-                        MaterialTheme.colorScheme.primary
+                    tint = (if (driveLogViewModel.logListState.sortOrder.value == SortOrderType.AscendingDate) {
+                        MaterialTheme.colorScheme.primary  // TODO
                     } else {
                         Color.Transparent
                     }),
@@ -45,7 +45,8 @@ fun DriveLogListSortMenu(
             }
         },
         onClick = {
-            driveLogListViewModel.setDriveLogOrder(SortOrderType.AscendingDate)
+            driveLogViewModel.logListState.sortOrder.value =
+                SortOrderType.AscendingDate  // TODO: 上に返す
         },
     )
     DropdownMenuItem(
@@ -54,8 +55,8 @@ fun DriveLogListSortMenu(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = (if (driveLogListViewModel.sortOrder.value == SortOrderType.DescendingDate) {
-                        MaterialTheme.colorScheme.primary
+                    tint = (if (driveLogViewModel.logListState.sortOrder.value == SortOrderType.DescendingDate) {
+                        MaterialTheme.colorScheme.primary  // TODO
                     } else {
                         Color.Transparent
                     }),
@@ -65,7 +66,8 @@ fun DriveLogListSortMenu(
             }
         },
         onClick = {
-            driveLogListViewModel.setDriveLogOrder(SortOrderType.DescendingDate)
+            driveLogViewModel.logListState.sortOrder.value =
+                SortOrderType.DescendingDate  // TODO: 上に返す
         },
     )
 }
@@ -84,7 +86,7 @@ private fun DriveLogListSortMenuPreview() {
             ) {
                 DriveLogListSortMenu(
                     modifier = Modifier.fillMaxWidth(),
-                    driveLogListViewModel = DriveLogListViewModel(),
+                    driveLogViewModel = DriveLogViewModel(),
                 )
             }
         }

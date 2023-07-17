@@ -11,19 +11,18 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
-import org.tirasweel.drivelogger.viewmodels.DriveLogListViewModel
+import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
 @Composable
 fun DriveLogListScreen(
     modifier: Modifier = Modifier,
-    driveLogListViewModel: DriveLogListViewModel,
+    driveLogViewModel: DriveLogViewModel,
     clickListener: LogListInteractionListener? = null,
     appBarClickListener: DriveLogListTopAppBarClickListener? = null,
 ) {
@@ -32,7 +31,7 @@ fun DriveLogListScreen(
         topBar = {
             DriveLogListTopAppBar(
                 modifier = Modifier,
-                driveLogListViewModel = driveLogListViewModel,
+                driveLogViewModel = driveLogViewModel,
                 clickListener = appBarClickListener,
             )
         },
@@ -42,7 +41,10 @@ fun DriveLogListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.padding(all = 16.dp),
-                onClick = { clickListener?.onFabAddClicked() }
+                onClick = {
+                    clickListener?.onFabAddClicked()
+                    // navController.navigate(DriveLogEdit.route)
+                }
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
@@ -52,7 +54,8 @@ fun DriveLogListScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { contentPadding ->
-        val driveLogs by driveLogListViewModel.driveLogsStateFlow.collectAsState()
+        val driveLogs by driveLogViewModel.driveLogList
+
         LazyColumn(
             modifier = Modifier.padding(contentPadding)
         ) {
@@ -63,7 +66,7 @@ fun DriveLogListScreen(
                 DriveLogRow(
                     driveLog = driveLog,
                     clickListener = clickListener,
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -76,7 +79,7 @@ private fun DriveLogListScreenPreview() {
     DriveLoggerTheme {
         DriveLogListScreen(
             modifier = Modifier.fillMaxWidth(),
-            driveLogListViewModel = DriveLogListViewModel(),
+            driveLogViewModel = DriveLogViewModel(),
         )
     }
 }

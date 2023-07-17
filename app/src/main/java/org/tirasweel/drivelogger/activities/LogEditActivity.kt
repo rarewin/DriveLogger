@@ -16,7 +16,7 @@ import org.tirasweel.drivelogger.compose.DriveLogEditScreen
 import org.tirasweel.drivelogger.compose.DriveLogEditScreenClickListener
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.utils.ConfirmDialogFragment
-import org.tirasweel.drivelogger.viewmodels.DriveLogEditViewModel
+import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
 class LogEditActivity : ComponentActivity() {
 
@@ -41,7 +41,7 @@ class LogEditActivity : ComponentActivity() {
         Error,
     }
 
-    private val viewModel: DriveLogEditViewModel by viewModels()
+    private val viewModel: DriveLogViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +71,7 @@ class LogEditActivity : ComponentActivity() {
                             ConfirmDialogFragment.createAlertDialog(
                                 this@LogEditActivity,
                                 null,
-                                getString(R.string.message_register_drivelog)
+                                getString(R.string.message_save_drivelog)
                             ) { response ->
                                 if (response) {
                                     viewModel.saveCurrentLog()
@@ -109,7 +109,7 @@ class LogEditActivity : ComponentActivity() {
                             }.show()
                         }
                     },
-                    driveLogEditViewModel = viewModel,
+                    driveLogViewModel = viewModel,
                 )
             }
         }
