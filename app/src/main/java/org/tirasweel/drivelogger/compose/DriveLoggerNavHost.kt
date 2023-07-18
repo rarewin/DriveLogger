@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.tirasweel.drivelogger.DriveLogEdit
 import org.tirasweel.drivelogger.DriveLogList
+import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
@@ -38,6 +39,15 @@ fun DriveLoggerNavHost(
 
                     override fun onItemClicked(log: DriveLog) {
                         navController.navigate(DriveLogEdit.route(logId = log.id))
+                    }
+                },
+                appBarClickListener = object : DriveLogListTopAppBarClickListener {
+                    override fun onClickExport() {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onSortOrderChanged(sortOrderType: SortOrderType) {
+                        driveLogViewModel.updateDriveLogList()
                     }
                 }
             )

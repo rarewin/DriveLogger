@@ -105,7 +105,6 @@ fun DriveLogEditTopAppBar(
                 ) {
                     IconButton(
                         onClick = {
-                            // clickListener?.onClickDelete()
                             driveLogViewModel.uiState
                                 .isConfirmDialogForDeleteLogDisplayed
                                 .value = true

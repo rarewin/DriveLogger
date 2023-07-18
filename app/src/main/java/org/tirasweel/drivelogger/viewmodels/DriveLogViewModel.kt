@@ -170,7 +170,7 @@ class DriveLogViewModel : ViewModel() {
         .sort(logListState.sortOrder.value.property, logListState.sortOrder.value.order)
         .find()
 
-    private fun updateDriveLogList() {
+    fun updateDriveLogList() {
         _driveLogList.value = getDriveLogs()
     }
 

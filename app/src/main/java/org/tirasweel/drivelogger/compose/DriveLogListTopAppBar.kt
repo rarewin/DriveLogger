@@ -20,11 +20,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
 interface DriveLogListTopAppBarClickListener {
     fun onClickExport()
+
+    fun onSortOrderChanged(sortOrderType: SortOrderType)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,10 +75,17 @@ fun DriveLogListTopAppBar(
                 expanded = sortMenuExpanded,
                 onDismissRequest = { sortMenuExpanded = false },
             ) {
-                DriveLogListSortMenu(
-                    modifier = modifier,
-                    driveLogViewModel = driveLogViewModel,
-                )
+                SortOrderType.values().forEach { sortOrderType ->
+                    DriveLogListSortingMenuItem(
+                        currentSortOrder = driveLogViewModel.logListState.sortOrder,
+                        sortOrderType = sortOrderType,
+                        textId = sortOrderType.menuTextId,
+                        onSortOrderChanged = {
+                            sortMenuExpanded = false
+                            clickListener?.onSortOrderChanged(it)
+                        },
+                    )
+                }
             }
         }
     })
