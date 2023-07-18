@@ -1,17 +1,21 @@
 package org.tirasweel.drivelogger.compose
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.tirasweel.drivelogger.DriveLogEdit
 import org.tirasweel.drivelogger.DriveLogList
+import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
+import java.io.File
 
 @Composable
 fun DriveLoggerNavHost(
@@ -29,6 +33,12 @@ fun DriveLoggerNavHost(
         composable(
             route = DriveLogList.route,
         ) {
+            val context = LocalContext.current
+            val exportFile = context.getExternalFilesDir("DriveLogs")
+                ?.let { dir ->
+                    File(dir, "export.json")
+                }
+
             DriveLogListScreen(
                 driveLogViewModel = driveLogViewModel,
                 clickListener = object : LogListInteractionListener {
@@ -40,10 +50,34 @@ fun DriveLoggerNavHost(
                     override fun onItemClicked(log: DriveLog) {
                         navController.navigate(DriveLogEdit.route(logId = log.id))
                     }
+
+                    override fun onConfirmOverwriteExport(response: Boolean) {
+                        if (response) {
+                            exportFile?.let {
+                                driveLogViewModel.exportDriveLogLists(it)
+                                Toast.makeText(
+                                    context,
+                                    R.string.message_export_file_successful,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
                 },
                 appBarClickListener = object : DriveLogListTopAppBarClickListener {
                     override fun onClickExport() {
-                        TODO("Not yet implemented")
+                        if (exportFile?.exists() == true) {
+                            driveLogViewModel.uiState.isConfirmDialogForOverwriteExport.value = true
+                        } else {
+                            exportFile?.let {
+                                driveLogViewModel.exportDriveLogLists(it)
+                                Toast.makeText(
+                                    context,
+                                    R.string.message_export_file_successful,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
                     }
 
                     override fun onSortOrderChanged(sortOrderType: SortOrderType) {

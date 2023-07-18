@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
@@ -71,6 +72,14 @@ fun DriveLogListScreen(
             }
         }
     }
+
+    ConfirmDialog(
+        isDisplayed = driveLogViewModel.uiState.isConfirmDialogForOverwriteExport,
+        onResponse = { response ->
+            clickListener?.onConfirmOverwriteExport(response)
+        },
+        textId = R.string.message_export_file_already_exists,
+    )
 }
 
 @Preview

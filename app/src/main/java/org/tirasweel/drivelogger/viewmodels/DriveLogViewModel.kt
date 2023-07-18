@@ -7,10 +7,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.RealmUtil
+import java.io.File
+import java.io.FileWriter
 import java.util.Date
 
 class DriveLogViewModel : ViewModel() {
@@ -31,6 +35,9 @@ class DriveLogViewModel : ViewModel() {
 
         /** DatePicker表示状態 */
         var isDatePickerDisplayed = mutableStateOf(false)
+
+        /** エクスポート上書き確認 */
+        var isConfirmDialogForOverwriteExport = mutableStateOf(false)
     }
 
     /** ログの編集フォームの状態 */
@@ -231,5 +238,15 @@ class DriveLogViewModel : ViewModel() {
             .firstOrNull()?.id
 
         return maxId?.plus(1) ?: 1L
+    }
+
+    fun exportDriveLogLists(file: File) {
+        val writer = FileWriter(file)
+
+        _driveLogList.value.forEach { log ->
+            writer.write(Json.encodeToString(log))
+        }
+
+        writer.close()
     }
 }

@@ -58,7 +58,10 @@ fun DriveLogListTopAppBar(
             ) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.menu_title_export)) },
-                    onClick = { clickListener?.onClickExport() },
+                    onClick = {
+                        clickListener?.onClickExport()
+                        sortMenuExpanded = true
+                    },
                 )
             }
         }
