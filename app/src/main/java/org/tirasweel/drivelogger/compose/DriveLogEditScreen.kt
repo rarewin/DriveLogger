@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -244,109 +243,31 @@ fun DriveLogEditScreen(
     }
 
     // 変更破棄確認ダイアログ
-    driveLogViewModel.uiState.isConfirmDialogForDiscardModificationDisplayed.let { isDisplayed ->
-        if (isDisplayed.value) {
-            AlertDialog(
-                onDismissRequest = {
-                    clickListener?.onConfirmDiscardModification(false)
-                },
-                text = {
-                    Text(text = stringResource(R.string.message_discard_modification_drivelog))
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            isDisplayed.value = false
-                            clickListener?.onConfirmDiscardModification(true)
-                        }
-                    ) {
-                        Text(stringResource(id = R.string.yes))
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            isDisplayed.value = false
-                            clickListener?.onConfirmDiscardModification(false)
-                        }
-                    ) {
-                        Text(stringResource(id = R.string.no))
-                    }
-                }
-            )
-        }
-    }
+    ConfirmDialog(
+        isDisplayed = driveLogViewModel.uiState.isConfirmDialogForDiscardModificationDisplayed,
+        onResponse = { response ->
+            clickListener?.onConfirmDiscardModification(response)
+        },
+        textId = R.string.message_discard_modification_drivelog,
+    )
 
     // 削除確認ダイアログ
-    if (driveLogViewModel.uiState.isConfirmDialogForDeleteLogDisplayed.value) {
-        val isDisplayed =
-            driveLogViewModel.uiState.isConfirmDialogForDeleteLogDisplayed
-
-        AlertDialog(
-            onDismissRequest = {
-                clickListener?.onConfirmDelete(false)
-            },
-            text = {
-                Text(text = stringResource(R.string.message_remove_drivelog))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        isDisplayed.value = false
-                        clickListener?.onConfirmDelete(true)
-                    }
-                ) {
-                    Text(stringResource(id = R.string.yes))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        isDisplayed.value = false
-                        clickListener?.onConfirmDelete(false)
-                    }
-                ) {
-                    Text(stringResource(id = R.string.no))
-                }
-            }
-        )
-    }
+    ConfirmDialog(
+        isDisplayed = driveLogViewModel.uiState.isConfirmDialogForDeleteLogDisplayed,
+        onResponse = { response ->
+            clickListener?.onConfirmDelete(response)
+        },
+        textId = R.string.message_remove_drivelog,
+    )
 
     // 上書き保存確認ダイアログ
-    if (driveLogViewModel.uiState.isConfirmDialogForOverwriteLog.value) {
-        val isDisplayed =
-            driveLogViewModel.uiState.isConfirmDialogForOverwriteLog
-
-        AlertDialog(
-            onDismissRequest = {
-                clickListener?.onConfirmOverwrite(false)
-                isDisplayed.value = false
-            },
-            text = {
-                Text(text = stringResource(R.string.message_overwrite_drivelog))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        clickListener?.onConfirmOverwrite(true)
-                        isDisplayed.value = false
-                    }
-                ) {
-                    Text(stringResource(id = R.string.yes))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        clickListener?.onConfirmOverwrite(false)
-                        isDisplayed.value = false
-                    }
-                ) {
-                    Text(stringResource(id = R.string.no))
-                }
-            }
-        )
-    }
+    ConfirmDialog(
+        isDisplayed = driveLogViewModel.uiState.isConfirmDialogForOverwriteLog,
+        onResponse = { response ->
+            clickListener?.onConfirmOverwrite(response)
+        },
+        textId = R.string.message_overwrite_drivelog,
+    )
 }
 
 @Preview
