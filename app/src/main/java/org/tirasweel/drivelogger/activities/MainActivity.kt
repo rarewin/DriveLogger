@@ -31,27 +31,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        val startForResult =
-//            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//                when (result.resultCode) {
-//                    Activity.RESULT_OK -> {
-//                        val ret = result.data?.getIntExtra(
-//                            LogEditActivity.ResultKey.Result.name,
-//                            LogEditActivity.ActivityResult.Error.ordinal,
-//                        )
-//                        when (ret) {
-//                            LogEditActivity.ActivityResult.LogCreated.ordinal,
-//                            LogEditActivity.ActivityResult.LogDeleted.ordinal,
-//                            LogEditActivity.ActivityResult.LogUpdated.ordinal -> {
-//                                viewModel.reloadDriveLogs()
-//                            }
-//
-//                            else -> {}
-//                        }
-//                    }
-//                }
-//            }
-
         setContent {
             DriveLoggerTheme {
                 DriveLoggerApp(
@@ -59,50 +38,6 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-
-//        setContent {
-//            DriveLoggerTheme {
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
-//                ) {
-//                    DriveLogListScreen(
-//                        driveLogListViewModel = viewModel,
-//                        clickListener = object : LogListInteractionListener {
-//
-//                            /* 追加ボタン */
-//                            override fun onFabAddClicked() {
-//                                val intent = Intent(this@MainActivity, LogEditActivity::class.java)
-//                                Log.d(TAG, "create new drive log")
-//                                startForResult.launch(intent)
-//                            }
-//
-//                            /* 既存ログ */
-//                            override fun onItemClicked(log: DriveLog) {
-//
-//                                val intent =
-//                                    Intent(
-//                                        this@MainActivity,
-//                                        LogEditActivity::class.java
-//                                    ).apply {
-//                                        putExtra(
-//                                            LogEditActivity.IntentKey.DriveLogId.name,
-//                                            log.id
-//                                        )
-//                                    }
-//
-//                                startActivity(intent)
-//                            }
-//                        },
-//                        appBarClickListener = object : DriveLogListTopAppBarClickListener {
-//                            override fun onClickExport() {
-//                                executeExport()
-//                            }
-//                        },
-//                    )
-//                }
-//            }
-//        }
     }
 
     private fun executeExport() {
