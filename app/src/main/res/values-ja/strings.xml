@@ -7,11 +7,11 @@
     <string name="message_remove_drivelog">このログを削除してもよいですか?</string>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
-    <string name="message_register_drivelog">変更を保存してもよろしいですか?</string>
+    <string name="message_overwrite_drivelog">変更を保存してもよろしいですか?</string>
     <string name="message_discard_modification_drivelog">変更を破棄してよろしいですか?</string>
     <string name="title_date">日付</string>
     <string name="title_mileage">走行距離 (km)</string>
-    <string name="title_memo">メモ</string>
+    <string name="hint_memo">メモ</string>
     <string name="title_fuel_efficient">燃費 (km/L)</string>
     <string name="menu_title_sort">ソート</string>
     <string name="sort_date_ascending">日付(昇順)</string>
@@ -27,4 +27,7 @@
     <string name="menu_title_export">エクスポート</string>
     <string name="message_export_file_already_exists">エクスポートファイルは既に存在します。上書きしますか?</string>
     <string name="message_export_file_successful">エクスポートに成功しました</string>
+    <string name="screen_title_drive_logging">走行記録</string>
+    <string name="screen_title_refuel_logging">給油記録</string>
+    <string name="title_cancel">キャンセル</string>
 </resources>
