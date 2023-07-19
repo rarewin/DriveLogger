@@ -1,17 +1,20 @@
-package org.tirasweel.drivelogger
+package org.tirasweel.drivelogger.interfaces
 
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
-interface DriveLoggerDestination {
+interface Destination {
+    val title: String
     val route: String
 }
 
-object DriveLogList : DriveLoggerDestination {
+object DriveLogList : Destination {
+    override val title = "Drive Log"
     override val route = "log_list"
 }
 
-object DriveLogEdit : DriveLoggerDestination {
+object DriveLogEdit : Destination {
+    override val title = "Drive Log"
     override val route = "log_edit"
 
     fun route(logId: Long) = "$route?$logIdArg=$logId"
@@ -26,4 +29,9 @@ object DriveLogEdit : DriveLoggerDestination {
     )
 }
 
-val driveLogScreenList = listOf(DriveLogList, DriveLogEdit)
+object RefuelLogList : Destination {
+    override val title = "Refuel"
+    override val route = "refuel_list"
+}
+
+val driveLogScreenList = listOf(DriveLogList, DriveLogEdit, RefuelLogList)

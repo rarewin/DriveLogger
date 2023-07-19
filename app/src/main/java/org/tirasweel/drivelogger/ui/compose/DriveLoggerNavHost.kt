@@ -8,23 +8,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import org.tirasweel.drivelogger.DriveLogEdit
-import org.tirasweel.drivelogger.DriveLogList
 import org.tirasweel.drivelogger.R
-import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.interfaces.DriveLogEdit
+import org.tirasweel.drivelogger.interfaces.DriveLogList
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
+import org.tirasweel.drivelogger.interfaces.RefuelLogList
 import org.tirasweel.drivelogger.ui.compose.drivelogedit.DriveLogEditScreen
 import org.tirasweel.drivelogger.ui.compose.drivelogedit.DriveLogEditScreenClickListener
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListScreen
-import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListTopAppBarClickListener
+import org.tirasweel.drivelogger.ui.compose.refuelloglist.RefuelLogListScreen
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
+import org.tirasweel.drivelogger.viewmodels.RefuelLogViewModel
 import java.io.File
 
 @Composable
 fun DriveLoggerNavHost(
     navController: NavHostController,
     driveLogViewModel: DriveLogViewModel,
+    refuelLogViewModel: RefuelLogViewModel,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -48,7 +50,7 @@ fun DriveLoggerNavHost(
                 clickListener = object : LogListInteractionListener {
                     override fun onFabAddClicked() {
                         driveLogViewModel.logFormState.resetLogForm()
-                        navController.navigate(DriveLogEdit.route)
+                        navController.navigate(DriveLogList.route)
                     }
 
                     override fun onItemClicked(log: DriveLog) {
@@ -68,26 +70,26 @@ fun DriveLoggerNavHost(
                         }
                     }
                 },
-                appBarClickListener = object : DriveLogListTopAppBarClickListener {
-                    override fun onClickExport() {
-                        if (exportFile?.exists() == true) {
-                            driveLogViewModel.uiState.isConfirmDialogForOverwriteExport.value = true
-                        } else {
-                            exportFile?.let {
-                                driveLogViewModel.exportDriveLogLists(it)
-                                Toast.makeText(
-                                    context,
-                                    R.string.message_export_file_successful,
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                    }
-
-                    override fun onSortOrderChanged(sortOrderType: SortOrderType) {
-                        driveLogViewModel.updateDriveLogList()
-                    }
-                }
+//                appBarClickListener = object : DriveLogListTopAppBarClickListener {
+//                    override fun onClickExport() {
+//                        if (exportFile?.exists() == true) {
+//                            driveLogViewModel.uiState.isConfirmDialogForOverwriteExport.value = true
+//                        } else {
+//                            exportFile?.let {
+//                                driveLogViewModel.exportDriveLogLists(it)
+//                                Toast.makeText(
+//                                    context,
+//                                    R.string.message_export_file_successful,
+//                                    Toast.LENGTH_LONG
+//                                ).show()
+//                            }
+//                        }
+//                    }
+//
+//                    override fun onSortOrderChanged(sortOrderType: SortOrderType) {
+//                        driveLogViewModel.updateDriveLogList()
+//                    }
+//                }
             )
         }
 
@@ -154,6 +156,15 @@ fun DriveLoggerNavHost(
                         }
                     }
                 }
+            )
+        }
+
+        // 走行ログ編集画面
+        composable(
+            route = RefuelLogList.route,
+        ) { navBackStackEntry ->
+            RefuelLogListScreen(
+                refuelLogViewModel = refuelLogViewModel,
             )
         }
     }

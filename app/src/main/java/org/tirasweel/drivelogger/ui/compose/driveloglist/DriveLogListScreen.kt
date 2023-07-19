@@ -27,51 +27,21 @@ fun DriveLogListScreen(
     modifier: Modifier = Modifier,
     driveLogViewModel: DriveLogViewModel,
     clickListener: LogListInteractionListener? = null,
-    appBarClickListener: DriveLogListTopAppBarClickListener? = null,
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            DriveLogListTopAppBar(
-                modifier = Modifier,
-                driveLogViewModel = driveLogViewModel,
-                clickListener = appBarClickListener,
-            )
-        },
-        bottomBar = {
-            DriveLogNavigationBar()
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.padding(all = 16.dp),
-                onClick = {
-                    clickListener?.onFabAddClicked()
-                    // navController.navigate(DriveLogEdit.route)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Add",
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End,
-    ) { contentPadding ->
-        val driveLogs by driveLogViewModel.driveLogList
+    val driveLogs by driveLogViewModel.driveLogList
 
-        LazyColumn(
-            modifier = Modifier.padding(contentPadding)
-        ) {
-            items(
-                items = driveLogs,
-                key = { driveLog -> driveLog.id }
-            ) { driveLog ->
-                DriveLogRow(
-                    driveLog = driveLog,
-                    clickListener = clickListener,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+    LazyColumn(
+        modifier = modifier,
+    ) {
+        items(
+            items = driveLogs,
+            key = { driveLog -> driveLog.id }
+        ) { driveLog ->
+            DriveLogRow(
+                driveLog = driveLog,
+                clickListener = clickListener,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 

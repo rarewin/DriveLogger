@@ -5,27 +5,36 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.tirasweel.drivelogger.R
-import org.tirasweel.drivelogger.activities.ScreenMode
+import org.tirasweel.drivelogger.interfaces.Destination
+import org.tirasweel.drivelogger.interfaces.DriveLogList
+import org.tirasweel.drivelogger.interfaces.RefuelLogList
+import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
+import org.tirasweel.drivelogger.viewmodels.AppViewModel
 
 @Composable
-fun DriveLogNavigationBar(modifier: Modifier = Modifier) {
+fun DriveLogNavigationBar(
+    modifier: Modifier = Modifier,
+    onItemClicked: (Destination) -> Unit,
+    appBarViewModel: AppViewModel,
+) {
+    var currentMode = appBarViewModel.currentMode.value
+
     NavigationBar(
         modifier = modifier,
     ) {
-        var currentMode by remember { mutableStateOf(ScreenMode.DriveLoggingScreen) }
-
         NavigationBarItem(
-            selected = (currentMode == ScreenMode.DriveLoggingScreen),
-            onClick = { currentMode = ScreenMode.DriveLoggingScreen },
+            selected = (currentMode == DriveLogList),
+            onClick = {
+                if (currentMode != DriveLogList) {
+                    currentMode = DriveLogList
+                    onItemClicked(DriveLogList)
+                }
+            },
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_directions_car_24),
@@ -35,8 +44,13 @@ fun DriveLogNavigationBar(modifier: Modifier = Modifier) {
             label = { Text(stringResource(id = R.string.screen_title_drive_logging)) }
         )
         NavigationBarItem(
-            selected = (currentMode == ScreenMode.RefuelLoggingScreen),
-            onClick = { /* currentMode = ScreenMode.RefuelLoggingScreen */ },
+            selected = (currentMode == RefuelLogList),
+            onClick = {
+                if (currentMode != RefuelLogList) {
+                    currentMode = RefuelLogList
+                    onItemClicked(RefuelLogList)
+                }
+            },
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_local_gas_station_24),
@@ -50,6 +64,14 @@ fun DriveLogNavigationBar(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-private fun DriveLogNavigationBar() {
-    DriveLogNavigationBar(modifier = Modifier)
+private fun DriveLogNavigationBarPreview() {
+    DriveLoggerTheme {
+        DriveLogNavigationBar(
+            modifier = Modifier,
+            appBarViewModel = AppViewModel(),
+            onItemClicked = { _ ->
+
+            }
+        )
+    }
 }
