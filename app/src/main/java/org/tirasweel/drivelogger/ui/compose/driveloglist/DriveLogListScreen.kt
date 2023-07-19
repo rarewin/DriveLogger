@@ -1,4 +1,4 @@
-package org.tirasweel.drivelogger.compose
+package org.tirasweel.drivelogger.ui.compose.driveloglist
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
+import org.tirasweel.drivelogger.ui.compose.DriveLogNavigationBar
+import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 

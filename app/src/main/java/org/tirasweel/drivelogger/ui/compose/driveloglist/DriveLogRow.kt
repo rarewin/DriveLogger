@@ -1,4 +1,4 @@
-package org.tirasweel.drivelogger.compose
+package org.tirasweel.drivelogger.ui.compose.driveloglist
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable

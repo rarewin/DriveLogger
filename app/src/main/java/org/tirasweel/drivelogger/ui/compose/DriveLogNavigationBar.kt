@@ -1,4 +1,4 @@
-package org.tirasweel.drivelogger.compose
+package org.tirasweel.drivelogger.ui.compose
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar

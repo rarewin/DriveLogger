@@ -1,4 +1,4 @@
-package org.tirasweel.drivelogger.compose
+package org.tirasweel.drivelogger.ui.compose.common
 
 import androidx.annotation.StringRes
 import androidx.compose.material3.AlertDialog

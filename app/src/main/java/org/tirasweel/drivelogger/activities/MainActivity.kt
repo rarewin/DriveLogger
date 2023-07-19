@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import org.tirasweel.drivelogger.BuildConfig
-import org.tirasweel.drivelogger.compose.DriveLoggerApp
+import org.tirasweel.drivelogger.ui.compose.DriveLoggerApp
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 

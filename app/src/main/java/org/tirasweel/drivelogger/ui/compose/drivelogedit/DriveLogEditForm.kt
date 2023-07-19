@@ -1,4 +1,4 @@
-package org.tirasweel.drivelogger.compose
+package org.tirasweel.drivelogger.ui.compose.drivelogedit
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
