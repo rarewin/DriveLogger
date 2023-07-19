@@ -60,7 +60,7 @@ fun DriveLogListTopAppBar(
                     text = { Text(stringResource(R.string.menu_title_export)) },
                     onClick = {
                         clickListener?.onClickExport()
-                        sortMenuExpanded = true
+                        importExportMenuExpanded = false
                     },
                 )
             }
