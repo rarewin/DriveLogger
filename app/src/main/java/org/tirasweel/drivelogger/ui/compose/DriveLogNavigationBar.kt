@@ -50,6 +50,6 @@ fun DriveLogNavigationBar(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-private fun DriveLogNavigationBar() {
+private fun DriveLogNavigationBarPreview() {
     DriveLogNavigationBar(modifier = Modifier)
 }

@@ -2,7 +2,9 @@ package org.tirasweel.drivelogger.utils
 
 import android.text.format.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class DateFormatConverter {
     companion object {
