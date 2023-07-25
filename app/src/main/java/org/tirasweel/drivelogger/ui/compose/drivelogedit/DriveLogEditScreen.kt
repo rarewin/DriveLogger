@@ -28,6 +28,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.activities.ScreenMode
+import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigation
+import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigationListener
 import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 import timber.log.Timber
@@ -129,6 +132,7 @@ fun DriveLogEditScreen(
     modifier: Modifier = Modifier,
     clickListener: DriveLogEditScreenClickListener? = null,
     driveLogViewModel: DriveLogViewModel,
+    bottomNavigationClickListener: DriveLoggerBottomNavigationListener? = null,
 ) {
     Scaffold(
         modifier = modifier,
@@ -137,6 +141,12 @@ fun DriveLogEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 clickListener = clickListener,
                 driveLogViewModel = driveLogViewModel,
+            )
+        },
+        bottomBar = {
+            DriveLoggerBottomNavigation(
+                currentMode = ScreenMode.DriveLoggingScreen,
+                clickListener = bottomNavigationClickListener,
             )
         }
     ) { contentPadding ->

@@ -16,8 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.activities.ScreenMode
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
-import org.tirasweel.drivelogger.ui.compose.DriveLogNavigationBar
+import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigation
+import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigationListener
 import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
@@ -28,6 +30,7 @@ fun DriveLogListScreen(
     driveLogViewModel: DriveLogViewModel,
     clickListener: LogListInteractionListener? = null,
     appBarClickListener: DriveLogListTopAppBarClickListener? = null,
+    bottomNavigationClickListener: DriveLoggerBottomNavigationListener? = null,
 ) {
     Scaffold(
         modifier = modifier,
@@ -39,7 +42,10 @@ fun DriveLogListScreen(
             )
         },
         bottomBar = {
-            DriveLogNavigationBar()
+            DriveLoggerBottomNavigation(
+                currentMode = ScreenMode.DriveLoggingScreen,
+                clickListener = bottomNavigationClickListener,
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
