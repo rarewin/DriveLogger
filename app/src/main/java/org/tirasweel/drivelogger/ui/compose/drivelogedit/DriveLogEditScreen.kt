@@ -1,6 +1,5 @@
 package org.tirasweel.drivelogger.ui.compose.drivelogedit
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
+import timber.log.Timber
 
 interface DriveLogEditScreenClickListener {
     fun onClickBack()
@@ -130,8 +130,6 @@ fun DriveLogEditScreen(
     clickListener: DriveLogEditScreenClickListener? = null,
     driveLogViewModel: DriveLogViewModel,
 ) {
-    val debugTag = object {}.javaClass.enclosingMethod?.name
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -217,7 +215,7 @@ fun DriveLogEditScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        Log.d(debugTag, "date: ${datePickerState.selectedDateMillis}")
+                        Timber.d("date: ${datePickerState.selectedDateMillis}")
                         datePickerState.selectedDateMillis?.let {
                             driveLogViewModel.logFormState.date.value = it
                             driveLogViewModel.uiState.isDatePickerDisplayed.value = false

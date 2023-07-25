@@ -1,6 +1,5 @@
 package org.tirasweel.drivelogger.ui.compose
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +18,7 @@ import org.tirasweel.drivelogger.ui.compose.drivelogedit.DriveLogEditScreenClick
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListScreen
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListTopAppBarClickListener
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
+import timber.log.Timber
 import java.io.File
 
 @Composable
@@ -123,7 +123,7 @@ fun DriveLoggerNavHost(
                             // 編集箇所があれば確認する
                             driveLogViewModel.uiState.isConfirmDialogForOverwriteLog.value = true
                         } else {
-                            Log.e("DriveLoggerNavHost", "invalid transition")
+                            Timber.e("invalid transition")
                         }
                     }
 
