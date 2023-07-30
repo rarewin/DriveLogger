@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -13,15 +14,17 @@ import androidx.navigation.compose.composable
 import org.tirasweel.drivelogger.DriveLogEdit
 import org.tirasweel.drivelogger.DriveLogList
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.RefuelLogList
 import org.tirasweel.drivelogger.activities.ScreenMode
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
-import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigationListener
+import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigationClickListener
 import org.tirasweel.drivelogger.ui.compose.drivelogedit.DriveLogEditScreen
 import org.tirasweel.drivelogger.ui.compose.drivelogedit.DriveLogEditScreenClickListener
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListScreen
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListTopAppBarClickListener
+import org.tirasweel.drivelogger.ui.compose.refuellist.RefuelListScreen
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 import timber.log.Timber
 import java.io.File
@@ -32,7 +35,7 @@ fun DriveLoggerNavHost(
     driveLogViewModel: DriveLogViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val currentScreenMode by remember { mutableStateOf(ScreenMode.DriveLoggingScreen) }
+    var currentScreenMode by remember { mutableStateOf(ScreenMode.DriveLoggingScreen) }
 
     NavHost(
         navController = navController,
@@ -40,13 +43,14 @@ fun DriveLoggerNavHost(
         modifier = modifier,
     ) {
 
-        val bottomNavigationClickListener = object : DriveLoggerBottomNavigationListener {
+        val bottomNavigationClickListener = object : DriveLoggerBottomNavigationClickListener {
             override fun onModeChanged(mode: ScreenMode) {
                 if (mode == currentScreenMode) {
                     Timber.d("clicked same mode with current one: $mode")
                     return
                 } else {
-                    Timber.d("clicked new mode: $mode")
+                    currentScreenMode = mode
+                    navController.navigate(mode.destination.route)
                 }
             }
         }
@@ -173,6 +177,15 @@ fun DriveLoggerNavHost(
                         }
                     }
                 },
+                bottomNavigationClickListener = bottomNavigationClickListener,
+            )
+        }
+
+        // 給油記録リスト
+        composable(
+            route = RefuelLogList.route,
+        ) {
+            RefuelListScreen(
                 bottomNavigationClickListener = bottomNavigationClickListener,
             )
         }
