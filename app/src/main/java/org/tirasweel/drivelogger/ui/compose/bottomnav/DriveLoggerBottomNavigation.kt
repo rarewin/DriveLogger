@@ -13,22 +13,30 @@ import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.activities.ScreenMode
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 
-interface DriveLoggerBottomNavigationListener {
-    fun onModeChanged(mode: ScreenMode)
+/**
+ * BottomNavigationのクリックリスナー
+ */
+interface DriveLoggerBottomNavigationClickListener {
+
+    /**
+     * モード変更
+     * @param mode  スクリーンモード
+     */
+    fun onModeChanged(mode: ScreenMode) {}
 }
 
 @Composable
 fun DriveLoggerBottomNavigation(
     modifier: Modifier = Modifier,
     currentMode: ScreenMode,
-    clickListener: DriveLoggerBottomNavigationListener? = null,
+    driveLoggerBottomNavigationClickListener: DriveLoggerBottomNavigationClickListener,
 ) {
     NavigationBar(
         modifier = modifier,
     ) {
         NavigationBarItem(
             selected = (currentMode == ScreenMode.DriveLoggingScreen),
-            onClick = { clickListener?.onModeChanged(ScreenMode.DriveLoggingScreen) },
+            onClick = { driveLoggerBottomNavigationClickListener.onModeChanged(ScreenMode.DriveLoggingScreen) },
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_directions_car_24),
@@ -39,7 +47,7 @@ fun DriveLoggerBottomNavigation(
         )
         NavigationBarItem(
             selected = (currentMode == ScreenMode.RefuelLoggingScreen),
-            onClick = { clickListener?.onModeChanged(ScreenMode.RefuelLoggingScreen) },
+            onClick = { driveLoggerBottomNavigationClickListener.onModeChanged(ScreenMode.RefuelLoggingScreen) },
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_local_gas_station_24),
@@ -58,6 +66,10 @@ private fun DriveLoggerBottomNavigationPreview() {
         DriveLoggerBottomNavigation(
             modifier = Modifier,
             currentMode = ScreenMode.DriveLoggingScreen,
+            driveLoggerBottomNavigationClickListener = object :
+                DriveLoggerBottomNavigationClickListener {
+                override fun onModeChanged(mode: ScreenMode) {}
+            }
         )
     }
 }

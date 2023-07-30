@@ -28,9 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
-import org.tirasweel.drivelogger.activities.ScreenMode
-import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigation
-import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigationListener
+import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigationClickListener
 import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 import timber.log.Timber
@@ -132,7 +130,7 @@ fun DriveLogEditScreen(
     modifier: Modifier = Modifier,
     clickListener: DriveLogEditScreenClickListener? = null,
     driveLogViewModel: DriveLogViewModel,
-    bottomNavigationClickListener: DriveLoggerBottomNavigationListener? = null,
+    bottomNavigationClickListener: DriveLoggerBottomNavigationClickListener,
 ) {
     Scaffold(
         modifier = modifier,
@@ -143,12 +141,12 @@ fun DriveLogEditScreen(
                 driveLogViewModel = driveLogViewModel,
             )
         },
-        bottomBar = {
-            DriveLoggerBottomNavigation(
-                currentMode = ScreenMode.DriveLoggingScreen,
-                clickListener = bottomNavigationClickListener,
-            )
-        }
+//        bottomBar = {
+//            DriveLoggerBottomNavigation(
+//                currentMode = ScreenMode.DriveLoggingScreen,
+//                driveLoggerBottomNavigationClickListener = bottomNavigationClickListener,
+//            )
+//        }
     ) { contentPadding ->
         Column(
             modifier = Modifier
@@ -285,6 +283,7 @@ private fun DriveLogEditScreenPreview() {
         DriveLogEditScreen(
             modifier = Modifier.fillMaxWidth(),
             driveLogViewModel = DriveLogViewModel(),
+            bottomNavigationClickListener = object : DriveLoggerBottomNavigationClickListener {},
         )
     }
 }
