@@ -26,4 +26,9 @@ object DriveLogEdit : DriveLoggerDestination {
     )
 }
 
+object RefuelLogList : DriveLoggerDestination {
+    override val route = "refuel_list"
+}
+
+
 val driveLogScreenList = listOf(DriveLogList, DriveLogEdit)

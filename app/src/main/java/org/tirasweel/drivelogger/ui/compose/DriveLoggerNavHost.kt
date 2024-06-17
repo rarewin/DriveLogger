@@ -2,6 +2,10 @@ package org.tirasweel.drivelogger.ui.compose
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -10,13 +14,17 @@ import androidx.navigation.compose.composable
 import org.tirasweel.drivelogger.DriveLogEdit
 import org.tirasweel.drivelogger.DriveLogList
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.RefuelLogList
+import org.tirasweel.drivelogger.activities.ScreenMode
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
+import org.tirasweel.drivelogger.ui.compose.bottomnav.DriveLoggerBottomNavigationClickListener
 import org.tirasweel.drivelogger.ui.compose.drivelogedit.DriveLogEditScreen
 import org.tirasweel.drivelogger.ui.compose.drivelogedit.DriveLogEditScreenClickListener
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListScreen
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListTopAppBarClickListener
+import org.tirasweel.drivelogger.ui.compose.refuellist.RefuelListScreen
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 import timber.log.Timber
 import java.io.File
@@ -27,11 +35,25 @@ fun DriveLoggerNavHost(
     driveLogViewModel: DriveLogViewModel,
     modifier: Modifier = Modifier,
 ) {
+    var currentScreenMode by remember { mutableStateOf(ScreenMode.DriveLoggingScreen) }
+
     NavHost(
         navController = navController,
         startDestination = DriveLogList.route,
         modifier = modifier,
     ) {
+
+        val bottomNavigationClickListener = object : DriveLoggerBottomNavigationClickListener {
+            override fun onModeChanged(mode: ScreenMode) {
+                if (mode == currentScreenMode) {
+                    Timber.d("clicked same mode with current one: $mode")
+                    return
+                } else {
+                    currentScreenMode = mode
+                    navController.navigate(mode.destination.route)
+                }
+            }
+        }
 
         // 走行ログ一覧
         composable(
@@ -87,7 +109,8 @@ fun DriveLoggerNavHost(
                     override fun onSortOrderChanged(sortOrderType: SortOrderType) {
                         driveLogViewModel.updateDriveLogList()
                     }
-                }
+                },
+                bottomNavigationClickListener = bottomNavigationClickListener,
             )
         }
 
@@ -153,7 +176,17 @@ fun DriveLoggerNavHost(
                             navController.popBackStack()
                         }
                     }
-                }
+                },
+                bottomNavigationClickListener = bottomNavigationClickListener,
+            )
+        }
+
+        // 給油記録リスト
+        composable(
+            route = RefuelLogList.route,
+        ) {
+            RefuelListScreen(
+                bottomNavigationClickListener = bottomNavigationClickListener,
             )
         }
     }
