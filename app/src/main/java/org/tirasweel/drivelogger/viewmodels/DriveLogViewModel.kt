@@ -5,22 +5,18 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.query.Sort
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
+import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
+import org.tirasweel.drivelogger.interfaces.RealmDriveLogsRepository
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
-import org.tirasweel.drivelogger.utils.RealmUtil
 import java.io.File
 import java.io.FileWriter
 import java.util.Date
 
 class DriveLogViewModel : ViewModel() {
-
-    /** Realm操作 */
-    private val realm = RealmUtil.createRealm()
 
     /** ダイアログやボタンなどのUI状態 */
     inner class UiState {
@@ -70,7 +66,7 @@ class DriveLogViewModel : ViewModel() {
 
         /** 編集中のログを設定 */
         fun setEditingDriveLog(id: Long) {
-            realm.query<DriveLog>("id == $0", id).find().firstOrNull()?.also { log ->
+            driveLogsRepository.getDriveLog(id) { log ->
                 editingLog.value = log
 
                 date.value = log.date
@@ -86,7 +82,6 @@ class DriveLogViewModel : ViewModel() {
                 }
 
                 textMemo.value = log.memo
-
             }
         }
 
@@ -169,13 +164,16 @@ class DriveLogViewModel : ViewModel() {
     val driveLogList: State<List<DriveLog>>
         get() = _driveLogList
 
+    private val driveLogsRepository: DriveLogsRepository by lazy {
+        RealmDriveLogsRepository()
+    }
+
     init {
         _driveLogList = mutableStateOf(getDriveLogs())
     }
 
-    private fun getDriveLogs(): List<DriveLog> = realm.query<DriveLog>()
-        .sort(logListState.sortOrder.value.property, logListState.sortOrder.value.order)
-        .find()
+    private fun getDriveLogs(): List<DriveLog> =
+        driveLogsRepository.getDriveLogs(logListState.sortOrder.value)
 
     fun updateDriveLogList() {
         _driveLogList.value = getDriveLogs()
@@ -186,12 +184,7 @@ class DriveLogViewModel : ViewModel() {
      */
     fun deleteEditingLog() {
         logFormState.editingLog.value?.let { log ->
-            realm.writeBlocking {
-                findLatest(log)?.let {
-                    delete(it)
-                }
-            }
-
+            driveLogsRepository.deleteDriveLog(log.id)
             updateDriveLogList()
         }
     }
@@ -211,18 +204,15 @@ class DriveLogViewModel : ViewModel() {
         }
 
         logFormState.toDriveLogOrNull()?.let { edited ->
-            realm.writeBlocking {
-                logFormState.editingLog.value?.let { log ->
-                    findLatest(log)?.apply {
-                        date = edited.date
-                        milliMileage = edited.milliMileage
-                        fuelEfficient = edited.fuelEfficient
-                        totalMilliMileage = edited.totalMilliMileage
-                        memo = edited.memo
-                    }
-                } ?: run {
-                    edited.id = getNewDriveLogId()
-                    copyToRealm(edited)
+            val id = logFormState.editingLog.value?.id
+
+            driveLogsRepository.setDriveLog(id) { log ->
+                log.apply {
+                    date = edited.date
+                    milliMileage = edited.milliMileage
+                    fuelEfficient = edited.fuelEfficient
+                    totalMilliMileage = edited.totalMilliMileage
+                    memo = edited.memo
                 }
             }
 
@@ -230,15 +220,7 @@ class DriveLogViewModel : ViewModel() {
         }
     }
 
-    private fun getNewDriveLogId(): Long {
-        val maxId = realm.query<DriveLog>()
-            .sort("id", Sort.DESCENDING)
-            .limit(1)
-            .find()
-            .firstOrNull()?.id
-
-        return maxId?.plus(1) ?: 1L
-    }
+//    private fun getNewDriveLogId(): Long = driveLogsRepository.getNewDriveLogId()
 
     fun exportDriveLogLists(file: File) {
         val writer = FileWriter(file)
