@@ -5,18 +5,24 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.tirasweel.drivelogger.DriveLogger
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
-import org.tirasweel.drivelogger.interfaces.RealmDriveLogsRepository
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import java.io.File
 import java.io.FileWriter
 import java.util.Date
 
-class DriveLogViewModel : ViewModel() {
+class DriveLogViewModel(
+    private val driveLogsRepository: DriveLogsRepository,
+) : ViewModel() {
 
     /** ダイアログやボタンなどのUI状態 */
     inner class UiState {
@@ -164,10 +170,6 @@ class DriveLogViewModel : ViewModel() {
     val driveLogList: State<List<DriveLog>>
         get() = _driveLogList
 
-    private val driveLogsRepository: DriveLogsRepository by lazy {
-        RealmDriveLogsRepository()
-    }
-
     init {
         _driveLogList = mutableStateOf(getDriveLogs())
     }
@@ -230,5 +232,15 @@ class DriveLogViewModel : ViewModel() {
         }
 
         writer.close()
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as DriveLogger)
+                val driveLogsRepository = application.container.driveLogsRepository
+                DriveLogViewModel(driveLogsRepository = driveLogsRepository)
+            }
+        }
     }
 }

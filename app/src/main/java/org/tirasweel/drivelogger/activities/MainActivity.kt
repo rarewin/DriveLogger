@@ -4,13 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.tirasweel.drivelogger.ui.compose.DriveLoggerApp
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
 class MainActivity : ComponentActivity() {
-
-    private val driveLogViewModel: DriveLogViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,7 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             DriveLoggerTheme {
                 DriveLoggerApp(
-                    driveLogViewModel = driveLogViewModel,
+                    driveLogViewModel = viewModel(factory = DriveLogViewModel.Factory),
                 )
             }
         }

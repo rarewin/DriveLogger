@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.classes.SortOrderType
+import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
@@ -103,7 +104,9 @@ fun DriveLogListTopAppBarPreview() {
         ) {
             DriveLogListTopAppBar(
                 modifier = Modifier,
-                driveLogViewModel = DriveLogViewModel(),
+                driveLogViewModel = DriveLogViewModel(
+                    driveLogsRepository = FakeDriveLogsRepository(),
+                ),
             )
         }
     }

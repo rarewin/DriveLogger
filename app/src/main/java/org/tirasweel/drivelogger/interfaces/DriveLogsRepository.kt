@@ -31,9 +31,7 @@ interface DriveLogsRepository {
     fun setDriveLog(id: Long?, dataHandler: (log: DriveLog) -> Unit)
 }
 
-class RealmDriveLogsRepository : DriveLogsRepository {
-
-    private val realm: Realm by lazy { RealmUtil.createRealm() }
+class RealmDriveLogsRepository(private val realm: Realm) : DriveLogsRepository {
 
     override fun getDriveLogs(sortOrder: SortOrderType): List<DriveLog> =
         realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
