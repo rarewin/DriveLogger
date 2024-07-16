@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.compose.DriveLogNavigationBar
 import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
@@ -90,7 +91,9 @@ private fun DriveLogListScreenPreview() {
     DriveLoggerTheme {
         DriveLogListScreen(
             modifier = Modifier.fillMaxWidth(),
-            driveLogViewModel = DriveLogViewModel(),
+            driveLogViewModel = DriveLogViewModel(
+                driveLogsRepository = FakeDriveLogsRepository(),
+            ),
         )
     }
 }

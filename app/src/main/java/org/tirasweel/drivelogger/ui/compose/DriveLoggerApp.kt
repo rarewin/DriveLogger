@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
@@ -26,7 +27,9 @@ fun DriveLoggerApp(
 private fun DriveLoggerAppPreview() {
     DriveLoggerTheme {
         DriveLoggerApp(
-            driveLogViewModel = DriveLogViewModel(),
+            driveLogViewModel = DriveLogViewModel(
+                driveLogsRepository = FakeDriveLogsRepository()
+            ),
         )
     }
 }

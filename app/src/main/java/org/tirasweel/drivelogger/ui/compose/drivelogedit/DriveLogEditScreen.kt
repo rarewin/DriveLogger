@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.tirasweel.drivelogger.R
+import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 import timber.log.Timber
@@ -274,7 +275,9 @@ private fun DriveLogEditScreenPreview() {
     Surface {
         DriveLogEditScreen(
             modifier = Modifier.fillMaxWidth(),
-            driveLogViewModel = DriveLogViewModel(),
+            driveLogViewModel = DriveLogViewModel(
+                driveLogsRepository = FakeDriveLogsRepository(),
+            ),
         )
     }
 }
