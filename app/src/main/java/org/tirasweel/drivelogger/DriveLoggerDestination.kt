@@ -1,5 +1,6 @@
 package org.tirasweel.drivelogger
 
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -18,10 +19,11 @@ object DriveLogEdit : DriveLoggerDestination {
 
     const val logIdArg = "log_id"
     val routeWithArgs = "$route?$logIdArg={$logIdArg}"
-    val arguments = listOf(
+    val arguments: List<NamedNavArgument> = listOf(
         navArgument(logIdArg) {
-            nullable = true
             type = NavType.StringType
+            nullable = true
+            defaultValue = null
         }
     )
 }
