@@ -12,7 +12,7 @@ class DriveLogger : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        container = DefaultAppContainer()
+        container = DefaultAppContainer(this)
 
         Timber.plant(Timber.DebugTree())
     }

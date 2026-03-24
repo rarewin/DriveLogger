@@ -1,19 +1,24 @@
 package org.tirasweel.drivelogger.data
 
-import io.realm.kotlin.Realm
+import android.content.Context
+import androidx.room.Room
+import org.tirasweel.drivelogger.db.AppDatabase
 import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
-import org.tirasweel.drivelogger.interfaces.RealmDriveLogsRepository
-import org.tirasweel.drivelogger.utils.RealmUtil
+import org.tirasweel.drivelogger.interfaces.RoomDriveLogsRepository
 
 interface AppContainer {
     val driveLogsRepository: DriveLogsRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(private val context: Context) : AppContainer {
 
-    private val realm: Realm by lazy { RealmUtil.createRealm() }
+    private val database: AppDatabase by lazy {
+        Room.databaseBuilder(context, AppDatabase::class.java, "drive_logger_db")
+            .allowMainThreadQueries() // Maintain similar behavior to Realm's writeBlocking for now, but consider migrating to coroutines
+            .build()
+    }
 
     override val driveLogsRepository: DriveLogsRepository by lazy {
-        RealmDriveLogsRepository(realm)
+        RoomDriveLogsRepository(database.driveLogDao())
     }
 }
