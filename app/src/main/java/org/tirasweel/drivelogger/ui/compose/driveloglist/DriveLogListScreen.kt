@@ -1,5 +1,6 @@
 package org.tirasweel.drivelogger.ui.compose.driveloglist
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,7 +12,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,15 +58,10 @@ fun DriveLogListScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { contentPadding ->
-        val driveLogs by driveLogViewModel.driveLogList
-
         LazyColumn(
-            modifier = Modifier.padding(contentPadding)
+            modifier = Modifier.padding(contentPadding),
         ) {
-            items(
-                items = driveLogs,
-                key = { driveLog -> driveLog.id }
-            ) { driveLog ->
+            items(driveLogViewModel.driveLogList.value) { driveLog ->
                 DriveLogRow(
                     driveLog = driveLog,
                     clickListener = clickListener,
@@ -85,6 +80,7 @@ fun DriveLogListScreen(
     )
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview
 @Composable
 private fun DriveLogListScreenPreview() {
