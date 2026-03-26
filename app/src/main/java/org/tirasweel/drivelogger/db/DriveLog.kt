@@ -1,61 +1,32 @@
 package org.tirasweel.drivelogger.db
 
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
-import kotlinx.serialization.Serializable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-//enum class MileageUnit : RealmObject {
-//    KiloMeter,
-//    Mile;
-//
-//    var enum: MileageUnit
-//        get() {
-//            return valueOf(enumDescription)
-//        }
-//        set(newValue) {
-//            enumDescription = newValue.name
-//        }
-//    private var enumDescription: String = MileageUnit.KiloMeter.name
-//}
-
-@Serializable
-class DriveLog : RealmObject {
+@Entity(tableName = "drive_log")
+data class DriveLog(
     /** ID */
-    @PrimaryKey
-    var id: Long
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0,
 
     /** 作成日 */
-    var createdDate: Long
+    var createdDate: Long = 0,
 
     /** 更新日 */
-    var updatedDate: Long
+    var updatedDate: Long = 0,
 
     /** 日付 */
-    var date: Long
+    var date: Long = 0,
 
     /** 走行距離x1,000 */
-    var milliMileage: Long
-
-    /** 距離の単位 */
-    // var mileageUnit: MileageUnit = MileageUnit.KiloMeter
+    var milliMileage: Long = -1,
 
     /** 燃費 */
-    var fuelEfficient: Double?
+    var fuelEfficient: Double? = null,
 
     /** 合計走行距離x1,000 */
-    var totalMilliMileage: Long?
+    var totalMilliMileage: Long? = null,
 
     /** メモ */
     var memo: String = ""
-
-    constructor() {
-        id = 0
-        createdDate = 0
-        updatedDate = 0
-        date = 0
-        milliMileage = -1
-        fuelEfficient = null
-        totalMilliMileage = null
-        memo = ""
-    }
-}
+)

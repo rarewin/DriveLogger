@@ -1,11 +1,8 @@
 package org.tirasweel.drivelogger.interfaces
 
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
-import org.tirasweel.drivelogger.utils.RealmUtil
+import org.tirasweel.drivelogger.db.DriveLogDao
 
 interface DriveLogsRepository {
     fun getDriveLogs(sortOrder: SortOrderType): List<DriveLog>
@@ -31,54 +28,36 @@ interface DriveLogsRepository {
     fun setDriveLog(id: Long?, dataHandler: (log: DriveLog) -> Unit)
 }
 
-class RealmDriveLogsRepository(private val realm: Realm) : DriveLogsRepository {
+class RoomDriveLogsRepository(private val driveLogDao: DriveLogDao) : DriveLogsRepository {
 
-    override fun getDriveLogs(sortOrder: SortOrderType): List<DriveLog> =
-        realm.query<DriveLog>().sort(sortOrder.property, sortOrder.order).find()
-
-    override fun deleteDriveLog(id: Long) {
-        realm.writeBlocking {
-            realm.query<DriveLog>("id == $0", id).find().firstOrNull()?.let {
-                delete(it)
-            }
+    override fun getDriveLogs(sortOrder: SortOrderType): List<DriveLog> {
+        return when (sortOrder) {
+            SortOrderType.AscendingDate -> driveLogDao.getAllSortedByDateAsc()
+            SortOrderType.DescendingDate -> driveLogDao.getAllSortedByDateDesc()
         }
     }
 
+    override fun deleteDriveLog(id: Long) {
+        driveLogDao.deleteById(id)
+    }
+
     override fun getDriveLog(id: Long, dataHandler: (log: DriveLog) -> Unit) {
-        realm.query<DriveLog>("id == $0", id).find().firstOrNull()?.also { log ->
-            dataHandler(log)
+        driveLogDao.getById(id)?.let {
+            dataHandler(it)
         }
     }
 
     override fun setDriveLog(id: Long?, dataHandler: (log: DriveLog) -> Unit) {
-        val newLog = DriveLog()
-        dataHandler(newLog)
-
-        id?.let {
-            realm.writeBlocking {
-                realm.query<DriveLog>("id == $0", id).find().firstOrNull()?.also { log ->
-                    findLatest(log)?.apply(dataHandler)
-                }
+        if (id != null) {
+            driveLogDao.getById(id)?.let { log ->
+                dataHandler(log)
+                driveLogDao.update(log)
             }
-        } ?: run {
-            newLog.id = getNewDriveLogId()
-            realm.writeBlocking {
-                copyToRealm(newLog)
-            }
+        } else {
+            val newLog = DriveLog()
+            dataHandler(newLog)
+            // Room will auto-generate ID if it's 0 and set as autoGenerate = true
+            driveLogDao.insert(newLog)
         }
-    }
-
-    /**
-     * 新規IDを取得する
-     * @return 新規ID
-     */
-    private fun getNewDriveLogId(): Long {
-        val maxId = realm.query<DriveLog>()
-            .sort("id", Sort.DESCENDING)
-            .limit(1)
-            .find()
-            .firstOrNull()?.id
-
-        return maxId?.plus(1) ?: 1L
     }
 }

@@ -1,6 +1,5 @@
 package org.tirasweel.drivelogger.classes
 
-import io.realm.kotlin.query.Sort
 import org.tirasweel.drivelogger.R
 
 /**
@@ -17,15 +16,6 @@ enum class SortOrderType {
         }
 
     /**
-     * @brief ソート順(RealmのSortで)
-     */
-    val order
-        get() = when (this) {
-            AscendingDate -> Sort.ASCENDING
-            DescendingDate -> Sort.DESCENDING
-        }
-
-    /**
      * @brief ソートに使用するプロパティ
      */
     val property
@@ -33,4 +23,3 @@ enum class SortOrderType {
             AscendingDate, DescendingDate -> "date"
         }
 }
-

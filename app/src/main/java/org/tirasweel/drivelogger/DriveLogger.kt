@@ -3,8 +3,7 @@ package org.tirasweel.drivelogger
 import android.app.Application
 import org.tirasweel.drivelogger.data.AppContainer
 import org.tirasweel.drivelogger.data.DefaultAppContainer
-import timber.log.Timber.DebugTree
-import timber.log.Timber.Forest.plant
+import timber.log.Timber
 
 class DriveLogger : Application() {
 
@@ -13,8 +12,8 @@ class DriveLogger : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        container = DefaultAppContainer()
+        container = DefaultAppContainer(this)
 
-        plant(DebugTree())
+        Timber.plant(Timber.DebugTree())
     }
 }
