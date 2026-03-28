@@ -40,6 +40,7 @@ fun DriveLoggerNavHost(
         ) {
             val context = LocalContext.current
 
+            // エクスポート用ランチャー
             val exportLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.CreateDocument("application/json")
             ) { uri ->
@@ -64,6 +65,31 @@ fun DriveLoggerNavHost(
                 }
             }
 
+            // インポート用ランチャー
+            val importLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                uri?.let {
+                    try {
+                        context.contentResolver.openInputStream(it)?.use { inputStream ->
+                            driveLogViewModel.importDriveLogLists(inputStream)
+                            Toast.makeText(
+                                context,
+                                R.string.message_import_file_successful,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to import drive logs")
+                        Toast.makeText(
+                            context,
+                            "Import failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+
             DriveLogListScreen(
                 driveLogViewModel = driveLogViewModel,
                 clickListener = object : LogListInteractionListener {
@@ -76,11 +102,8 @@ fun DriveLoggerNavHost(
                         navController.navigate(DriveLogEdit.route(logId = log.id))
                     }
 
-                    override fun onConfirmOverwriteExport(response: Boolean) {
-                        // SAF (CreateDocument) uses the system UI for confirmation/overwrite, 
-                        // so we don't necessarily need our own dialog here if we use SAF.
-                        // However, to keep existing flow logic if needed:
-                        if (response) {
+                    override fun onConfirmOverwriteExport(confirm: Boolean) {
+                        if (confirm) {
                             exportLauncher.launch("drivelogs_export.json")
                         }
                     }
@@ -88,6 +111,10 @@ fun DriveLoggerNavHost(
                 appBarClickListener = object : DriveLogListTopAppBarClickListener {
                     override fun onClickExport() {
                         exportLauncher.launch("drivelogs_export.json")
+                    }
+
+                    override fun onClickImport() {
+                        importLauncher.launch(arrayOf("application/json"))
                     }
 
                     override fun onSortOrderChanged(sortOrderType: SortOrderType) {

@@ -16,6 +16,7 @@ import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
+import java.io.InputStream
 import java.io.OutputStream
 import java.util.Date
 
@@ -227,6 +228,15 @@ class DriveLogViewModel(
         outputStream.use { stream ->
             val jsonString = Json.encodeToString(_driveLogList.value)
             stream.write(jsonString.toByteArray())
+        }
+    }
+
+    fun importDriveLogLists(inputStream: InputStream) {
+        inputStream.use { stream ->
+            val jsonString = stream.bufferedReader().use { it.readText() }
+            val logs: List<DriveLog> = Json.decodeFromString(jsonString)
+            driveLogsRepository.insertDriveLogs(logs)
+            updateDriveLogList()
         }
     }
 
