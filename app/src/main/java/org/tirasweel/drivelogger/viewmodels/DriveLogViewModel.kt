@@ -16,8 +16,7 @@ import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
-import java.io.File
-import java.io.FileWriter
+import java.io.OutputStream
 import java.util.Date
 
 class DriveLogViewModel(
@@ -224,14 +223,11 @@ class DriveLogViewModel(
 
 //    private fun getNewDriveLogId(): Long = driveLogsRepository.getNewDriveLogId()
 
-    fun exportDriveLogLists(file: File) {
-        val writer = FileWriter(file)
-
-        _driveLogList.value.forEach { log ->
-            writer.write(Json.encodeToString(log))
+    fun exportDriveLogLists(outputStream: OutputStream) {
+        outputStream.use { stream ->
+            val jsonString = Json.encodeToString(_driveLogList.value)
+            stream.write(jsonString.toByteArray())
         }
-
-        writer.close()
     }
 
     companion object {

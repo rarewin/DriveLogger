@@ -2,7 +2,9 @@ package org.tirasweel.drivelogger.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity(tableName = "drive_log")
 data class DriveLog(
     /** ID */
