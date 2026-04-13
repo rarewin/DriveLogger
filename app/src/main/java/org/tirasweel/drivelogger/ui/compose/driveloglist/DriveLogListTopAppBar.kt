@@ -27,6 +27,7 @@ import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
 interface DriveLogListTopAppBarClickListener {
     fun onClickExport()
+    fun onClickImport()
 
     fun onSortOrderChanged(sortOrderType: SortOrderType)
 }
@@ -57,6 +58,13 @@ fun DriveLogListTopAppBar(
                 expanded = importExportMenuExpanded,
                 onDismissRequest = { importExportMenuExpanded = false },
             ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.menu_title_import)) },
+                    onClick = {
+                        clickListener?.onClickImport()
+                        importExportMenuExpanded = false
+                    },
+                )
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.menu_title_export)) },
                     onClick = {

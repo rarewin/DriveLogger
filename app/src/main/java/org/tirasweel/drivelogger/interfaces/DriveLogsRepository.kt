@@ -26,6 +26,12 @@ interface DriveLogsRepository {
      * @param dataHandler 新規/編集データの設定をするためのハンドラー
      */
     fun setDriveLog(id: Long?, dataHandler: (log: DriveLog) -> Unit)
+
+    /**
+     * 複数のログを一括で挿入する
+     * @param logs 挿入するログのリスト
+     */
+    fun insertDriveLogs(logs: List<DriveLog>)
 }
 
 class RoomDriveLogsRepository(private val driveLogDao: DriveLogDao) : DriveLogsRepository {
@@ -57,6 +63,14 @@ class RoomDriveLogsRepository(private val driveLogDao: DriveLogDao) : DriveLogsR
             val newLog = DriveLog()
             dataHandler(newLog)
             // Room will auto-generate ID if it's 0 and set as autoGenerate = true
+            driveLogDao.insert(newLog)
+        }
+    }
+
+    override fun insertDriveLogs(logs: List<DriveLog>) {
+        logs.forEach { log ->
+            // IDを0にリセットして新規挿入として扱う（既存データとの衝突を避けるため）
+            val newLog = log.copy(id = 0)
             driveLogDao.insert(newLog)
         }
     }

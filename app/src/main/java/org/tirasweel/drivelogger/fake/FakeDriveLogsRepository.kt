@@ -19,4 +19,8 @@ class FakeDriveLogsRepository: DriveLogsRepository {
     override fun setDriveLog(id: Long?, dataHandler: (log: DriveLog) -> Unit) {
         TODO("Not yet implemented")
     }
+
+    override fun insertDriveLogs(logs: List<DriveLog>) {
+        TODO("Not yet implemented")
+    }
 }

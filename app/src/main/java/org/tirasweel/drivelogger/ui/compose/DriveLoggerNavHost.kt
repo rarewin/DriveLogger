@@ -1,6 +1,8 @@
 package org.tirasweel.drivelogger.ui.compose
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,7 +21,6 @@ import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListScreen
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListTopAppBarClickListener
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 import timber.log.Timber
-import java.io.File
 
 @Composable
 fun DriveLoggerNavHost(
@@ -38,10 +39,56 @@ fun DriveLoggerNavHost(
             route = DriveLogList.route,
         ) {
             val context = LocalContext.current
-            val exportFile = context.getExternalFilesDir("DriveLogs")
-                ?.let { dir ->
-                    File(dir, "export.json")
+
+            // エクスポート用ランチャー
+            val exportLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/json")
+            ) { uri ->
+                uri?.let {
+                    try {
+                        context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                            driveLogViewModel.exportDriveLogLists(outputStream)
+                            Toast.makeText(
+                                context,
+                                R.string.message_export_file_successful,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to export drive logs")
+                        Toast.makeText(
+                            context,
+                            "Export failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
+            }
+
+            // インポート用ランチャー
+            val importLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                uri?.let {
+                    try {
+                        context.contentResolver.openInputStream(it)?.use { inputStream ->
+                            driveLogViewModel.importDriveLogLists(inputStream)
+                            Toast.makeText(
+                                context,
+                                R.string.message_import_file_successful,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to import drive logs")
+                        Toast.makeText(
+                            context,
+                            "Import failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
 
             DriveLogListScreen(
                 driveLogViewModel = driveLogViewModel,
@@ -55,33 +102,19 @@ fun DriveLoggerNavHost(
                         navController.navigate(DriveLogEdit.route(logId = log.id))
                     }
 
-                    override fun onConfirmOverwriteExport(response: Boolean) {
-                        if (response) {
-                            exportFile?.let {
-                                driveLogViewModel.exportDriveLogLists(it)
-                                Toast.makeText(
-                                    context,
-                                    R.string.message_export_file_successful,
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+                    override fun onConfirmOverwriteExport(confirm: Boolean) {
+                        if (confirm) {
+                            exportLauncher.launch("drivelogs_export.json")
                         }
                     }
                 },
                 appBarClickListener = object : DriveLogListTopAppBarClickListener {
                     override fun onClickExport() {
-                        if (exportFile?.exists() == true) {
-                            driveLogViewModel.uiState.isConfirmDialogForOverwriteExport.value = true
-                        } else {
-                            exportFile?.let {
-                                driveLogViewModel.exportDriveLogLists(it)
-                                Toast.makeText(
-                                    context,
-                                    R.string.message_export_file_successful,
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
+                        exportLauncher.launch("drivelogs_export.json")
+                    }
+
+                    override fun onClickImport() {
+                        importLauncher.launch(arrayOf("application/json"))
                     }
 
                     override fun onSortOrderChanged(sortOrderType: SortOrderType) {
