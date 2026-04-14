@@ -4,14 +4,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
+import org.tirasweel.drivelogger.viewmodels.DriveLogViewModelFactory
 
 @Composable
 fun DriveLoggerApp(
     modifier: Modifier = Modifier,
-    driveLogViewModel: DriveLogViewModel,
+    driveLogViewModel: DriveLogViewModel = viewModel(
+        factory = DriveLogViewModelFactory(
+            FakeDriveLogsRepository()
+        )
+    )
 ) {
     val navController = rememberNavController()
 
@@ -26,10 +32,6 @@ fun DriveLoggerApp(
 @Composable
 private fun DriveLoggerAppPreview() {
     DriveLoggerTheme {
-        DriveLoggerApp(
-            driveLogViewModel = DriveLogViewModel(
-                driveLogsRepository = FakeDriveLogsRepository()
-            ),
-        )
+        DriveLoggerApp()
     }
 }
