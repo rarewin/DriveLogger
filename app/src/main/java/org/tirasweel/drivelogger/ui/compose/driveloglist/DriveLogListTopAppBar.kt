@@ -19,11 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
+import org.tirasweel.drivelogger.viewmodels.DriveLogViewModelFactory
 
 interface DriveLogListTopAppBarClickListener {
     fun onClickExport()
@@ -107,14 +109,13 @@ fun DriveLogListTopAppBar(
 @Composable
 fun DriveLogListTopAppBarPreview() {
     DriveLoggerTheme {
-        Surface(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Surface(modifier = Modifier.fillMaxWidth()) {
+            val driveLogViewModel: DriveLogViewModel = viewModel(
+                factory = DriveLogViewModelFactory(FakeDriveLogsRepository())
+            )
             DriveLogListTopAppBar(
                 modifier = Modifier,
-                driveLogViewModel = DriveLogViewModel(
-                    driveLogsRepository = FakeDriveLogsRepository(),
-                ),
+                driveLogViewModel = driveLogViewModel
             )
         }
     }
