@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
@@ -26,6 +28,7 @@ import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 @Composable
 fun DriveLogListScreen(
     modifier: Modifier = Modifier,
+    navController: NavController,
     driveLogViewModel: DriveLogViewModel,
     clickListener: LogListInteractionListener? = null,
     appBarClickListener: DriveLogListTopAppBarClickListener? = null,
@@ -40,7 +43,7 @@ fun DriveLogListScreen(
             )
         },
         bottomBar = {
-            DriveLogNavigationBar()
+            DriveLogNavigationBar(navController = navController)
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -87,6 +90,7 @@ private fun DriveLogListScreenPreview() {
     DriveLoggerTheme {
         DriveLogListScreen(
             modifier = Modifier.fillMaxWidth(),
+            navController = rememberNavController(),
             driveLogViewModel = DriveLogViewModel(
                 driveLogsRepository = FakeDriveLogsRepository(),
             ),

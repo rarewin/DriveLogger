@@ -32,6 +32,15 @@
     <string name="message_import_file_successful">Import successful</string>
     <string name="screen_title_drive_logging">DriveLog</string>
     <string name="screen_title_refuel_logging">RefuelLog</string>
+    <string name="title_fuel_amount">Fuel Amount (L)</string>
+    <string name="hint_fuel_amount">Fuel Amount (L)</string>
+    <string name="title_fuel_price">Price (yen/L)</string>
+    <string name="hint_fuel_price">Price (yen/L)</string>
+    <string name="message_remove_refuellog">Do you want to remove this refuel log?</string>
+    <string name="message_discard_modification_refuellog">Do you want to discard the changes?</string>
+    <string name="message_overwrite_refuellog">Do you want to register the modification?</string>
+    <string name="text_l" translatable="false">%.2f L</string>
+    <string name="text_km_l" translatable="false">%.2f km/L</string>
     <string name="title_ok" translatable="false">OK</string>
     <string name="title_cancel">Cancel</string>
 </resources>
