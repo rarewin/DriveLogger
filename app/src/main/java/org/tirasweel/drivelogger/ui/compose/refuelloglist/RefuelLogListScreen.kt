@@ -16,11 +16,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.db.RefuelLog
@@ -37,12 +35,14 @@ fun RefuelLogListScreen(
     refuelLogViewModel: RefuelLogViewModel,
     onFabAddClicked: () -> Unit,
     onItemClicked: (RefuelLog) -> Unit,
+    appBarClickListener: RefuelLogListTopAppBarClickListener? = null,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.screen_title_refuel_logging)) }
+            RefuelLogListTopAppBar(
+                refuelLogViewModel = refuelLogViewModel,
+                clickListener = appBarClickListener,
             )
         },
         bottomBar = {

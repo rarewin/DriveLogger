@@ -26,6 +26,7 @@ import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListTopAppBarCl
 import org.tirasweel.drivelogger.ui.compose.refuellogedit.RefuelLogEditScreen
 import org.tirasweel.drivelogger.ui.compose.refuellogedit.RefuelLogEditScreenClickListener
 import org.tirasweel.drivelogger.ui.compose.refuelloglist.RefuelLogListScreen
+import org.tirasweel.drivelogger.ui.compose.refuelloglist.RefuelLogListTopAppBarClickListener
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 import org.tirasweel.drivelogger.viewmodels.RefuelLogViewModel
 import timber.log.Timber
@@ -214,6 +215,11 @@ fun DriveLoggerNavHost(
                 },
                 onItemClicked = { log ->
                     navController.navigate(RefuelLogEdit.route(logId = log.id))
+                },
+                appBarClickListener = object : RefuelLogListTopAppBarClickListener {
+                    override fun onSortOrderChanged(sortOrderType: SortOrderType) {
+                        refuelLogViewModel.updateRefuelLogList()
+                    }
                 }
             )
         }
