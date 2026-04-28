@@ -1,21 +1,18 @@
+# Android Studio / IntelliJ IDEA
+.idea/*
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
 *.iml
+
+# Android / Build
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/.idea/AndroidProjectSystem.xml
-/.idea/studiobot.xml
-/.idea/runConfigurations.xml
-.DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
 /app/google-services.json
+.DS_Store
 
 # Kotlin
 .kotlin/
