@@ -32,4 +32,11 @@
     <string name="screen_title_drive_logging">走行記録</string>
     <string name="screen_title_refuel_logging">給油記録</string>
     <string name="title_cancel">キャンセル</string>
+    <string name="title_fuel_amount">給油量 (L)</string>
+    <string name="hint_fuel_amount">給油量 (L)</string>
+    <string name="title_fuel_price">値段 (円/L)</string>
+    <string name="hint_fuel_price">値段 (円/L)</string>
+    <string name="message_remove_refuellog">この給油記録を削除しますか?</string>
+    <string name="message_discard_modification_refuellog">この変更を破棄しても良いですか?</string>
+    <string name="message_overwrite_refuellog">この変更を保存しますか?</string>
 </resources>

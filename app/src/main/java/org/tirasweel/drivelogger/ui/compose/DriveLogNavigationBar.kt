@@ -6,26 +6,37 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import org.tirasweel.drivelogger.DriveLogList
 import org.tirasweel.drivelogger.R
-import org.tirasweel.drivelogger.activities.ScreenMode
+import org.tirasweel.drivelogger.RefuelLogList
 
 @Composable
-fun DriveLogNavigationBar(modifier: Modifier = Modifier) {
+fun DriveLogNavigationBar(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     NavigationBar(
         modifier = modifier,
     ) {
-        var currentMode by remember { mutableStateOf(ScreenMode.DriveLoggingScreen) }
-
         NavigationBarItem(
-            selected = (currentMode == ScreenMode.DriveLoggingScreen),
-            onClick = { currentMode = ScreenMode.DriveLoggingScreen },
+            selected = (currentRoute == DriveLogList.route),
+            onClick = {
+                if (currentRoute != DriveLogList.route) {
+                    navController.navigate(DriveLogList.route) {
+                        popUpTo(DriveLogList.route) { inclusive = true }
+                    }
+                }
+            },
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_directions_car_24),
@@ -35,8 +46,14 @@ fun DriveLogNavigationBar(modifier: Modifier = Modifier) {
             label = { Text(stringResource(id = R.string.screen_title_drive_logging)) }
         )
         NavigationBarItem(
-            selected = (currentMode == ScreenMode.RefuelLoggingScreen),
-            onClick = { /* currentMode = ScreenMode.RefuelLoggingScreen */ },
+            selected = (currentRoute == RefuelLogList.route),
+            onClick = {
+                if (currentRoute != RefuelLogList.route) {
+                    navController.navigate(RefuelLogList.route) {
+                        popUpTo(DriveLogList.route)
+                    }
+                }
+            },
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_local_gas_station_24),
@@ -51,5 +68,5 @@ fun DriveLogNavigationBar(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun DriveLogNavigationBarPreview() {
-    DriveLogNavigationBar(modifier = Modifier)
+    DriveLogNavigationBar(navController = rememberNavController())
 }

@@ -28,4 +28,24 @@ object DriveLogEdit : DriveLoggerDestination {
     )
 }
 
-val driveLogScreenList = listOf(DriveLogList, DriveLogEdit)
+object RefuelLogList : DriveLoggerDestination {
+    override val route = "refuel_log_list"
+}
+
+object RefuelLogEdit : DriveLoggerDestination {
+    override val route = "refuel_log_edit"
+
+    fun route(logId: Long) = "$route?$logIdArg=$logId"
+
+    const val logIdArg = "log_id"
+    val routeWithArgs = "$route?$logIdArg={$logIdArg}"
+    val arguments: List<NamedNavArgument> = listOf(
+        navArgument(logIdArg) {
+            type = NavType.StringType
+            nullable = true
+            defaultValue = null
+        }
+    )
+}
+
+val driveLogScreenList = listOf(DriveLogList, DriveLogEdit, RefuelLogList, RefuelLogEdit)
