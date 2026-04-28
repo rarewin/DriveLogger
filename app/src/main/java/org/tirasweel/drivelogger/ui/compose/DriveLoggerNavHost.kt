@@ -206,6 +206,58 @@ fun DriveLoggerNavHost(
         composable(
             route = RefuelLogList.route,
         ) {
+            val context = LocalContext.current
+
+            // エクスポート用ランチャー
+            val exportLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/json")
+            ) { uri ->
+                uri?.let {
+                    try {
+                        context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                            refuelLogViewModel.exportRefuelLogLists(outputStream)
+                            Toast.makeText(
+                                context,
+                                R.string.message_export_file_successful,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to export refuel logs")
+                        Toast.makeText(
+                            context,
+                            "Export failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+
+            // インポート用ランチャー
+            val importLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                uri?.let {
+                    try {
+                        context.contentResolver.openInputStream(it)?.use { inputStream ->
+                            refuelLogViewModel.importRefuelLogLists(inputStream)
+                            Toast.makeText(
+                                context,
+                                R.string.message_import_file_successful,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to import refuel logs")
+                        Toast.makeText(
+                            context,
+                            "Import failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+
             RefuelLogListScreen(
                 navController = navController,
                 refuelLogViewModel = refuelLogViewModel,
@@ -217,6 +269,14 @@ fun DriveLoggerNavHost(
                     navController.navigate(RefuelLogEdit.route(logId = log.id))
                 },
                 appBarClickListener = object : RefuelLogListTopAppBarClickListener {
+                    override fun onClickExport() {
+                        exportLauncher.launch("refuellogs_export.json")
+                    }
+
+                    override fun onClickImport() {
+                        importLauncher.launch(arrayOf("application/json"))
+                    }
+
                     override fun onSortOrderChanged(sortOrderType: SortOrderType) {
                         refuelLogViewModel.updateRefuelLogList()
                     }

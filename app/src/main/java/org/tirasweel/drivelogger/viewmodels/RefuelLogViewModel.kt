@@ -14,6 +14,10 @@ import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.RefuelLog
 import org.tirasweel.drivelogger.interfaces.RefuelLogsRepository
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.Date
 
 class RefuelLogViewModel(
@@ -171,6 +175,22 @@ class RefuelLogViewModel(
                     memo = edited.memo
                 }
             }
+            updateRefuelLogList()
+        }
+    }
+
+    fun exportRefuelLogLists(outputStream: OutputStream) {
+        outputStream.use { stream ->
+            val jsonString = Json.encodeToString(_refuelLogList.value)
+            stream.write(jsonString.toByteArray())
+        }
+    }
+
+    fun importRefuelLogLists(inputStream: InputStream) {
+        inputStream.use { stream ->
+            val jsonString = stream.bufferedReader().use { it.readText() }
+            val logs: List<RefuelLog> = Json.decodeFromString(jsonString)
+            refuelLogsRepository.insertRefuelLogs(logs)
             updateRefuelLogList()
         }
     }

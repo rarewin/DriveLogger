@@ -3,6 +3,7 @@ package org.tirasweel.drivelogger.data
 import android.content.Context
 import androidx.room.Room
 import org.tirasweel.drivelogger.db.AppDatabase
+import org.tirasweel.drivelogger.db.MIGRATION_1_2
 import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
 import org.tirasweel.drivelogger.interfaces.RefuelLogsRepository
 import org.tirasweel.drivelogger.interfaces.RoomDriveLogsRepository
@@ -18,7 +19,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     private val database: AppDatabase by lazy {
         Room.databaseBuilder(context, AppDatabase::class.java, "drive_logger_db")
             .allowMainThreadQueries() // Maintain similar behavior to Realm's writeBlocking for now, but consider migrating to coroutines
-            .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 
