@@ -21,5 +21,14 @@ class DateFormatConverter {
 
             return cal.time.toLocaleDateString()
         }
+
+        fun Long.toYearMonthString(): String {
+            val locale = Locale.getDefault()
+            val format = DateFormat.getBestDateTimePattern(locale, "yyyyMMMM")
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = this
+
+            return SimpleDateFormat(format, locale).format(cal.time)
+        }
     }
 }

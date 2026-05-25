@@ -1,17 +1,26 @@
 package org.tirasweel.drivelogger.ui.compose.driveloglist
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,9 +31,12 @@ import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.compose.DriveLogNavigationBar
 import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
+import org.tirasweel.drivelogger.ui.compose.common.FastScroller
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
+import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toYearMonthString
 import org.tirasweel.drivelogger.viewmodels.DriveLogViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DriveLogListScreen(
     modifier: Modifier = Modifier,
@@ -33,6 +45,22 @@ fun DriveLogListScreen(
     clickListener: LogListInteractionListener? = null,
     appBarClickListener: DriveLogListTopAppBarClickListener? = null,
 ) {
+    val listState = rememberLazyListState()
+    val driveLogs = driveLogViewModel.driveLogList.value
+    val grouped = remember(driveLogs) {
+        driveLogs.groupBy { it.date.toYearMonthString() }
+    }
+
+    // 全アイテム（ヘッダー含む）のリストを作成し、ラベル引き引用にする
+    val allItems = remember(grouped) {
+        val list = mutableListOf<String>()
+        grouped.forEach { (month, logs) ->
+            list.add(month) // ヘッダー
+            logs.forEach { _ -> list.add(month) } // 各ログアイテム
+        }
+        list
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -61,16 +89,43 @@ fun DriveLogListScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { contentPadding ->
-        LazyColumn(
-            modifier = Modifier.padding(contentPadding),
-        ) {
-            items(driveLogViewModel.driveLogList.value) { driveLog ->
-                DriveLogRow(
-                    driveLog = driveLog,
-                    clickListener = clickListener,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+        Box(modifier = Modifier.padding(contentPadding)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = listState,
+            ) {
+                grouped.forEach { (month, logs) ->
+                    stickyHeader {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = month,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    items(logs) { driveLog ->
+                        DriveLogRow(
+                            driveLog = driveLog,
+                            clickListener = clickListener,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
             }
+
+            FastScroller(
+                listState = listState,
+                modifier = Modifier.align(Alignment.CenterEnd),
+                labelProvider = { index ->
+                    if (index in allItems.indices) allItems[index] else ""
+                }
+            )
         }
     }
 
