@@ -3,16 +3,15 @@ package org.tirasweel.drivelogger.ui.compose.driveloglist
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
@@ -24,23 +23,39 @@ fun DriveLogRow(
     driveLog: DriveLog,
     clickListener: LogListInteractionListener? = null,
 ) {
-    Card(
-        colors = CardDefaults.cardColors(
-            contentColor = MaterialTheme.colorScheme.primary,
-        ),
-        modifier = modifier
-            .padding(vertical = 4.dp, horizontal = 8.dp)
-            .clickable { clickListener?.onItemClicked(driveLog) }
-    ) {
-        Column(modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
-            Text(text = driveLog.date.toLocalDateString())
-            Text(text = String.format("%.2f km", driveLog.milliMileage / 1000.0))
-
-            Text(text = driveLog.fuelEfficient?.let { fuelEfficient ->
-                String.format("%.2f km/L", fuelEfficient)
-            } ?: "--- km/L")
+    ListItem(
+        modifier = modifier.clickable { clickListener?.onItemClicked(driveLog) },
+        headlineContent = {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = driveLog.date.toLocalDateString(),
+                    modifier = Modifier.weight(1f)
+                )
+                driveLog.fuelEfficient?.let { fuelEfficient ->
+                    Text(text = stringResource(id = R.string.text_km_l, fuelEfficient))
+                }
+            }
+        },
+        supportingContent = {
+            Column {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(id = R.string.text_km, driveLog.milliMileage / 1000.0),
+                        modifier = Modifier.weight(1f)
+                    )
+                    driveLog.totalMilliMileage?.let { totalMilliMileage ->
+                        Text(
+                            text = stringResource(id = R.string.text_km, totalMilliMileage / 1000.0),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+                if (driveLog.memo.isNotEmpty()) {
+                    Text(text = driveLog.memo)
+                }
+            }
         }
-    }
+    )
 }
 
 @Preview
