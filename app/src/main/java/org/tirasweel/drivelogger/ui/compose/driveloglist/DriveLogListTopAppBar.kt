@@ -46,7 +46,12 @@ fun DriveLogListTopAppBar(
     var importExportMenuExpanded by remember { mutableStateOf(initialImportExportMenuExpanded) }
     var sortMenuExpanded by remember { mutableStateOf(initialSortMenuExpanded) }
 
-    TopAppBar(modifier = modifier, title = {}, actions = {
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            Text(text = stringResource(id = R.string.screen_title_drive_logging))
+        },
+        actions = {
         Box(modifier = modifier) {
             IconButton(onClick = { importExportMenuExpanded = true }) {
                 Icon(
