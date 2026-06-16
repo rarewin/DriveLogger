@@ -76,7 +76,10 @@ fun RefuelLogListScreen(
             DriveLogNavigationBar(navController = navController)
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onFabAddClicked) {
+            FloatingActionButton(
+                modifier = Modifier.padding(all = 16.dp),
+                onClick = onFabAddClicked
+            ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(id = R.string.description_fab_new_drivelog))
             }
         }
