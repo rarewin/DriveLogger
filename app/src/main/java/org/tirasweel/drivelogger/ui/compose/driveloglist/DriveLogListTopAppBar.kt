@@ -2,6 +2,9 @@ package org.tirasweel.drivelogger.ui.compose.driveloglist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +45,8 @@ fun DriveLogListTopAppBar(
     initialImportExportMenuExpanded: Boolean = false,
     initialSortMenuExpanded: Boolean = false,
     clickListener: DriveLogListTopAppBarClickListener? = null,
+    isChartVisible: Boolean = true,
+    onToggleChart: () -> Unit = {},
 ) {
     var importExportMenuExpanded by remember { mutableStateOf(initialImportExportMenuExpanded) }
     var sortMenuExpanded by remember { mutableStateOf(initialSortMenuExpanded) }
@@ -52,7 +57,14 @@ fun DriveLogListTopAppBar(
             Text(text = stringResource(id = R.string.screen_title_drive_logging))
         },
         actions = {
-        Box(modifier = modifier) {
+            IconButton(onClick = onToggleChart) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ShowChart,
+                    tint = if (isChartVisible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                    contentDescription = null
+                )
+            }
+            Box(modifier = modifier) {
             IconButton(onClick = { importExportMenuExpanded = true }) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_import_export_24),

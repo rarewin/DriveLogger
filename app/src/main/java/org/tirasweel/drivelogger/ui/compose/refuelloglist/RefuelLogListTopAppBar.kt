@@ -21,6 +21,10 @@ import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.ui.compose.driveloglist.DriveLogListSortingMenuItem
 import org.tirasweel.drivelogger.viewmodels.RefuelLogViewModel
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material3.MaterialTheme
+
 interface RefuelLogListTopAppBarClickListener {
     fun onClickExport()
     fun onClickImport()
@@ -35,6 +39,8 @@ fun RefuelLogListTopAppBar(
     initialImportExportMenuExpanded: Boolean = false,
     initialSortMenuExpanded: Boolean = false,
     clickListener: RefuelLogListTopAppBarClickListener? = null,
+    isChartVisible: Boolean = true,
+    onToggleChart: () -> Unit = {},
 ) {
     var importExportMenuExpanded by remember { mutableStateOf(initialImportExportMenuExpanded) }
     var sortMenuExpanded by remember { mutableStateOf(initialSortMenuExpanded) }
@@ -43,6 +49,13 @@ fun RefuelLogListTopAppBar(
         modifier = modifier,
         title = { Text(stringResource(id = R.string.screen_title_refuel_logging)) },
         actions = {
+            IconButton(onClick = onToggleChart) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ShowChart,
+                    tint = if (isChartVisible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                    contentDescription = null
+                )
+            }
             Box(modifier = Modifier) {
                 IconButton(onClick = { importExportMenuExpanded = true }) {
                     Icon(

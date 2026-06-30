@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,7 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +35,7 @@ import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.fake.FakeDriveLogsRepository
 import org.tirasweel.drivelogger.interfaces.LogListInteractionListener
 import org.tirasweel.drivelogger.ui.compose.DriveLogNavigationBar
+import org.tirasweel.drivelogger.ui.compose.common.AnalyticsChart
 import org.tirasweel.drivelogger.ui.compose.common.ConfirmDialog
 import org.tirasweel.drivelogger.ui.compose.common.FastScroller
 import org.tirasweel.drivelogger.ui.theme.DriveLoggerTheme
@@ -48,6 +53,7 @@ fun DriveLogListScreen(
 ) {
     val listState = rememberLazyListState()
     val driveLogs = driveLogViewModel.driveLogList.value
+    var isChartExpanded by remember { mutableStateOf(true) }
     val grouped = remember(driveLogs) {
         driveLogs.groupBy { it.date.toYearMonthString() }
     }
@@ -69,6 +75,8 @@ fun DriveLogListScreen(
                 modifier = Modifier,
                 driveLogViewModel = driveLogViewModel,
                 clickListener = appBarClickListener,
+                isChartVisible = isChartExpanded,
+                onToggleChart = { isChartExpanded = !isChartExpanded }
             )
         },
         bottomBar = {
@@ -79,7 +87,6 @@ fun DriveLogListScreen(
                 modifier = Modifier.padding(all = 16.dp),
                 onClick = {
                     clickListener?.onFabAddClicked()
-                    // navController.navigate(DriveLogEdit.route)
                 }
             ) {
                 Icon(
@@ -90,44 +97,56 @@ fun DriveLogListScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { contentPadding ->
-        Box(modifier = Modifier.padding(contentPadding)) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = listState,
-            ) {
-                grouped.forEach { (month, logs) ->
-                    stickyHeader {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = month,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+        Column(modifier = Modifier.padding(contentPadding)) {
+            // 共通化した AnalyticsChart を呼び出すだけ
+            AnalyticsChart(
+                isChartExpanded = isChartExpanded,
+                chartData = driveLogViewModel.chartData,
+                currentMetric = driveLogViewModel.logListState.chartMetric.value,
+                currentType = driveLogViewModel.logListState.chartType.value,
+                onMetricSelected = { driveLogViewModel.logListState.chartMetric.value = it },
+                onTypeSelected = { driveLogViewModel.logListState.chartType.value = it }
+            )
+
+            Box(modifier = Modifier.weight(1f)) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = listState,
+                ) {
+                    grouped.forEach { (month, logs) ->
+                        stickyHeader {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = month,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        items(logs) { driveLog ->
+                            DriveLogRow(
+                                driveLog = driveLog,
+                                clickListener = clickListener,
+                                modifier = Modifier.fillMaxWidth(),
                             )
+                            HorizontalDivider()
                         }
                     }
-                    items(logs) { driveLog ->
-                        DriveLogRow(
-                            driveLog = driveLog,
-                            clickListener = clickListener,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        HorizontalDivider()
-                    }
                 }
-            }
 
-            FastScroller(
-                listState = listState,
-                modifier = Modifier.align(Alignment.CenterEnd),
-                labelProvider = { index ->
-                    if (index in allItems.indices) allItems[index] else ""
-                }
-            )
+                FastScroller(
+                    listState = listState,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    labelProvider = { index ->
+                        if (index in allItems.indices) allItems[index] else ""
+                    }
+                )
+            }
         }
     }
 

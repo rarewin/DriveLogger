@@ -23,7 +23,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,6 +35,7 @@ import androidx.navigation.NavController
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.db.RefuelLog
 import org.tirasweel.drivelogger.ui.compose.DriveLogNavigationBar
+import org.tirasweel.drivelogger.ui.compose.common.AnalyticsChart
 import org.tirasweel.drivelogger.ui.compose.common.FastScroller
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toYearMonthString
@@ -50,6 +54,7 @@ fun RefuelLogListScreen(
 ) {
     val listState = rememberLazyListState()
     val logs = refuelLogViewModel.refuelLogList.value
+    var isChartExpanded by remember { mutableStateOf(true) }
     val grouped = remember(logs) {
         logs.groupBy { it.date.toYearMonthString() }
     }
@@ -70,6 +75,8 @@ fun RefuelLogListScreen(
             RefuelLogListTopAppBar(
                 refuelLogViewModel = refuelLogViewModel,
                 clickListener = appBarClickListener,
+                isChartVisible = isChartExpanded,
+                onToggleChart = { isChartExpanded = !isChartExpanded }
             )
         },
         bottomBar = {
@@ -84,43 +91,55 @@ fun RefuelLogListScreen(
             }
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = listState,
-            ) {
-                grouped.forEach { (month, monthLogs) ->
-                    stickyHeader {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = month,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+        Column(modifier = Modifier.padding(paddingValues)) {
+            // 共通 AnalyticsChart を呼び出す
+            AnalyticsChart(
+                isChartExpanded = isChartExpanded,
+                chartData = refuelLogViewModel.chartData,
+                currentMetric = refuelLogViewModel.logListState.chartMetric.value,
+                currentType = refuelLogViewModel.logListState.chartType.value,
+                onMetricSelected = { refuelLogViewModel.logListState.chartMetric.value = it },
+                onTypeSelected = { refuelLogViewModel.logListState.chartType.value = it }
+            )
+
+            Box(modifier = Modifier.weight(1f)) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = listState,
+                ) {
+                    grouped.forEach { (month, monthLogs) ->
+                        stickyHeader {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = month,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        items(monthLogs) { log ->
+                            RefuelLogRow(
+                                log = log,
+                                modifier = Modifier.clickable { onItemClicked(log) }
                             )
+                            HorizontalDivider()
                         }
                     }
-                    items(monthLogs) { log ->
-                        RefuelLogRow(
-                            log = log,
-                            modifier = Modifier.clickable { onItemClicked(log) }
-                        )
-                        HorizontalDivider()
-                    }
                 }
-            }
 
-            FastScroller(
-                listState = listState,
-                modifier = Modifier.align(Alignment.CenterEnd),
-                labelProvider = { index ->
-                    if (index in allItems.indices) allItems[index] else ""
-                }
-            )
+                FastScroller(
+                    listState = listState,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    labelProvider = { index ->
+                        if (index in allItems.indices) allItems[index] else ""
+                    }
+                )
+            }
         }
     }
 }

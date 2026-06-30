@@ -16,6 +16,10 @@ import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
+import org.tirasweel.drivelogger.utils.ChartDataPoint
+import org.tirasweel.drivelogger.utils.ChartHelper
+import org.tirasweel.drivelogger.utils.ChartMetric
+import org.tirasweel.drivelogger.utils.ChartType
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.Date
@@ -153,7 +157,21 @@ class DriveLogViewModel(
     inner class LogListState {
         /** ソート順設定 */
         var sortOrder = mutableStateOf(SortOrderType.DescendingDate)
+
+        /** グラフの表示タイプ */
+        var chartType = mutableStateOf(ChartType.Monthly)
+
+        /** グラフの表示指標 */
+        var chartMetric = mutableStateOf(ChartMetric.FuelEfficiency)
     }
+
+    /** グラフ表示用のデータを取得 */
+    val chartData: List<ChartDataPoint>
+        get() = ChartHelper.generateChartData(
+            logs = _driveLogList.value,
+            metric = logListState.chartMetric.value,
+            chartType = logListState.chartType.value
+        )
 
     /** 共通UI状態のインスタンス */
     var uiState = UiState()

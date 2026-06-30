@@ -16,6 +16,10 @@ import org.tirasweel.drivelogger.interfaces.RefuelLogsRepository
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.tirasweel.drivelogger.utils.ChartDataPoint
+import org.tirasweel.drivelogger.utils.ChartHelper
+import org.tirasweel.drivelogger.utils.ChartMetric
+import org.tirasweel.drivelogger.utils.ChartType
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.Date
@@ -117,7 +121,16 @@ class RefuelLogViewModel(
 
     inner class LogListState {
         var sortOrder = mutableStateOf(SortOrderType.DescendingDate)
+        var chartType = mutableStateOf(ChartType.Monthly)
+        var chartMetric = mutableStateOf(ChartMetric.FuelEfficiency)
     }
+
+    val chartData: List<ChartDataPoint>
+        get() = ChartHelper.generateChartData(
+            logs = _refuelLogList.value,
+            metric = logListState.chartMetric.value,
+            chartType = logListState.chartType.value
+        )
 
     var uiState = UiState()
     var logFormState = LogFormState()
