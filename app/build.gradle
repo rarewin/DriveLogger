@@ -95,19 +95,7 @@ android {
     }
 }
 
-androidComponents {
-    onVariants(selector().all(), { variant ->
-        def versionTag = getVersionName(variant.name)
-        def myVersionCode = getVersionCode(versionTag)
-        def myVersionName = versionTag
-        
-        variant.outputs.each { output ->
-            println("${variant.name} [${myVersionCode}, ${myVersionName}]")
-            output.versionName.set(myVersionName)
-            output.versionCode.set(myVersionCode)
-        }
-    })
-}
+
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.18.0'
@@ -148,4 +136,16 @@ dependencies {
     implementation "com.google.accompanist:accompanist-themeadapter-material:0.36.0"
 
     implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    def vico_version = "1.13.1"
+    implementation "com.patrykandpatrick.vico:core:$vico_version"
+    implementation "com.patrykandpatrick.vico:compose:$vico_version"
+    implementation "com.patrykandpatrick.vico:compose-m3:$vico_version"
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
