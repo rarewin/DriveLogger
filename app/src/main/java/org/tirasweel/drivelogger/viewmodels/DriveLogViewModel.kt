@@ -16,6 +16,10 @@ import org.tirasweel.drivelogger.classes.SortOrderType
 import org.tirasweel.drivelogger.db.DriveLog
 import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
 import org.tirasweel.drivelogger.utils.DateFormatConverter.Companion.toLocaleDateString
+import org.tirasweel.drivelogger.utils.ChartDataPoint
+import org.tirasweel.drivelogger.utils.ChartHelper
+import org.tirasweel.drivelogger.utils.ChartMetric
+import org.tirasweel.drivelogger.utils.ChartType
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.Date
@@ -149,11 +153,6 @@ class DriveLogViewModel(
         }
     }
 
-    /** グラフの表示指標 */
-    enum class ChartMetric {
-        FuelEfficiency, Mileage, TotalMileage
-    }
-
     /** ログのリストの状態 */
     inner class LogListState {
         /** ソート順設定 */
@@ -166,67 +165,13 @@ class DriveLogViewModel(
         var chartMetric = mutableStateOf(ChartMetric.FuelEfficiency)
     }
 
-    /** グラフの表示単位 */
-    enum class ChartType {
-        Weekly, Monthly, Yearly
-    }
-
-    /** グラフ用のデータポイント */
-    data class ChartDataPoint(
-        val label: String,
-        val value: Double
-    )
-
     /** グラフ表示用のデータを取得 */
     val chartData: List<ChartDataPoint>
-        get() {
-            val logs = _driveLogList.value.sortedBy { it.date }
-            if (logs.isEmpty()) return emptyList()
-
-            val calendar = Calendar.getInstance()
-
-            // 選択された指標に応じてログをフィルタリング
-            val filteredLogs = when (logListState.chartMetric.value) {
-                ChartMetric.FuelEfficiency -> logs.filter { it.fuelEfficient != null }
-                ChartMetric.Mileage -> logs.filter { it.milliMileage >= 0 }
-                ChartMetric.TotalMileage -> logs.filter { it.totalMilliMileage != null }
-            }
-
-            if (filteredLogs.isEmpty()) return emptyList()
-
-            // 期間ごとにグループ化
-            val groupedLogs = filteredLogs.groupBy { log ->
-                calendar.timeInMillis = log.date
-                when (logListState.chartType.value) {
-                    ChartType.Weekly -> {
-                        "${calendar.get(Calendar.YEAR)} W${calendar.get(Calendar.WEEK_OF_YEAR)}"
-                    }
-                    ChartType.Monthly -> {
-                        "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}"
-                    }
-                    ChartType.Yearly -> {
-                        "${calendar.get(Calendar.YEAR)}"
-                    }
-                }
-            }
-
-            return groupedLogs.map { (label, logsInGroup) ->
-                val value = when (logListState.chartMetric.value) {
-                    ChartMetric.FuelEfficiency -> {
-                        logsInGroup.mapNotNull { it.fuelEfficient }.average()
-                    }
-                    ChartMetric.Mileage -> {
-                        logsInGroup.map { it.milliMileage.toDouble() / 1000.0 }.sum()
-                    }
-                    ChartMetric.TotalMileage -> {
-                        // logsInGroup はソート済みの filteredLogs から生成されるため、
-                        // 最後のログが対象期間内での最新の総走行距離（オドメーター値）になります。
-                        logsInGroup.last().totalMilliMileage!!.toDouble() / 1000.0
-                    }
-                }
-                ChartDataPoint(label, value)
-            }
-        }
+        get() = ChartHelper.generateChartData(
+            logs = _driveLogList.value,
+            metric = logListState.chartMetric.value,
+            chartType = logListState.chartType.value
+        )
 
     /** 共通UI状態のインスタンス */
     var uiState = UiState()

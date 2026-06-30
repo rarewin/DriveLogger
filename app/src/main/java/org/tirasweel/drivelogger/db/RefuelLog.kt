@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
+import org.tirasweel.drivelogger.interfaces.ChartableLog
+
 @Serializable
 @Entity(tableName = "refuel_log")
 data class RefuelLog(
@@ -37,4 +39,9 @@ data class RefuelLog(
 
     /** メモ */
     var memo: String = ""
-)
+) : ChartableLog {
+    override val logDate: Long get() = date
+    override val logMilliMileage: Long get() = milliMileage
+    override val logTotalMilliMileage: Long? get() = totalMilliMileage
+    override val logFuelEfficiency: Double? get() = fuelEfficiency
+}
