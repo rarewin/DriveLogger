@@ -56,16 +56,12 @@ fun AnalyticsChart(
     onTypeSelected: (ChartType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (chartData.isEmpty()) return
+    if (chartData.size < 2) return
 
-    val chartModelProducer = remember { ChartEntryModelProducer() }
     val datasetForModel = remember(chartData) {
         chartData.mapIndexed { index, dataPoint -> entryOf(index.toFloat(), dataPoint.value) }
     }
-
-    LaunchedEffect(key1 = datasetForModel) {
-        chartModelProducer.setEntries(datasetForModel)
-    }
+    val chartModelProducer = remember(datasetForModel) { ChartEntryModelProducer(datasetForModel) }
 
     AnimatedVisibility(visible = isChartExpanded, modifier = modifier) {
         Column {
