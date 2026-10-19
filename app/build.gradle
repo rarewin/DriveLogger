@@ -141,6 +141,9 @@ dependencies {
     implementation "com.patrykandpatrick.vico:core:$vico_version"
     implementation "com.patrykandpatrick.vico:compose:$vico_version"
     implementation "com.patrykandpatrick.vico:compose-m3:$vico_version"
+
+    // Location
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
 }
 
 java {
