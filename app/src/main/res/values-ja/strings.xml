@@ -39,4 +39,7 @@
     <string name="message_remove_refuellog">この給油記録を削除しますか?</string>
     <string name="message_discard_modification_refuellog">この変更を破棄しても良いですか?</string>
     <string name="message_overwrite_refuellog">この変更を保存しますか?</string>
+    <string name="notification_channel_location_tracking">走行位置の記録</string>
+    <string name="notification_title_location_tracking">走行ルートを記録中</string>
+    <string name="notification_text_location_tracking">GPSで位置情報を定期取得しています…</string>
 </resources>
