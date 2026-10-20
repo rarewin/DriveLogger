@@ -42,4 +42,8 @@
     <string name="notification_channel_location_tracking">走行位置の記録</string>
     <string name="notification_title_location_tracking">走行ルートを記録中</string>
     <string name="notification_text_location_tracking">GPSで位置情報を定期取得しています…</string>
+    <string name="location_interval_5s">5秒</string>
+    <string name="location_interval_10s">10秒</string>
+    <string name="location_interval_30s">30秒</string>
+    <string name="location_interval_1m">1分</string>
 </resources>

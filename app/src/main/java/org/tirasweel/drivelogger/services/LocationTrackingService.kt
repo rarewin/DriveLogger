@@ -16,6 +16,7 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -23,23 +24,28 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.tirasweel.drivelogger.DriveLogger
 import org.tirasweel.drivelogger.R
 import org.tirasweel.drivelogger.activities.MainActivity
 import org.tirasweel.drivelogger.interfaces.LocationClient
+import org.tirasweel.drivelogger.interfaces.LocationSettingsRepository
 import timber.log.Timber
 
 class LocationTrackingService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
+    private lateinit var locationSettingsRepository: LocationSettingsRepository
     private var trackingJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
-        locationClient = (application as DriveLogger).container.locationClient
+        val container = (application as DriveLogger).container
+        locationClient = container.locationClient
+        locationSettingsRepository = container.locationSettingsRepository
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -47,18 +53,20 @@ class LocationTrackingService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START -> {
-                val intervalMillis = intent.getLongExtra(
-                    EXTRA_INTERVAL_MILLIS,
-                    DEFAULT_INTERVAL_MILLIS
-                )
-                startTracking(intervalMillis)
+                val intervalMillisOverride = if (intent.hasExtra(EXTRA_INTERVAL_MILLIS)) {
+                    intent.getLongExtra(EXTRA_INTERVAL_MILLIS, -1L).takeIf { it > 0L }
+                } else {
+                    null
+                }
+                startTracking(intervalMillisOverride)
             }
             ACTION_STOP -> stopTracking()
         }
         return START_STICKY
     }
 
-    private fun startTracking(intervalMillis: Long) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun startTracking(intervalMillisOverride: Long?) {
         if (!locationClient.hasLocationPermission()) {
             Timber.w("Location permission is not granted. Cannot start LocationTrackingService.")
             stopSelf()
@@ -83,7 +91,16 @@ class LocationTrackingService : Service() {
 
         _isTracking.value = true
         trackingJob?.cancel()
-        trackingJob = locationClient.getLocationUpdates(intervalMillis = intervalMillis)
+
+        val locationFlow = if (intervalMillisOverride != null) {
+            locationClient.getLocationUpdates(intervalMillis = intervalMillisOverride)
+        } else {
+            locationSettingsRepository.locationInterval.flatMapLatest { intervalType ->
+                locationClient.getLocationUpdates(intervalMillis = intervalType.intervalMillis)
+            }
+        }
+
+        trackingJob = locationFlow
             .catch { e ->
                 Timber.e(e, "Failed to receive location updates")
             }
@@ -144,7 +161,6 @@ class LocationTrackingService : Service() {
         const val ACTION_START = "org.tirasweel.drivelogger.action.START_LOCATION_TRACKING"
         const val ACTION_STOP = "org.tirasweel.drivelogger.action.STOP_LOCATION_TRACKING"
         const val EXTRA_INTERVAL_MILLIS = "extra_interval_millis"
-        const val DEFAULT_INTERVAL_MILLIS = 10_000L
 
         private const val NOTIFICATION_CHANNEL_ID = "location_tracking_channel"
         private const val NOTIFICATION_ID = 1001
@@ -155,10 +171,12 @@ class LocationTrackingService : Service() {
         private val _lastLocation = MutableStateFlow<Location?>(null)
         val lastLocation: StateFlow<Location?> = _lastLocation.asStateFlow()
 
-        fun start(context: Context, intervalMillis: Long = DEFAULT_INTERVAL_MILLIS) {
+        fun start(context: Context, intervalMillis: Long? = null) {
             val intent = Intent(context, LocationTrackingService::class.java).apply {
                 action = ACTION_START
-                putExtra(EXTRA_INTERVAL_MILLIS, intervalMillis)
+                if (intervalMillis != null) {
+                    putExtra(EXTRA_INTERVAL_MILLIS, intervalMillis)
+                }
             }
             ContextCompat.startForegroundService(context, intent)
         }

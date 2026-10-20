@@ -6,6 +6,7 @@ import org.tirasweel.drivelogger.db.AppDatabase
 import org.tirasweel.drivelogger.db.MIGRATION_1_2
 import org.tirasweel.drivelogger.interfaces.DriveLogsRepository
 import org.tirasweel.drivelogger.interfaces.LocationClient
+import org.tirasweel.drivelogger.interfaces.LocationSettingsRepository
 import org.tirasweel.drivelogger.interfaces.RefuelLogsRepository
 import org.tirasweel.drivelogger.interfaces.RoomDriveLogsRepository
 import org.tirasweel.drivelogger.interfaces.RoomRefuelLogsRepository
@@ -14,6 +15,7 @@ interface AppContainer {
     val driveLogsRepository: DriveLogsRepository
     val refuelLogsRepository: RefuelLogsRepository
     val locationClient: LocationClient
+    val locationSettingsRepository: LocationSettingsRepository
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -35,5 +37,9 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val locationClient: LocationClient by lazy {
         DefaultLocationClient(context)
+    }
+
+    override val locationSettingsRepository: LocationSettingsRepository by lazy {
+        SharedPreferencesLocationSettingsRepository(context)
     }
 }

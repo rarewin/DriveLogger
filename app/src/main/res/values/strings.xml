@@ -46,4 +46,8 @@
     <string name="notification_channel_location_tracking">Drive Location Tracking</string>
     <string name="notification_title_location_tracking">Recording drive route</string>
     <string name="notification_text_location_tracking">Tracking location via GPS…</string>
+    <string name="location_interval_5s">5 seconds</string>
+    <string name="location_interval_10s">10 seconds</string>
+    <string name="location_interval_30s">30 seconds</string>
+    <string name="location_interval_1m">1 minute</string>
 </resources>
